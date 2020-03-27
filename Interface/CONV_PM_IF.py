@@ -32,7 +32,7 @@ def tell_conv_type(in_channels,groups):
 
 Model_Zoo = [ 'alexnet', 'densenet121', 'densenet161',  'densenet169', 'densenet201', 'squeezenet1_0', 'squeezenet1_1',  'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn','wide_resnet101_2', 'wide_resnet50_2',  'vgg11',  'resnet50', 'resnet101', 'resnet152', 'resnet18', 'resnet34' ]
 
-Model_Zoo_w_dconv = [   'mnasnet0_5', 'mobilenet_v2',  'mnasnet0_75', 'mnasnet1_0', 'mnasnet1_3', 'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0', 'shufflenet_v2_x1_5', 'shufflenet_v2_x2_0']
+Model_Zoo_w_dconv = [   'mnasnet0_5', 'mobilenet_v2', 'mnasnet1_0', 'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0']
 
 print(len(Model_Zoo))
 
@@ -50,6 +50,9 @@ for model_name in Model_Zoo_w_dconv:
 
     cTT = 0
     dTT = 0
+
+    cTT_cmp = 0
+    dTT_cmp = 0
 
     for layer_name,layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
@@ -95,43 +98,69 @@ for model_name in Model_Zoo_w_dconv:
             #     TT += acc_1.get_layer_latency(Layer)[0]
 
 
+            #
+            # if T=="cconv":
+            #     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (64,6,14,14,11,28,16,18)
+            #     [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (1024, 2520, 18000, 1824, 16)
+            #     Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv")
+            #     acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
+            #                            Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)
+            #     # print("\t\tcconv:",acc_1.get_layer_latency(Layer))
+            #     cTT += acc_1.get_layer_latency(Layer)[0]
+            # elif T=="dconv":
+            #     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (64,32,14,14,5,6,12,6)
+            #     [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (1024, 2520, 18000, 1824, 16)
+            #     Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "dconv")
+            #     acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
+            #                            Tk, W_p, I_p, O_p, "dconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)
+            #     # print("\t\tdconv:",acc_1.get_layer_latency(Layer))
+            #     dTT += acc_1.get_layer_latency(Layer)[0]
+            #
 
             if T=="cconv":
-                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (64,6,14,14,11,28,16,18)
+                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (64,34,14,14,11,28,16,18)
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (1024, 2520, 18000, 1824, 16)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv")
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                        Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)
                 # print("\t\tcconv:",acc_1.get_layer_latency(Layer))
-                cTT += acc_1.get_layer_latency(Layer)[0]
+                cTT_cmp += acc_1.get_layer_latency(Layer)[0]
             elif T=="dconv":
-                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (64,32,14,14,5,6,12,6)
+                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = (128,1,14,14,5,6,12,6)
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (1024, 2520, 18000, 1824, 16)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "dconv")
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                        Tk, W_p, I_p, O_p, "dconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)
                 # print("\t\tdconv:",acc_1.get_layer_latency(Layer))
-                dTT += acc_1.get_layer_latency(Layer)[0]
+                dTT_cmp += acc_1.get_layer_latency(Layer)[0]
 
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d)  or isinstance(layer, nn.AvgPool2d):
             input = layer(input)
 
-    print("\tTotal Time:", (cTT + dTT) / 10 ** 5)
+    # print("\tTotal Time:", (cTT + dTT) / 10 ** 5)
     # print("\tTime cconv:", (cTT) / 10 ** 5)
     # print("\tTime dconv:", (dTT) / 10 ** 5)
+
+    print("\tTotal Time:", (cTT_cmp + dTT_cmp) / 10 ** 5)
 
     # i+=1
     # if i==1:
     #     print("Total Time:",(cTT+dTT)/10**5)
     #     print("\tTime cconv:", (cTT) / 10 ** 5)
     #     print("\tTime dconv:", (dTT) / 10 ** 5)
+    #
+    #     print("="*50)
+    #
+    #     print("Total Time:", (cTT_cmp + dTT_cmp) / 10 ** 5)
+    #     print("\tTime cconv:", (cTT_cmp) / 10 ** 5)
+    #     print("\tTime dconv:", (dTT_cmp) / 10 ** 5)
     #     sys.exit(0)
+    #
 
 
 
-
-
+sys.exit(0)
 
 
 
