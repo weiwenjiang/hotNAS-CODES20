@@ -1,8 +1,11 @@
 search_space = {
-    'hw_only_cconv2': (list(range(10,20,30)),[7,14],[7,14],list(range(2,3,2)),list(range(2,3,2)),list(range(2,3,2))),
     'hw_only_cconv': (list(range(10,250,30)),[7,14,20,32],[7,14,20,32],list(range(2,10,2)),list(range(2,10,2)),list(range(2,10,2))),
-    "hw_cd_cconv": (list(range(10,250,30)),[7,14,20,32],[7,14,20,32],list(range(2,10,2)),list(range(2,10,2)),list(range(2,10,2))),
-    "hw_cd_dconv": (list(range(10,250,30)),[7,14,20,32],[7,14,20,32],list(range(2,10,2)),list(range(2,10,2)),list(range(2,10,2)))
+    'hw_only_cconv2': (list(range(10,20,30)),[7,14],[7,14],list(range(2,3,2)),list(range(2,3,2)),list(range(2,3,2))),
+    "hw_cd_cconv": (list(range(10,250,30)),[7,14,32],[7,14,32],list(range(2,10,2)),list(range(2,10,2)),list(range(2,10,2))),
+    "hw_cd_dconv": (list(range(64,1024,64)),[7,14,32],[7,14,32]),
+    "hw_cd_cconv2": (list(range(10,20,30)),[14],[7,14],list(range(2,3,2)),list(range(2,3,2)),list(range(2,3,2))),
+    "hw_cd_dconv2": (list(range(64,74,64)),[7,14],[7,14])
+
 }
 
 
