@@ -74,8 +74,8 @@ def do_exploration(model):
                     for I_p in range_Ip:
                         for O_p in range_Op:
                             cur_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-
-                            print([Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p], cur_lat)
+                            if cur_lat!=-1:
+                                print([Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p], cur_lat)
                             if cur_lat!=-1 and cur_lat<best_lat:
                                 best_lat = cur_lat
                                 best_design = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
