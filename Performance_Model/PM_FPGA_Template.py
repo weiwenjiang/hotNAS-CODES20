@@ -17,7 +17,7 @@ class FPGA_Templates:
         if T == "cconv" or T == "dconv":
             self.T = T
         else:
-            print("[Error] only support conventional conv2d (cconv) and depthwise conv (dconv)")
+            #print("[Error] only support conventional conv2d (cconv) and depthwise conv (dconv)")
             sys.exit(0)
         if T == "dconv":
             if self.Tm != self.Tn:
@@ -28,7 +28,7 @@ class FPGA_Templates:
         self.usage_comm_bw = 0
 
         if self.validate_design(Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p, T, r_PortBW, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)==-1:
-            print("[Error] resource cannot satisfied")
+            #print("[Error] resource cannot satisfied")
             self.Success = False
         else:
             # print("[INOF] construct sucessfully")
@@ -44,22 +44,22 @@ class FPGA_Templates:
                 DSP = Tm*Tn
                 Port_BW = 16*(W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    print("[Error] DSP exceeds")
+                    #print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    print("[Error] Communication bitwidth exceeds")
+                    #print("[Error] Communication bitwidth exceeds")
                     return -1
             elif BITWIDTH==32:
                 DSP = 5*Tm*Tn
                 Port_BW = 32 * (W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    print("[Error] DSP exceeds")
+                    #print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    print("[Error] Communication bitwidth exceeds")
+                    #print("[Error] Communication bitwidth exceeds")
                     return -1
             else:
-                print("[Error] only support 16-bit fixed point and 32-bit floating point")
+                #print("[Error] only support 16-bit fixed point and 32-bit floating point")
                 sys.exit(0)
 
             bI = 2*Tn*ceil(Tr*Tc*BITWIDTH/r_BRAM_Size)
@@ -70,7 +70,7 @@ class FPGA_Templates:
                 bW = Tm*Tn*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds")
+                #print("[Error] BRAM exceeds")
                 return -1
 
         elif T=="dconv":
@@ -80,22 +80,22 @@ class FPGA_Templates:
                 DSP = Tm * 1
                 Port_BW = 16 * (W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    print("[Error] DSP exceeds")
+                    #print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    print("[Error] Communication bitwidth exceeds")
+                    #print("[Error] Communication bitwidth exceeds")
                     return -1
             elif BITWIDTH == 32:
                 DSP = 5 * Tm * 1
                 Port_BW = 32 * (W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    print("[Error] DSP exceeds")
+                    #print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    print("[Error] Communication bitwidth exceeds")
+                    #print("[Error] Communication bitwidth exceeds")
                     return -1
             else:
-                print("[Error] only support 16-bit fixed point and 32-bit floating point")
+                #print("[Error] only support 16-bit fixed point and 32-bit floating point")
                 sys.exit(0)
 
             bI = 2*Tn*ceil(Tr*Tc*BITWIDTH/r_BRAM_Size)
@@ -106,11 +106,11 @@ class FPGA_Templates:
                 bW = Tm*1*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds")
+                #print("[Error] BRAM exceeds")
                 return -1
 
         else:
-            print("[Error] only support conventional conv2d (cconv) and depthwise conv (dconv)")
+            #print("[Error] only support conventional conv2d (cconv) and depthwise conv (dconv)")
             sys.exit(0)
 
         self.usage_DSP = DSP
@@ -123,8 +123,8 @@ class FPGA_Templates:
         [B, M, N, R, C, K, S, T] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         if K > Tk:
-            print("[Error] <From class Conv2D_FPGA_Template> Kernel Size {} of input conv is larger than the template supported {}".format(
-                    K, Tk))
+            #print("[Error] <From class Conv2D_FPGA_Template> Kernel Size {} of input conv is larger than the template supported {}".format(
+            #        K, Tk))
             return False
         elif K < Tk:
             # print("[Warning] <From class Conv2D_FPGA_Template> {} HW kernel {} is underutilized for conv kernel {}".format(T, Tk,
@@ -132,7 +132,7 @@ class FPGA_Templates:
             pass;
 
         if self.T != T:
-            print("[Error] <From class Conv2D_FPGA_Template> cannot using {} template for {}".format(self.T, T))
+            #print("[Error] <From class Conv2D_FPGA_Template> cannot using {} template for {}".format(self.T, T))
             return False
         return True
 

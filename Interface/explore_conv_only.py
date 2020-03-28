@@ -61,7 +61,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
 
 
 def do_exploration(model):
-    (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv_debug']
+    (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv']
 
     best_lat = 999999999999
     best_design = []
