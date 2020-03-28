@@ -61,7 +61,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
 
 
 def do_exploration(model):
-    (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv']
+    (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv_debug']
 
     best_lat = 999999999999
     best_design = []
@@ -75,13 +75,14 @@ def do_exploration(model):
                         for O_p in range_Op:
                             cur_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
 
-                            print("'", Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p, "':", cur_lat,best_lat)
+                            # print("'", Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p, "':", cur_lat,best_lat)
                             if cur_lat!=-1 and cur_lat<best_lat:
                                 best_lat = cur_lat
                                 best_design = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
     return best_lat,best_design
 
 
+import time
 
 if __name__== "__main__":
 
@@ -94,9 +95,13 @@ if __name__== "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
+    start_time = time.time()
+
     best_lat,best_design = do_exploration(model)
 
-    print(model_name, best_lat,best_design)
+    end_time = time.time()
+
+    print(model_name, best_lat,best_design, (end_time - start_time))
 
     # Model_Zoo = [ 'alexnet', 'densenet121', 'densenet161',  'densenet169', 'densenet201', 'squeezenet1_0', 'squeezenet1_1',  'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn','wide_resnet101_2', 'wide_resnet50_2',  'vgg11',  'resnet50', 'resnet101', 'resnet152', 'resnet18', 'resnet34' ]
 
