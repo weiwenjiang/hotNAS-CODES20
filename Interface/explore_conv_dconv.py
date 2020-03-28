@@ -13,7 +13,7 @@ from search_space import *
 from CONV_PM_IF import *
 import argparse
 import copy
-
+import time
 
 
 def get_max_k_d(model):
@@ -135,6 +135,10 @@ if __name__== "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
+    start_time = time.time()
+
     best_lat,best_design = do_exploration(model)
+
+    end_time = time.time()
 
     print(model_name, best_lat,best_design)
