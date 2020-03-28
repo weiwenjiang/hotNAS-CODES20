@@ -141,4 +141,4 @@ if __name__== "__main__":
 
     end_time = time.time()
 
-    print(model_name, best_lat,best_design)
+    print(model_name, best_lat,best_design,  (end_time - start_time))
