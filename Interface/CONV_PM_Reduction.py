@@ -36,6 +36,7 @@ def tell_conv_type(in_channels,groups):
 
 
 
+
 if __name__== "__main__":
 
     Model_Zoo = [ 'resnet18', 'densenet121', 'alexnet',  'densenet161',  'densenet169', 'densenet201', 'squeezenet1_0', 'squeezenet1_1',  'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn','wide_resnet101_2', 'wide_resnet50_2',  'vgg11',  'resnet50', 'resnet101', 'resnet152',  'resnet34' ]
@@ -48,7 +49,7 @@ if __name__== "__main__":
     for model_name in Model_Zoo:
         print(model_name)
         model = globals()[model_name]()
-        print(model)
+        # print(model)
 
         input = torch.Tensor(torch.Size([1,3,224,224])).to(torch.float32)
 
@@ -69,32 +70,33 @@ if __name__== "__main__":
             if isinstance(layer, nn.Conv2d):
                 print(layer_name)
 
+                if is_same(layer.kernel_size)==3:
+                    ztNAS_add_kernel_mask(model, layer, layer_name, mask=[[1,1,1],[1,1,1],[1,0,0]])
 
+                # else:
+                #     ztNAS_modify_kernel_shape(model, layer, layer_name, var_k=2)
+                #
 
-
-
-                ztNAS_modify_kernel(model, layer, layer_name, 2)
-
-
-
-
-
-                sys.exit(0)
-
-                input_shape = list(input.shape)
-                input_shape[1] = layer.in_channels
-                input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
-                input = layer(input)
-
-
-
-
-
-
-
-            elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d)  or isinstance(layer, nn.AvgPool2d):
-                input = layer(input)
-
+            #     print(model)
+            #
+            #
+            #
+            #     sys.exit(0)
+            #
+            #     input_shape = list(input.shape)
+            #     input_shape[1] = layer.in_channels
+            #     input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
+            #     input = layer(input)
+            #
+            #
+            #
+            #
+            #
+            #
+            #
+            # elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d)  or isinstance(layer, nn.AvgPool2d):
+            #     input = layer(input)
+            #
 
 
         print(model)
