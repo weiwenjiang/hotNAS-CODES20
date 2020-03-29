@@ -10,6 +10,9 @@ from torch import nn
 import torchvision
 from torchvision import transforms
 
+sys.path.append("../Interface")
+from ztNAS_model_change import *
+
 import utils
 
 try:
@@ -139,76 +142,76 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-
-def modify_model(vgg):
-
-    for param in vgg.parameters():
-        param.requires_grad = False
-    layers = list(vgg.layer4[0].children())[:-1]
-
-    bck1 = vgg.state_dict()["layer4.0.conv1.weight"][:]
-    bck2 = vgg.state_dict()["layer4.0.bn1.weight"][:]
-    bck3 = vgg.state_dict()["layer4.0.bn1.bias"][:]
-    bck4 = vgg.state_dict()["layer4.0.conv2.weight"][:]
-    bck5 =  vgg.state_dict()["layer4.0.bn1.running_mean"][:]
-    bck6 =  vgg.state_dict()["layer4.0.bn1.running_var"][:]
-
-    ch = 460
-
-    print("="*100)
-    for name, param in vgg.named_parameters():
-        print (name,param.requires_grad,param.data.shape,param.data.min())
-
-
-    layers[0] = torch.nn.Conv2d(256, ch, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-    layers[1] = torch.nn.BatchNorm2d(ch, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-    layers[3] = torch.nn.Conv2d(ch, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-
-    vgg.layer4[0].conv1 = layers[0]
-    vgg.layer4[0].bn1 = layers[1]
-    vgg.layer4[0].conv2 = layers[3]
-    
-    print(bck1.shape, bck4.shape)
-
-    vgg.state_dict()["layer4.0.conv1.weight"][:] = bck1[0:ch,:,:,:]
-    vgg.state_dict()["layer4.0.bn1.weight"][:] = bck2[0:ch]
-    vgg.state_dict()["layer4.0.bn1.bias"][:] = bck3[0:ch]
-    vgg.state_dict()["layer4.0.conv2.weight"][:] = bck4[:,0:ch,:,:]
-    vgg.state_dict()["layer4.0.bn1.running_mean"][:] = bck5[0:ch]
-    vgg.state_dict()["layer4.0.bn1.running_var"][:] =bck6[0:ch]
-
-
-
-    print("="*100)
-    for name, param in vgg.named_parameters():
-        print (name,param.requires_grad,param.data.shape,param.data.min())
-
-
-    ''' VGG Modifications
-    for param in vgg.parameters():
-        param.requires_grad = False
-    layers = list(vgg.features.children())[:-1]
-    
-    features_3_weight = vgg.state_dict()["features.3.weight"][:]
-    features_3_bias = vgg.state_dict()["features.3.bias"][:]
-    features_6_weight = vgg.state_dict()["features.6.weight"][:]
-    features_6_bias = vgg.state_dict()["features.6.bias"][:]
-
-    ch = 126
-
-    layers[3] = torch.nn.Conv2d(64, ch, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-    layers[6] = torch.nn.Conv2d(ch, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-
-    features = torch.nn.Sequential(*layers)
-    vgg.features = features
-
-    vgg.state_dict()["features.3.weight"][:] = features_3_weight[0:ch,:,:,:]
-    vgg.state_dict()["features.3.bias"][:] = features_3_bias[0:ch]
-    vgg.state_dict()["features.6.weight"][:] = features_6_weight[:,0:ch,:,:]
-    vgg.state_dict()["features.6.bias"][:] = features_6_bias[:]
-
-    '''
-    return vgg
+#
+# def modify_model(vgg):
+#
+#     for param in vgg.parameters():
+#         param.requires_grad = False
+#     layers = list(vgg.layer4[0].children())[:-1]
+#
+#     bck1 = vgg.state_dict()["layer4.0.conv1.weight"][:]
+#     bck2 = vgg.state_dict()["layer4.0.bn1.weight"][:]
+#     bck3 = vgg.state_dict()["layer4.0.bn1.bias"][:]
+#     bck4 = vgg.state_dict()["layer4.0.conv2.weight"][:]
+#     bck5 =  vgg.state_dict()["layer4.0.bn1.running_mean"][:]
+#     bck6 =  vgg.state_dict()["layer4.0.bn1.running_var"][:]
+#
+#     ch = 460
+#
+#     print("="*100)
+#     for name, param in vgg.named_parameters():
+#         print (name,param.requires_grad,param.data.shape,param.data.min())
+#
+#
+#     layers[0] = torch.nn.Conv2d(256, ch, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+#     layers[1] = torch.nn.BatchNorm2d(ch, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+#     layers[3] = torch.nn.Conv2d(ch, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+#
+#     vgg.layer4[0].conv1 = layers[0]
+#     vgg.layer4[0].bn1 = layers[1]
+#     vgg.layer4[0].conv2 = layers[3]
+#
+#     print(bck1.shape, bck4.shape)
+#
+#     vgg.state_dict()["layer4.0.conv1.weight"][:] = bck1[0:ch,:,:,:]
+#     vgg.state_dict()["layer4.0.bn1.weight"][:] = bck2[0:ch]
+#     vgg.state_dict()["layer4.0.bn1.bias"][:] = bck3[0:ch]
+#     vgg.state_dict()["layer4.0.conv2.weight"][:] = bck4[:,0:ch,:,:]
+#     vgg.state_dict()["layer4.0.bn1.running_mean"][:] = bck5[0:ch]
+#     vgg.state_dict()["layer4.0.bn1.running_var"][:] =bck6[0:ch]
+#
+#
+#
+#     print("="*100)
+#     for name, param in vgg.named_parameters():
+#         print (name,param.requires_grad,param.data.shape,param.data.min())
+#
+#
+#     ''' VGG Modifications
+#     for param in vgg.parameters():
+#         param.requires_grad = False
+#     layers = list(vgg.features.children())[:-1]
+#
+#     features_3_weight = vgg.state_dict()["features.3.weight"][:]
+#     features_3_bias = vgg.state_dict()["features.3.bias"][:]
+#     features_6_weight = vgg.state_dict()["features.6.weight"][:]
+#     features_6_bias = vgg.state_dict()["features.6.bias"][:]
+#
+#     ch = 126
+#
+#     layers[3] = torch.nn.Conv2d(64, ch, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+#     layers[6] = torch.nn.Conv2d(ch, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+#
+#     features = torch.nn.Sequential(*layers)
+#     vgg.features = features
+#
+#     vgg.state_dict()["features.3.weight"][:] = features_3_weight[0:ch,:,:,:]
+#     vgg.state_dict()["features.3.bias"][:] = features_3_bias[0:ch]
+#     vgg.state_dict()["features.6.weight"][:] = features_6_weight[:,0:ch,:,:]
+#     vgg.state_dict()["features.6.bias"][:] = features_6_bias[:]
+#
+#     '''
+#     return vgg
 
 
 
@@ -244,6 +247,12 @@ def main(args):
 
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
+
+    for layer_name, layer in model.named_modules():
+        if isinstance(layer, nn.Conv2d):
+            print(layer_name)
+
+            ztNAS_modify_kernel(model, layer, layer_name, 2)
 
     #model = modify_model(model)
 
