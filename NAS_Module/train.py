@@ -256,7 +256,7 @@ def main(args):
 
     #model = modify_model(model)
 
-    #print(model)
+    print(model)
 
     model.to(device)
     if args.distributed and args.sync_bn:
