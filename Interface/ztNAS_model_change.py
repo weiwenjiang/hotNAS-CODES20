@@ -43,16 +43,16 @@ def ztNAS_modify_kernel(model,layer, layer_name,var_k,increase=True):
     ##
     if last_not_digit == len(seq) - 1:
         # last one is the attribute, directly setattr
-        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(P + var_k/2, P + var_k/2), groups=G, bias=b)
+        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(int(P + var_k/2), int(P + var_k/2)), groups=G, bias=b)
         setattr(pre_attr, seq[-1], new_conv)
     elif last_not_digit == len(seq) - 2:
         # one index last_attr[]
-        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(P + var_k/2, P + var_k/2), groups=G, bias=b)
+        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(int(P + var_k/2), int(P + var_k/2)), groups=G, bias=b)
         last_attr[int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-2], last_attr)
     elif last_not_digit == len(seq) - 3:
         # two index last_attr[][]
-        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(P + var_k/2, P + var_k/2), groups=G, bias=b)
+        new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(int(P + var_k/2), int(P + var_k/2)), groups=G, bias=b)
         last_attr[int(seq[-2])][int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-3], last_attr)
     else:
