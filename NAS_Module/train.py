@@ -252,7 +252,8 @@ def main(args):
         if isinstance(layer, nn.Conv2d):
             print(layer_name)
             if is_same(layer.kernel_size) == 3:
-                ztNAS_add_kernel_mask(model, layer, layer_name, mask=[[1, 1, 1], [0, 1, 1], [1, 1, 0]])
+                mask = torch.tensor([[1, 1, 1], [1, 1, 1], [1, 0, 0]], dtype=torch.float32)
+                ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
 
     #model = modify_model(model)
 
