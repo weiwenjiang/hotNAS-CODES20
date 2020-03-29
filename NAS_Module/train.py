@@ -251,8 +251,8 @@ def main(args):
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
             print(layer_name)
-
-            ztNAS_modify_kernel(model, layer, layer_name, 2)
+            if is_same(layer.kernel_size) == 3:
+                ztNAS_add_kernel_mask(model, layer, layer_name, mask=[[1, 1, 1], [0, 1, 1], [1, 1, 0]])
 
     #model = modify_model(model)
 
