@@ -71,7 +71,8 @@ if __name__== "__main__":
                 print(layer_name)
 
                 if is_same(layer.kernel_size)==3:
-                    ztNAS_add_kernel_mask(model, layer, layer_name, mask=[[1,1,1],[1,1,1],[1,0,0]])
+                    mask = torch.tensor([[1,1,1],[1,1,1],[1,0,0]], dtype=torch.float32)
+                    ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
 
                 # else:
                 #     ztNAS_modify_kernel_shape(model, layer, layer_name, var_k=2)
