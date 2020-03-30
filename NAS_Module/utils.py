@@ -296,6 +296,8 @@ def update_Z_Pattern(X, U, layer_names, pattern):
     new_Z = {}
     layer_pattern = {}
 
+    print("Update Z", pattern)
+
     for name in layer_names:
 
         z = (X[name] + U[name])
@@ -324,6 +326,7 @@ def update_Z_Pattern(X, U, layer_names, pattern):
         new_Z[name] = z
         layer_pattern[name] = pattern
 
+    print("Update Z", layer_pattern)
     return new_Z,layer_pattern
 
 
@@ -367,9 +370,9 @@ def apply_prune(model, layer_names, device, percent):
 def apply_prune_pattern(model, layer_names, layer_pattern, device):
     print("Apply Pruning based on pattern")
     for name in layer_names:
-        model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
         print(model.state_dict()[name + ".weight"][:].data)
-        print(layer_pattern[name])
+        model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
+
 
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0
