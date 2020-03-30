@@ -140,13 +140,15 @@ class Conv2dPattern(_ConvNdPattern):
 
     # @weak_script_method
     def forward(self, input):
-
-        if (self.mask.shape != self.kernel_size):
-            print("[Warning]: Mask size is not consistent",self.mask.shape,self.kernel_size)
-            self.mask = torch.ones(self.kernel_size)
-
-        return Conv2dPatternFunction.apply(input, self.weight * self.mask, self.bias, self.stride,
-                                             self.padding, self.dilation, self.groups)
+        return Conv2dPatternFunction.apply(input, self.weight, self.bias, self.stride,
+                                           self.padding, self.dilation, self.groups)
+        #
+        # if (self.mask.shape != self.kernel_size):
+        #     print("[Warning]: Mask size is not consistent",self.mask.shape,self.kernel_size)
+        #     self.mask = torch.ones(self.kernel_size)
+        #
+        # return Conv2dPatternFunction.apply(input, self.weight * self.mask, self.bias, self.stride,
+        #                                      self.padding, self.dilation, self.groups)
 
 
 
