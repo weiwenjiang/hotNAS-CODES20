@@ -315,15 +315,14 @@ def prune_weight(weight, device, delta):
 
 def apply_prune(model, layer_names, device):
     delta = 5e-4 / 1e-2
-    print("Apply Pruning based on delta = 5e-4 / 1e-2")
+    print("Apply Pruning based on delta = 5e-4 / 1e-2:",delta)
     dict_mask = {}
     idx = 0
     for name in layer_names:
-        if name.split('.')[-1] == "weight":
-            mask = prune_weight(model.state_dict()[name + ".weight"][:], device, delta)
-            model.state_dict()[name + ".weight"][:].data.mul_(mask)
-            dict_mask[name] = mask
-            idx += 1
+        mask = prune_weight(model.state_dict()[name + ".weight"][:], device, delta)
+        model.state_dict()[name + ".weight"][:].data.mul_(mask)
+        dict_mask[name] = mask
+        idx += 1
     return dict_mask
 
 def print_prune(model, layer_names):
