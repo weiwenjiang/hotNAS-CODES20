@@ -24,7 +24,51 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, admm_optimizer, data_loader, device, epoch, print_freq, layer_names,
+def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
+                    percent, pattern, data_loader_test, arg_rho, apex=False):
+    Z, U = utils.initialize_Z_and_U(model, layer_names)
+
+    # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
+
+    model.train()
+    metric_logger = utils.MetricLogger(delimiter="  ")
+    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
+    metric_logger.add_meter('img/s', utils.SmoothedValue(window_size=10, fmt='{value}'))
+
+    header = 'Epoch: [{}]'.format(epoch)
+
+    batch_idx = 0
+    rho = arg_rho
+    for image, target in metric_logger.log_every(data_loader, print_freq, header):
+        start_time = time.time()
+        image, target = image.to(device), target.to(device)
+        output = model(image)
+
+        loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
+
+        optimizer.zero_grad()
+        if apex:
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
+        optimizer.step()
+
+        acc1, acc5 = utils.accuracy(output, target, topk=(1, 5))
+        batch_size = image.shape[0]
+        metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
+        metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
+        metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
+        metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
+
+        batch_idx += 1
+
+
+    evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
+
+
+
+def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, print_freq, layer_names,
                     percent, pattern, data_loader_test, arg_rho, apex=False):
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
@@ -46,65 +90,39 @@ def train_one_epoch(model, criterion, optimizer, admm_optimizer, data_loader, de
         output = model(image)
 
 
-        if batch_idx <= 2400:
-            loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
 
-            admm_optimizer.zero_grad()
-            if apex:
-                with amp.scale_loss(loss, admm_optimizer) as scaled_loss:
-                    scaled_loss.backward()
-            else:
-                loss.backward()
-            admm_optimizer.step()
+        loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
 
-            acc1, acc5 = utils.accuracy(output, target, topk=(1, 5))
-            batch_size = image.shape[0]
-            metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
-            metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
-            metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
-            metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
+        admm_optimizer.zero_grad()
+        if apex:
+            with amp.scale_loss(loss, admm_optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
+        admm_optimizer.step()
 
-            batch_idx+=1
+        acc1, acc5 = utils.accuracy(output, target, topk=(1, 5))
+        batch_size = image.shape[0]
+        metric_logger.update(loss=loss.item(), lr=admm_optimizer.param_groups[0]["lr"])
+        metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
+        metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
+        metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
+
+        batch_idx+=1
 
 
 
-            if batch_idx%600 == 0:
-                print("=" * 10, "Entering ADMM Optimization")
-                X = utils.update_X(model, layer_names)
-                Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
-                U = utils.update_U(U, X, Z, layer_names)
-                rho = rho*10
+        if batch_idx%1000 == 0:
+            print("=" * 10, "Entering ADMM Optimization")
+            X = utils.update_X(model, layer_names)
+            Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
+            U = utils.update_U(U, X, Z, layer_names)
+            rho = rho*10
 
-        if batch_idx==2400:
-            if data_loader_test:
-                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
 
-        if batch_idx>2400:
-            loss = criterion(output, target)
+    evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
 
-            optimizer.zero_grad()
-            if apex:
-                with amp.scale_loss(loss, optimizer) as scaled_loss:
-                    scaled_loss.backward()
-            else:
-                loss.backward()
-            optimizer.step()
 
-            acc1, acc5 = utils.accuracy(output, target, topk=(1, 5))
-            batch_size = image.shape[0]
-            metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
-            metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
-            metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
-            metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
-
-            batch_idx += 1
-
-            if batch_idx%100 == 0:
-                if data_loader_test:
-                    evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names,
-                             pattern=pattern)
-
-    return layer_pattern
 
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], pattern=[]):
     model.eval()
@@ -385,9 +403,13 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        layer_pattern = train_one_epoch(model, criterion, optimizer, admm_optimizer, data_loader, device, epoch, args.print_freq,
+        train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, args.print_freq,
                                         layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
         lr_scheduler.step()
+
+        re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
+                        layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+
         evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
         if args.output_dir:
             checkpoint = {
