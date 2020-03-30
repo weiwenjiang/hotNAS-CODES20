@@ -66,15 +66,15 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             X = utils.update_X(model, layer_names)
             Z = utils.update_Z(X, U, percent)
             U = utils.update_U(U, X, Z)
-            Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
             if data_loader_test:
                 evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
+            Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
 
 
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[]):
     model.eval()
 
-    mask = utils.apply_prune(model, layer_names, percent, device)
+    mask = utils.apply_prune(model, layer_names, device, percent)
     utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
