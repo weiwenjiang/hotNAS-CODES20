@@ -278,10 +278,10 @@ def main(args):
     percent = []
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32, device=device)
-    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32, device=device)
-    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
-    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32)
+    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32)
+    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32)
+    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32)
 
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
