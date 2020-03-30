@@ -363,10 +363,37 @@ def apply_prune(model, layer_names, device, percent):
     return dict_mask
 
 
-def apply_prune_pattern(model, layer_names, layer_pattern, device):
+def apply_prune_pattern(model, layer_names, pattern, device):
     print("Apply Pruning based on pattern")
+    # for name in layer_names:
+    #     model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
+    layer_pattern = {}
     for name in layer_names:
-        model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
+        z = model.state_dict()[name + ".weight"][:].data
+        shape = list(z.shape[:-2])
+        shape.append(1)
+        shape.append(1)
+        after_pattern_0 = z * pattern[0]
+        after_norm_0 = after_pattern_0.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_1 = z * pattern[1]
+        after_norm_1 = after_pattern_1.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_2 = z * pattern[2]
+        after_norm_2 = after_pattern_2.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_3 = z * pattern[3]
+        after_norm_3 = after_pattern_3.norm(dim=(2, 3)).reshape(shape)
+
+        max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
+        tmp_pattern = torch.zeros_like(z)
+
+        tmp_pattern = tmp_pattern + (after_norm_0 == max_norm).float() * pattern[0] + \
+                      ((after_norm_1 == max_norm) & (after_norm_0 != max_norm)).float() * pattern[1] + \
+                      (after_norm_2 == max_norm).float() * pattern[2] + \
+                      (after_norm_3 == max_norm).float() * pattern[3]
+
+        model.state_dict()[name + ".weight"][:].data.mul_((tmp_pattern).to(device))
+        layer_pattern[name] = tmp_pattern
+
+    return layer_pattern
 
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0

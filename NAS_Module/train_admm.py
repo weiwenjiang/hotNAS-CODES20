@@ -68,14 +68,14 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
             U = utils.update_U(U, X, Z, layer_names)
             if data_loader_test:
-                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern= layer_pattern)
+                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
             Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
     return layer_pattern
 
-def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], layer_pattern=[]):
+def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], pattern=[]):
     model.eval()
 
-    utils.apply_prune_pattern(model, layer_names, layer_pattern, device)
+    utils.apply_prune_pattern(model, layer_names, pattern, device)
     utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -344,7 +344,7 @@ def main(args):
             train_sampler.set_epoch(epoch)
         layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, pattern, data_loader_test, args.apex)
         lr_scheduler.step()
-        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern=layer_pattern)
+        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),
