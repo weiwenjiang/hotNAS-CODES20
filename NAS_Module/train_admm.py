@@ -15,6 +15,8 @@ from ztNAS_model_change import *
 
 import utils
 from optimizer import PruneAdam
+from termplot import Plot
+
 
 try:
     from apex import amp
@@ -64,6 +66,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             X = utils.update_X(model, layer_names)
             Z = utils.update_Z(X, U)
             U = utils.update_U(U, X, Z)
+            Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
 
 
 def evaluate(model, criterion, data_loader, device, print_freq=100):
