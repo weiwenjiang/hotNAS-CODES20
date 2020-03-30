@@ -368,7 +368,7 @@ def apply_prune_pattern(model, layer_names, layer_pattern, device):
     print("Apply Pruning based on pattern")
     for name in layer_names:
         model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
-
+        print(model.state_dict()[name + ".weight"][:].data)
 
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0
