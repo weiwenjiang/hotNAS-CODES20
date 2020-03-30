@@ -323,6 +323,7 @@ def update_Z_Pattern(X, U, layer_names, pattern):
 
         z = z * pattern
 
+        print("inside loop",pattern)
         new_Z[name] = z
         layer_pattern[name] = pattern
 
