@@ -283,6 +283,53 @@ def update_X(model, layer_names):
         X[name] = model.state_dict()[name + ".weight"][:].detach().cpu().clone()
     return X
 
+def update_U(U, X, Z, layer_names):
+    new_U = {}
+    for name in layer_names:
+        new_u = U[name] + X[name] - Z[name]
+        new_U[name] = new_u
+    return new_U
+
+
+
+def update_Z_Pattern(X, U, layer_names, pattern):
+    new_Z = {}
+    layer_pattern = {}
+
+    for name in layer_names:
+
+        z = X[name] + U[name]
+        shape = list(z.shape[:-2])
+        shape.append(1)
+        shape.append(1)
+        after_pattern_0 = z * pattern[0]
+        after_norm_0 = after_pattern_0.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_1 = z * pattern[1]
+        after_norm_1 = after_pattern_1.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_2 = z * pattern[2]
+        after_norm_2 = after_pattern_2.norm(dim=(2, 3)).reshape(shape)
+        after_pattern_3 = z * pattern[3]
+        after_norm_3 = after_pattern_3.norm(dim=(2, 3)).reshape(shape)
+
+        max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
+        pattern = torch.zeros_like(z)
+
+        pattern = pattern + (after_norm_0 == max_norm).float() * pattern[0] + \
+                  (after_norm_1 == max_norm).float() * pattern[1] + \
+                  (after_norm_2 == max_norm).float() * pattern[2] + \
+                  (after_norm_3 == max_norm).float() * pattern[3]
+
+        z = z * pattern
+
+        new_Z[name] = z
+        layer_pattern[name] = pattern
+
+    return new_Z,layer_pattern
+
+
+
+
+
 def update_Z(X, U, layer_names, percent):
     new_Z = {}
     idx = 0
@@ -296,13 +343,6 @@ def update_Z(X, U, layer_names, percent):
         idx += 1
     return new_Z
 
-def update_U(U, X, Z, layer_names):
-    new_U = {}
-    for name in layer_names:
-        new_u = U[name] + X[name] - Z[name]
-        new_U[name] = new_u
-    return new_U
-
 
 def prune_weight(weight, device, percent):
     weight_numpy = weight.detach().cpu().numpy()
@@ -310,7 +350,6 @@ def prune_weight(weight, device, percent):
     under_threshold = abs(weight_numpy) < pcen
     weight_numpy[under_threshold] = 0
     mask = torch.Tensor(abs(weight_numpy) >= pcen).to(device)
-
     return mask
 
 def apply_prune(model, layer_names, device, percent):
@@ -323,6 +362,13 @@ def apply_prune(model, layer_names, device, percent):
         dict_mask[name] = mask
         idx += 1
     return dict_mask
+
+
+def apply_prune_pattern(model, layer_names, layer_pattern):
+    print("Apply Pruning based on pattern")
+    for name in layer_names:
+        model.state_dict()[name + ".weight"][:].data.mul_(layer_pattern[name])
+
 
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0

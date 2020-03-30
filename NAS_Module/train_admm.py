@@ -24,7 +24,8 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names, percent, data_loader_test, apex=False):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
+                    percent, pattern, data_loader_test, apex=False):
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
 
@@ -64,17 +65,17 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         if batch_idx%100==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
-            Z = utils.update_Z(X, U, percent)
-            U = utils.update_U(U, X, Z)
+            Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
+            U = utils.update_U(U, X, Z, layer_names)
             if data_loader_test:
-                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
+                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern= layer_pattern)
             Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
+    return layer_pattern
 
-
-def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[]):
+def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], layer_pattern=[]):
     model.eval()
 
-    mask = utils.apply_prune(model, layer_names, device, percent)
+    utils.apply_prune_pattern(model, layer_names, layer_pattern)
     utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -276,11 +277,16 @@ def main(args):
     layer_names = []
     percent = []
 
+    pattern = {}
+    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32, device=device)
+    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32, device=device)
+    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
             if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
                 layer_names.append(layer_name)
-                percent.append(0.3)
 
             # print(layer_name)
             # if is_same(layer.kernel_size) == 3 and layer.in_channels==512:
@@ -336,9 +342,9 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, data_loader_test, args.apex)
+        layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, pattern, data_loader_test, args.apex)
         lr_scheduler.step()
-        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
+        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern=layer_pattern)
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),

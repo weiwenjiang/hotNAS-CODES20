@@ -95,7 +95,7 @@ if __name__== "__main__":
 
         for name, param in model.named_parameters():
             print (name,param.requires_grad,param.data.shape)
-        sys.exit(0)
+
         for layer_name, layer in model.named_modules():
             if isinstance(layer, nn.Conv2d):
                 # print(layer_name)
