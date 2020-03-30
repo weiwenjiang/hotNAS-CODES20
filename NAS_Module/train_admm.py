@@ -342,8 +342,6 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        print(pattern)
-        sys.exit(0)
         layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, pattern, data_loader_test, args.apex)
         lr_scheduler.step()
         evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern=layer_pattern)
