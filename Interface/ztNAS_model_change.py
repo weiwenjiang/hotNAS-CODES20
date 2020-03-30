@@ -3,6 +3,9 @@ import torch
 import sys
 from utility import is_same
 import pattern_kernel
+import copy_conv2d
+import torch.nn.functional as F
+
 
 def get_last_attr_idx(model,seq):
 
@@ -102,18 +105,18 @@ def ztNAS_add_kernel_mask(model,layer, layer_name,mask):
     ##
     if last_not_digit == len(seq) - 1:
         # last one is the attribute, directly setattr
-        new_conv = pattern_kernel.Conv2dPattern(N, M, kernel_size=(K,K), stride=(S, S),
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
                              padding=(P,P), groups=G, bias=b, mask=mask)
         setattr(pre_attr, seq[-1], new_conv)
     elif last_not_digit == len(seq) - 2:
         # one index last_attr[]
-        new_conv = pattern_kernel.Conv2dPattern(N, M, kernel_size=(K,K), stride=(S, S),
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
                              padding=(P,P), groups=G, bias=b, mask=mask)
         last_attr[int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-2], last_attr)
     elif last_not_digit == len(seq) - 3:
         # two index last_attr[][]
-        new_conv = pattern_kernel.Conv2dPattern(N, M, kernel_size=(K,K), stride=(S, S),
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
                              padding=(P,P), groups=G, bias=b, mask=mask)
         last_attr[int(seq[-2])][int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-3], last_attr)
