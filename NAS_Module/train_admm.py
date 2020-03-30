@@ -272,9 +272,14 @@ def main(args):
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
     layer_names = []
+    percent = []
+
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
-            layer_names.append(layer_name)
+            if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
+                layer_names.append(layer_name)
+                percent.append(0.3)
+
             # print(layer_name)
             # if is_same(layer.kernel_size) == 3 and layer.in_channels==512:
             #     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

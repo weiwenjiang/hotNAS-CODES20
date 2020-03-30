@@ -7,7 +7,7 @@ import torch.distributed as dist
 
 import errno
 import os
-
+import numpy as np
 
 class SmoothedValue(object):
     """Track a series of values and provide access to smoothed values over a
@@ -283,19 +283,16 @@ def update_X(model, layer_names):
         X += (model.state_dict()[name + ".weight"][:].detach().cpu().clone(),)
     return X
 
-def update_Z(X, U):
+def update_Z(X, U, percent):
     new_Z = ()
-    delta = 5e-4 / 1e-2
+    idx = 0
     for x, u in zip(X, U):
         z = x + u
-        new_z = z.clone()
-        if (z > delta).sum() != 0:
-            new_z[z > delta] = z[z > delta] - delta
-        if (z < -delta).sum() != 0:
-            new_z[z < -delta] = z[z < -delta] + delta
-        if (abs(z) <= delta).sum() != 0:
-            new_z[abs(z) <= delta] = 0
-        new_Z += (new_z,)
+        pcen = np.percentile(abs(z), 100 * percent[idx])
+        under_threshold = abs(z) < pcen
+        z.data[under_threshold] = 0
+        new_Z += (z,)
+        idx += 1
     return new_Z
 
 def update_U(U, X, Z):
@@ -306,20 +303,21 @@ def update_U(U, X, Z):
     return new_U
 
 
-def prune_weight(weight, device, delta):
+def prune_weight(weight, device, percent):
     weight_numpy = weight.detach().cpu().numpy()
-    under_threshold = abs(weight_numpy) < delta
+    pcen = np.percentile(abs(weight_numpy), 100 * percent)
+    under_threshold = abs(weight_numpy) < pcen
     weight_numpy[under_threshold] = 0
-    mask = torch.Tensor(abs(weight_numpy) >= delta).to(device)
+    mask = torch.Tensor(abs(weight_numpy) >= pcen).to(device)
+
     return mask
 
-def apply_prune(model, layer_names, device):
-    delta = 5e-4 / 1e-2
-    print("Apply Pruning based on delta = 5e-4 / 1e-2:",delta)
+def apply_prune(model, layer_names, device, percent):
+    print("Apply Pruning based on percent:",percent)
     dict_mask = {}
     idx = 0
     for name in layer_names:
-        mask = prune_weight(model.state_dict()[name + ".weight"][:], device, delta)
+        mask = prune_weight(model.state_dict()[name + ".weight"][:], device, percent[idx])
         model.state_dict()[name + ".weight"][:].data.mul_(mask)
         dict_mask[name] = mask
         idx += 1
