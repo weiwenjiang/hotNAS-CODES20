@@ -146,9 +146,9 @@ class Conv2dPattern(_ConvNdPattern):
             self.mask = torch.ones(self.kernel_size)
 
         w_shape = self.weight.shape
-        self.mask = self.mask.expand(w_shape)
+        mask = self.mask.expand(w_shape)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        pattern_weight = self.weight.mul(self.mask).to(device)
+        pattern_weight = self.weight.mul(mask).to(device)
 
         return Conv2dPatternFunction.apply(input, pattern_weight, self.bias, self.stride,
                                              self.padding, self.dilation, self.groups)
