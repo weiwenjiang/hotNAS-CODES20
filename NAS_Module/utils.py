@@ -296,8 +296,6 @@ def update_Z_Pattern(X, U, layer_names, pattern):
     new_Z = {}
     layer_pattern = {}
 
-    print("Update Z", pattern)
-
     for name in layer_names:
 
         z = (X[name] + U[name])
@@ -316,23 +314,16 @@ def update_Z_Pattern(X, U, layer_names, pattern):
         max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
         tmp_pattern = torch.zeros_like(z)
 
-        print("after_norm",after_norm_0)
-        print("max_norm",max_norm)
-        print(after_norm_0 == max_norm)
-        print("pattern[0]",pattern[0])
-
         tmp_pattern = tmp_pattern + (after_norm_0 == max_norm).float() * pattern[0] + \
-                  (after_norm_1 == max_norm).float() * pattern[1] + \
-                  (after_norm_2 == max_norm).float() * pattern[2] + \
-                  (after_norm_3 == max_norm).float() * pattern[3]
+                  (after_norm_1 == max_norm and after_norm_0 != max_norm).float() * pattern[1] + \
+                  (after_norm_2 == max_norm and after_norm_1 != max_norm and after_norm_0 != max_norm).float() * pattern[2] + \
+                  (after_norm_3 == max_norm and after_norm_2 != max_norm and after_norm_1 != max_norm and after_norm_0 != max_norm).float() * pattern[3]
 
         z = z * tmp_pattern
 
-        print("inside loop",tmp_pattern)
         new_Z[name] = z
         layer_pattern[name] = tmp_pattern
 
-    print("Update Z", layer_pattern)
     return new_Z,layer_pattern
 
 
@@ -376,9 +367,7 @@ def apply_prune(model, layer_names, device, percent):
 def apply_prune_pattern(model, layer_names, layer_pattern, device):
     print("Apply Pruning based on pattern")
     for name in layer_names:
-        print(model.state_dict()[name + ".weight"][:].data)
         model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
-    sys.exit(0)
 
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0
