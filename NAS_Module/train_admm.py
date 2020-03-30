@@ -29,7 +29,7 @@ def train_one_epoch(model, criterion, optimizer, admm_optimizer, data_loader, de
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
 
-    Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
+    # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
 
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
