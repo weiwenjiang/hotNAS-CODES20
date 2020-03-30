@@ -369,7 +369,7 @@ def apply_prune_pattern(model, layer_names, pattern, device):
     #     model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
     layer_pattern = {}
     for name in layer_names:
-        z = model.state_dict()[name + ".weight"][:].data
+        z = model.state_dict()[name + ".weight"][:].detach().cpu().clone()
         shape = list(z.shape[:-2])
         shape.append(1)
         shape.append(1)
