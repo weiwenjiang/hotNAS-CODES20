@@ -24,7 +24,7 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names, percent, apex=False):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names, percent, data_loader_test, apex=False):
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
 
@@ -67,6 +67,8 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             Z = utils.update_Z(X, U, percent)
             U = utils.update_U(U, X, Z)
             Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
+            if data_loader_test:
+                evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
 
 
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[]):
@@ -334,7 +336,7 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, args.apex)
+        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, data_loader_test, args.apex)
         lr_scheduler.step()
         evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
         if args.output_dir:
