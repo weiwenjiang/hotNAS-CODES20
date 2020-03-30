@@ -349,7 +349,10 @@ def main(args):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.Adam(
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+
+    admm_optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     if args.apex:
@@ -382,7 +385,7 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
+        layer_pattern = train_one_epoch(model, criterion, optimizer, admm_optimizer, data_loader, device, epoch, args.print_freq,
                                         layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
         lr_scheduler.step()
         evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
