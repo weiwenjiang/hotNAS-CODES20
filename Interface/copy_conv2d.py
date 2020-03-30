@@ -77,11 +77,13 @@ class _ConvNd(Module):
 class Conv2d_Custom(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
-                 bias=True, padding_mode='zeros', mask=[]):
+                 bias=True, padding_mode='zeros', mask=torch.zeros(1)):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
         dilation = _pair(dilation)
+        self.mask = mask
+        self.kernel_size = _pair(kernel_size)
         super(Conv2d_Custom, self).__init__(
             in_channels, out_channels, kernel_size, stride, padding, dilation,
             False, _pair(0), groups, bias, padding_mode)
@@ -97,4 +99,7 @@ class Conv2d_Custom(_ConvNd):
                         self.padding, self.dilation, self.groups)
 
     def forward(self, input):
-        return self.conv2d_forward(input, self.weight)
+        if (self.mask.shape != self.kernel_size):
+            print("[Warning]: Mask size is not consistent",self.mask.shape,self.kernel_size)
+            self.mask = torch.ones(self.kernel_size)
+        return self.conv2d_forward(input, self.weight * self.mask)
