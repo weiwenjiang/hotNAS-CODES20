@@ -289,7 +289,7 @@ def main(args):
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = PruneAdam(
+    optimizer = torch.optim.adam(
         model.parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     if args.apex:
