@@ -316,6 +316,9 @@ def update_Z_Pattern(X, U, layer_names, pattern):
         max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
         pattern = torch.zeros_like(z)
 
+        print("after_norm",after_norm_0)
+        print("max_norm",max_norm)
+
         pattern = pattern + (after_norm_0 == max_norm).float() * pattern[0] + \
                   (after_norm_1 == max_norm).float() * pattern[1] + \
                   (after_norm_2 == max_norm).float() * pattern[2] + \

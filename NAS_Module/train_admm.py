@@ -62,7 +62,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx+=1
 
-        if batch_idx%10==0:
+        if batch_idx%20==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
             Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
