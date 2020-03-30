@@ -62,14 +62,14 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx+=1
 
-        if batch_idx%20==0:
+        if batch_idx%200==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
             Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
             U = utils.update_U(U, X, Z, layer_names)
             if data_loader_test:
                 evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern= layer_pattern)
-            Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
+            Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
     return layer_pattern
 
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], layer_pattern=[]):
