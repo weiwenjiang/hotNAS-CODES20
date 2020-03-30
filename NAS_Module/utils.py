@@ -304,3 +304,21 @@ def update_U(U, X, Z):
         new_u = u + x - z
         new_U += (new_u,)
     return new_U
+
+def print_prune(model, layer_names):
+    prune_param, total_param = 0, 0
+
+    if len(layer_names)==0:
+        print("No pruning layer is provided")
+    else:
+        for name in layer_names:
+            print("[at weight {}]".format(name))
+            print("percentage of pruned: {:.4f}%".format(100 * (abs(model.state_dict()[name + ".weight"][:]) == 0).sum().item() / model.state_dict()[name + ".weight"][:].numel()))
+            print("nonzero parameters after pruning: {} / {}\n".format((model.state_dict()[name + ".weight"][:] != 0).sum().item(), model.state_dict()[name + ".weight"][:].numel()))
+
+            total_param += model.state_dict()[name + ".weight"][:].numel()
+            prune_param += (model.state_dict()[name + ".weight"][:] != 0).sum().item()
+
+        print("total nonzero parameters after pruning: {} / {} ({:.4f}%)".
+              format(prune_param, total_param,
+                     100 * (total_param - prune_param) / total_param))

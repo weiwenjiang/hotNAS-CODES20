@@ -69,8 +69,11 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
 
 
-def evaluate(model, criterion, data_loader, device, print_freq=100):
+def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[]):
     model.eval()
+
+    utils.print_prune(model, layer_names)
+
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
     with torch.no_grad():
@@ -315,7 +318,7 @@ def main(args):
         args.start_epoch = checkpoint['epoch'] + 1
 
     if args.test_only:
-        evaluate(model, criterion, data_loader_test, device=device)
+        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names)
         return
 
     print("Start training")
