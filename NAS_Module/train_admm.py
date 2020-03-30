@@ -73,11 +73,11 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
             U = utils.update_U(U, X, Z, layer_names)
             rho = rho*10
-            Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
 
         if batch_idx%500==0:
             if data_loader_test:
                 evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
+            # Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
 
     return layer_pattern
 
