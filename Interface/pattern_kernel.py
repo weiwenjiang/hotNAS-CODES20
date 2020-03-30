@@ -145,12 +145,7 @@ class Conv2dPattern(_ConvNdPattern):
             print("[Warning]: Mask size is not consistent",self.mask.shape,self.kernel_size)
             self.mask = torch.ones(self.kernel_size)
 
-        w_shape = self.weight.shape
-        mask = self.mask.expand(w_shape)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        pattern_weight = self.weight.mul(mask).to(device)
-
-        return Conv2dPatternFunction.apply(input, pattern_weight, self.bias, self.stride,
+        return Conv2dPatternFunction.apply(input, self.weight * self.mask, self.bias, self.stride,
                                              self.padding, self.dilation, self.groups)
 
 
@@ -241,14 +236,16 @@ if __name__== "__main__":
     # trainer(model_pattern, optimizer_pattern,x,y)
 
 
-    x = torch.tensor([[[[1,1,1,1,1],
-          [1,1,1,1,1],
-          [1,1,1,1,1],
-          [1,1,1,1,1],
-          [1,1,1,1,1]]]],dtype=torch.float32)
-    print(x.shape)
+    # x = torch.tensor([[[[1,1,1,1,1],
+    #       [1,1,1,1,1],
+    #       [1,1,1,1,1],
+    #       [1,1,1,1,1],
+    #       [1,1,1,1,1]]]],dtype=torch.float32)
+    # print(x.shape)
+
+    x = torch.randn(10, 3, 5, 5)
     mask = torch.tensor([[0,1,1],[1,1,1],[1,0,0]],dtype=torch.float32)
-    TC = Conv2dPattern(1,1,3, mask=mask)
+    TC = Conv2dPattern(3,1,3, mask=mask)
     print(TC.weight)
     print(TC(x))
 
