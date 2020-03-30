@@ -256,13 +256,13 @@ def init_distributed_mode(args):
 
 
 
-def admm_loss(device, model, layer_names, criterion, Z, U, output, target):
+def admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho=1e-4):
     idx = 0
     loss = criterion(output, target)
     for name in layer_names:
         u = U[name].to(device)
         z = Z[name].to(device)
-        loss += 1e-2 / 2 * (model.state_dict()[name + ".weight"][:] - z + u).norm()
+        loss += rho / 2 * (model.state_dict()[name + ".weight"][:] - z + u).norm()
         idx += 1
     return loss
 

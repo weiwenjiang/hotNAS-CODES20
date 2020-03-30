@@ -25,9 +25,11 @@ except ImportError:
 
 
 def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    percent, pattern, data_loader_test, apex=False):
+                    percent, pattern, data_loader_test, arg_rho, apex=False):
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
+
+    Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
 
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -37,13 +39,14 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
     header = 'Epoch: [{}]'.format(epoch)
 
     batch_idx = 0
+    rho = arg_rho
     for image, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = time.time()
         image, target = image.to(device), target.to(device)
         output = model(image)
         # loss = criterion(output, target)
 
-        loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target)
+        loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
 
         optimizer.zero_grad()
         if apex:
@@ -62,14 +65,20 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx+=1
 
-        if batch_idx%50==0:
-            print("="*10,"Entering ADMM Optimization")
+
+
+        if batch_idx%100 == 0:
+            print("=" * 10, "Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
-            Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
+            Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
             U = utils.update_U(U, X, Z, layer_names)
+            rho = rho*10
+            Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
+
+        if batch_idx%500==0:
             if data_loader_test:
                 evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
-            Plot([float(x) for x in list(X[layer_names[-1]].flatten())], plot_type=2)
+
     return layer_pattern
 
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], pattern=[]):
@@ -296,10 +305,16 @@ def main(args):
 
     #model = modify_model(model)
 
-    # for name, param in model.named_parameters():
-    #     names = [n + "." for n in name.split(".")[:-1]]
-    #     if "".join(names)[:-1] not in layer_names:
-    #         param.requires_grad = False
+
+    for name, param in model.named_parameters():
+        names = [n + "." for n in name.split(".")[:-1]]
+        if "".join(names)[:-1] not in layer_names:
+            param.requires_grad = False
+        else:
+            break
+
+    for name, param in model.named_parameters():
+        print(name, param.requires_grad, param.data.shape)
 
     print(model)
 
@@ -342,7 +357,8 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, pattern, data_loader_test, args.apex)
+        layer_pattern = train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
+                                        layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
         lr_scheduler.step()
         evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
         if args.output_dir:
@@ -377,6 +393,7 @@ def parse_args():
     parser.add_argument('-j', '--workers', default=16, type=int, metavar='N',
                         help='number of data loading workers (default: 16)')
     parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
+    parser.add_argument('--rho', default=1e-4, type=float, help='initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
@@ -389,6 +406,7 @@ def parse_args():
     parser.add_argument('--resume', default='', help='resume from checkpoint')
     parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                         help='start epoch')
+
 
     parser.add_argument('--adam_epsilon', type=float, default=1e-8, metavar='E',
                         help='adam epsilon (default: 1e-8)')
