@@ -256,6 +256,7 @@ def plot_file(filename):
 
 if __name__ == '__main__':
     filename = None
+
     if len(sys.argv) > 1:
         filename = sys.argv[1]
         plot_file(filename)
