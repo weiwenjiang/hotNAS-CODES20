@@ -260,46 +260,47 @@ def admm_loss(device, model, layer_names, criterion, Z, U, output, target):
     idx = 0
     loss = criterion(output, target)
     for name in layer_names:
-        u = U[idx].to(device)
-        z = Z[idx].to(device)
+        u = U[name].to(device)
+        z = Z[name].to(device)
         loss += 1e-2 / 2 * (model.state_dict()[name + ".weight"][:] - z + u).norm()
         idx += 1
     return loss
 
 
 def initialize_Z_and_U(model, layer_names):
-    Z = ()
-    U = ()
+    Z = {}
+    U = {}
 
     for name in layer_names:
-        Z += (model.state_dict()[name + ".weight"][:].detach().cpu().clone(),)
-        U += (torch.zeros_like(model.state_dict()[name + ".weight"][:]).cpu(),)
+        Z[name] = model.state_dict()[name + ".weight"][:].detach().cpu().clone()
+        U[name] = torch.zeros_like(model.state_dict()[name + ".weight"][:]).cpu()
 
     return Z, U
 
 def update_X(model, layer_names):
-    X = ()
+    X = {}
     for name in layer_names:
-        X += (model.state_dict()[name + ".weight"][:].detach().cpu().clone(),)
+        X[name] = model.state_dict()[name + ".weight"][:].detach().cpu().clone()
     return X
 
-def update_Z(X, U, percent):
-    new_Z = ()
+def update_Z(X, U, layer_names, percent):
+    new_Z = {}
     idx = 0
-    for x, u in zip(X, U):
-        z = x + u
+
+    for name in layer_names:
+        z = X[name] + U[name]
         pcen = np.percentile(abs(z), 100 * percent[idx])
         under_threshold = abs(z) < pcen
         z.data[under_threshold] = 0
-        new_Z += (z,)
+        new_Z[name] = z
         idx += 1
     return new_Z
 
-def update_U(U, X, Z):
-    new_U = ()
-    for u, x, z in zip(U, X, Z):
-        new_u = u + x - z
-        new_U += (new_u,)
+def update_U(U, X, Z, layer_names):
+    new_U = {}
+    for name in layer_names:
+        new_u = U[name] + X[name] - Z[name]
+        new_U[name] = new_u
     return new_U
 
 
