@@ -62,7 +62,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx+=1
 
-        if batch_idx%20==0:
+        if batch_idx%50==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
             Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
@@ -296,10 +296,10 @@ def main(args):
 
     #model = modify_model(model)
 
-    for name, param in model.named_parameters():
-        names = [n + "." for n in name.split(".")[:-1]]
-        if "".join(names)[:-1] not in layer_names:
-            param.requires_grad = False
+    # for name, param in model.named_parameters():
+    #     names = [n + "." for n in name.split(".")[:-1]]
+    #     if "".join(names)[:-1] not in layer_names:
+    #         param.requires_grad = False
 
     print(model)
 
