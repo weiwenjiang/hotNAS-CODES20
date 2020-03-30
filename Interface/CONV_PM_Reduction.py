@@ -33,11 +33,24 @@ def tell_conv_type(in_channels,groups):
 #             a = getattr(a, var)
 #     return a
 #
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 
 
 
 if __name__== "__main__":
+
+    # B, C, H, W = 10, 3, 4, 4
+    # x = torch.randn(B, C, H, W)
+    # y = torch.where(x > x.view(B, C, -1).mean(2)[:, :, None, None], torch.tensor([1.]), torch.tensor([0.]))
+    #
+    # print(x.shape)
+    # print(y.shape)
+    # sys.exit(0)
+    #
+
+
 
     Model_Zoo = [ 'resnet18', 'densenet121', 'alexnet',  'densenet161',  'densenet169', 'densenet201', 'squeezenet1_0', 'squeezenet1_1',  'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn','wide_resnet101_2', 'wide_resnet50_2',  'vgg11',  'resnet50', 'resnet101', 'resnet152',  'resnet34' ]
 
@@ -63,16 +76,84 @@ if __name__== "__main__":
         cTT_cmp = 0
         dTT_cmp = 0
 
+        pattern3_3 = {}
+        pattern3_3[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32, device=device)
+        pattern3_3[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32, device=device)
+        pattern3_3[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+        pattern3_3[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
 
-
-
-        for layer_name,layer in model.named_modules():
+        layer_names = []
+        for layer_name, layer in model.named_modules():
             if isinstance(layer, nn.Conv2d):
-                print(layer_name)
+                if is_same(layer.kernel_size) == 3 and layer.in_channels == 512 and layer.out_channels == 512:
+                    layer_names.append(layer_name)
 
-                if is_same(layer.kernel_size)==3:
-                    mask = torch.tensor([[1,1,1],[1,1,1],[1,0,0]], dtype=torch.float32)
-                    ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
+        for name, param in model.named_parameters():
+            names = [n+"." for n in name.split(".")[:-1]]
+            if "".join(names)[:-1] not in layer_names:
+                param.requires_grad = False
+
+        for name, param in model.named_parameters():
+            print (name,param.requires_grad,param.data.shape)
+        sys.exit(0)
+        for layer_name, layer in model.named_modules():
+            if isinstance(layer, nn.Conv2d):
+                # print(layer_name)
+                if is_same(layer.kernel_size) == 3 and layer.in_channels == 512 and layer.out_channels == 512:
+                    print(layer_name, layer)
+
+                    weight_shape = model.state_dict()[layer_name + ".weight"][:].shape
+                    shape = list(model.state_dict()[layer_name + ".weight"][:].shape[:-2])
+                    shape.append(1)
+                    shape.append(1)
+                    after_pattern_0 = model.state_dict()[layer_name + ".weight"][:]*pattern3_3[0]
+                    after_norm_0 = after_pattern_0.norm(dim=(2,3)).reshape(shape)
+                    after_pattern_1 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[1]
+                    after_norm_1 = after_pattern_1.norm(dim=(2, 3)).reshape(shape)
+                    after_pattern_2 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[2]
+                    after_norm_2 = after_pattern_2.norm(dim=(2, 3)).reshape(shape)
+                    after_pattern_3 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[3]
+                    after_norm_3 = after_pattern_3.norm(dim=(2, 3)).reshape(shape)
+
+
+                    max_norm = (torch.max(torch.max(torch.max(after_norm_0,after_norm_1),after_norm_2),after_norm_3))
+                    pattern = torch.zeros_like(model.state_dict()[layer_name + ".weight"][:])
+
+                    pattern = pattern + (after_norm_0==max_norm).float()*pattern3_3[0] + \
+                              (after_norm_1==max_norm).float()* pattern3_3[1] + \
+                              (after_norm_2==max_norm).float()* pattern3_3[2] +\
+                              (after_norm_3==max_norm).float()* pattern3_3[3]
+
+                    weight = model.state_dict()[layer_name + ".weight"][:] * pattern
+
+                    print(weight)
+
+
+
+
+
+
+                    # new_after_norm_0 = after_norm_0.clone()
+                    # new_after_norm_0.reshape(weight_shape)
+                    # print(new_after_norm_0.shape)
+                    # # new_after_norm_0[after_norm_0 == max_norm,:,:] = pattern3_3[0]
+                    # # print(new_after_norm_0)
+
+                    # print(model.state_dict()[layer_name + ".weight"][:]*pattern3_3[0])
+                    # print(after_pattern_0.shape)
+                    # print((after_norm_0==max_norm).int().shape)
+                    # print(after_pattern_0[after_norm_0==max_norm].shape)
+
+
+
+
+                    sys.exit(0)
+
+                    #
+                    #
+                    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                    # mask = torch.tensor([[1, 1, 1], [1, 1, 0], [1, 0, 0]], dtype=torch.float32, device=device)
+                    # ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
 
                 # else:
                 #     ztNAS_modify_kernel_shape(model, layer, layer_name, var_k=2)
@@ -100,7 +181,7 @@ if __name__== "__main__":
             #
 
 
-        print(model)
+        # print(model)
         sys.exit(0)
 
 

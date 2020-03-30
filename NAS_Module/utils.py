@@ -253,3 +253,54 @@ def init_distributed_mode(args):
     torch.distributed.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                          world_size=args.world_size, rank=args.rank)
     setup_for_distributed(args.rank == 0)
+
+
+
+def admm_loss(device, model, layer_names, criterion, Z, U, output, target):
+    idx = 0
+    loss = criterion(output, target)
+    for name in layer_names:
+        u = U[idx].to(device)
+        z = Z[idx].to(device)
+        loss += 1e-2 / 2 * (model.state_dict()[name + ".weight"][:] - z + u).norm()
+        idx += 1
+    return loss
+
+
+def initialize_Z_and_U(model, layer_names):
+    Z = ()
+    U = ()
+
+    for name in layer_names:
+        Z += (model.state_dict()[name + ".weight"][:].detach().cpu().clone(),)
+        U += (torch.zeros_like(model.state_dict()[name + ".weight"][:]).cpu(),)
+
+    return Z, U
+
+def update_X(model, layer_names):
+    X = ()
+    for name in layer_names:
+        X += (model.state_dict()[name + ".weight"][:].detach().cpu().clone(),)
+    return X
+
+def update_Z(X, U):
+    new_Z = ()
+    delta = 5e-4 / 1e-2
+    for x, u in zip(X, U):
+        z = x + u
+        new_z = z.clone()
+        if (z > delta).sum() != 0:
+            new_z[z > delta] = z[z > delta] - delta
+        if (z < -delta).sum() != 0:
+            new_z[z < -delta] = z[z < -delta] + delta
+        if (abs(z) <= delta).sum() != 0:
+            new_z[abs(z) <= delta] = 0
+        new_Z += (new_z,)
+    return new_Z
+
+def update_U(U, X, Z):
+    new_U = ()
+    for u, x, z in zip(U, X, Z):
+        new_u = u + x - z
+        new_U += (new_u,)
+    return new_U
