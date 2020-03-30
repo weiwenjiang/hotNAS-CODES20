@@ -253,7 +253,7 @@ def main(args):
             print(layer_name)
             if is_same(layer.kernel_size) == 3:
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                mask = torch.tensor([[1, 1, 1], [1, 1, 1], [1, 1, 1]], dtype=torch.float32, device=device)
+                mask = torch.tensor([[1, 1, 1], [1, 1, 1], [1, 1, 0]], dtype=torch.float32, device=device)
                 ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
 
     #model = modify_model(model)
