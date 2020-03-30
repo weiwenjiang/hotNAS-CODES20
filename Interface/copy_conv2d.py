@@ -77,7 +77,7 @@ class _ConvNd(Module):
 class Conv2d_Custom(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
-                 bias=True, padding_mode='zeros'):
+                 bias=True, padding_mode='zeros', mask=[]):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
