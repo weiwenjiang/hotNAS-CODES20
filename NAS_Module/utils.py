@@ -305,6 +305,27 @@ def update_U(U, X, Z):
         new_U += (new_u,)
     return new_U
 
+
+def prune_weight(weight, device, delta):
+    weight_numpy = weight.detach().cpu().numpy()
+    under_threshold = abs(weight_numpy) < delta
+    weight_numpy[under_threshold] = 0
+    mask = torch.Tensor(abs(weight_numpy) >= delta).to(device)
+    return mask
+
+def apply_prune(model, layer_names, device):
+    delta = 5e-4 / 1e-2
+    print("Apply Pruning based on delta = 5e-4 / 1e-2")
+    dict_mask = {}
+    idx = 0
+    for name in layer_names:
+        if name.split('.')[-1] == "weight":
+            mask = prune_weight(model.state_dict()[name + ".weight"][:], device, delta)
+            model.state_dict()[name + ".weight"][:].data.mul_(mask)
+            dict_mask[name] = mask
+            idx += 1
+    return dict_mask
+
 def print_prune(model, layer_names):
     prune_param, total_param = 0, 0
 
