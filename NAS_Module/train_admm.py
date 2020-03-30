@@ -65,7 +65,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         if batch_idx%100==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
-            Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
+            Z,layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern, device)
             U = utils.update_U(U, X, Z, layer_names)
             if data_loader_test:
                 evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, layer_pattern= layer_pattern)
@@ -278,10 +278,10 @@ def main(args):
     percent = []
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32)
-    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32)
-    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32)
-    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32)
+    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32, device=device)
+    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32, device=device)
+    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
 
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):

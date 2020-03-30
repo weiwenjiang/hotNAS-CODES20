@@ -292,13 +292,13 @@ def update_U(U, X, Z, layer_names):
 
 
 
-def update_Z_Pattern(X, U, layer_names, pattern):
+def update_Z_Pattern(X, U, layer_names, pattern, device):
     new_Z = {}
     layer_pattern = {}
 
     for name in layer_names:
 
-        z = X[name] + U[name]
+        z = (X[name] + U[name]).to(device)
         shape = list(z.shape[:-2])
         shape.append(1)
         shape.append(1)
