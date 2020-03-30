@@ -75,7 +75,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], layer_pattern=[]):
     model.eval()
 
-    utils.apply_prune_pattern(model, layer_names, layer_pattern)
+    utils.apply_prune_pattern(model, layer_names, layer_pattern, device)
     utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
