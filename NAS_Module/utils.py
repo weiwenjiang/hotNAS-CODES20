@@ -295,7 +295,6 @@ def update_U(U, X, Z, layer_names):
 def update_Z_Pattern(X, U, layer_names, pattern):
     new_Z = {}
     layer_pattern = {}
-
     for name in layer_names:
 
         z = (X[name] + U[name])
@@ -315,9 +314,9 @@ def update_Z_Pattern(X, U, layer_names, pattern):
         tmp_pattern = torch.zeros_like(z)
 
         tmp_pattern = tmp_pattern + (after_norm_0 == max_norm).float() * pattern[0] + \
-                  (after_norm_1 == max_norm and after_norm_0 != max_norm).float() * pattern[1] + \
-                  (after_norm_2 == max_norm and after_norm_1 != max_norm and after_norm_0 != max_norm).float() * pattern[2] + \
-                  (after_norm_3 == max_norm and after_norm_2 != max_norm and after_norm_1 != max_norm and after_norm_0 != max_norm).float() * pattern[3]
+            ((after_norm_1 == max_norm) & (after_norm_0 != max_norm)).float() * pattern[1] + \
+                  (after_norm_2 == max_norm).float() * pattern[2] + \
+                  (after_norm_3 == max_norm).float() * pattern[3]
 
         z = z * tmp_pattern
 
