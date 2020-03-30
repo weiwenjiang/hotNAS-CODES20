@@ -24,7 +24,7 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names, apex=False):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names, percent, apex=False):
 
     Z, U = utils.initialize_Z_and_U(model,layer_names)
 
@@ -64,15 +64,15 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         if batch_idx%100==0:
             print("="*10,"Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
-            Z = utils.update_Z(X, U)
+            Z = utils.update_Z(X, U, percent)
             U = utils.update_U(U, X, Z)
             Plot([float(x) for x in list(X[0].flatten())], plot_type=2)
 
 
-def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[]):
+def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[]):
     model.eval()
 
-    mask = utils.apply_prune(model, layer_names, device)
+    mask = utils.apply_prune(model, layer_names, percent, device)
     utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -324,7 +324,7 @@ def main(args):
         args.start_epoch = checkpoint['epoch'] + 1
 
     if args.test_only:
-        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names)
+        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
         return
 
     print("Start training")
@@ -334,9 +334,9 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, args.apex)
+        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, layer_names, percent, args.apex)
         lr_scheduler.step()
-        evaluate(model, criterion, data_loader_test, device=device)
+        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),
