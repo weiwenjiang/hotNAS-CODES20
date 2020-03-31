@@ -369,7 +369,7 @@ def main(args):
     admm_optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, eps=args.adam_epsilon)
 
-    admm_re_train_optimizer = pruneAdam(
+    admm_re_train_optimizer = PruneAdam(
         model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     if args.apex:
