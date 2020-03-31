@@ -356,13 +356,13 @@ def main(args):
 
     #model = modify_model(model)
 
-    #
-    # for name, param in model.named_parameters():
-    #     names = [n + "." for n in name.split(".")[:-1]]
-    #     if "".join(names)[:-1] not in layer_names:
-    #         param.requires_grad = False
-    #     else:
-    #         break
+
+    for name, param in model.named_parameters():
+        names = [n + "." for n in name.split(".")[:-1]]
+        if "".join(names)[:-1] not in layer_names:
+            param.requires_grad = False
+        else:
+            break
 
     for name, param in model.named_parameters():
         print(name, param.requires_grad, param.data.shape)
