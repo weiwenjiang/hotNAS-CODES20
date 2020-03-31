@@ -96,7 +96,7 @@ class Conv2d_Custom(_ConvNd):
                             weight, self.bias, self.stride,
                             _pair(0), self.dilation, self.groups)
 
-        return  F.conv2d(torch.zeros_like(input), torch.zeros_like(weight), self.bias, self.stride,
+        return  F.conv2d(input, weight, self.bias, self.stride,
                         self.padding, self.dilation, self.groups)
 
 
