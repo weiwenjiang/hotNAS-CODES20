@@ -428,7 +428,7 @@ def main(args):
         print("="*10,"Applying pruning model")
 
         for layer_name in layer_names:
-            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name])
+            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
         print(model)
         evaluate(model, criterion, data_loader_test, device=device)
 
