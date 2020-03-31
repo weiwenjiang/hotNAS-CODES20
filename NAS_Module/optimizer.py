@@ -315,7 +315,7 @@ class PruneAdam(NameOptimizer):
 
         return loss
 
-    def prune_step(self, mask, closure=None):
+    def prune_step(self,  layer_names, layer_pattern, closure=None):
         """Performs a single optimization step.
         Arguments:
             closure (callable, optional): A closure that reevaluates the model
@@ -361,8 +361,10 @@ class PruneAdam(NameOptimizer):
                 exp_avg.mul_(beta1).add_(1 - beta1, grad)
                 exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
 
-                if name.split('.')[-1] == "weight":
-                    exp_avg_sq.mul_(mask[name])
+                name_list = [n + "." for n in name.split(".")[:-1]]
+                suf_name = "".join(name_list)[:-1]
+                if name.split('.')[-1] == "weight" and suf_name in layer_names:
+                    exp_avg_sq.mul_(layer_pattern[suf_name])
 
                 if amsgrad:
                     # Maintains the maximum of all 2nd moment running avg. till now
@@ -376,8 +378,8 @@ class PruneAdam(NameOptimizer):
                 bias_correction2 = 1 - beta2 ** state['step']
                 step_size = group['lr'] * math.sqrt(bias_correction2) / bias_correction1
 
-                if name.split('.')[-1] == "weight":
-                    exp_avg.mul_(mask[name])
+                if name.split('.')[-1] == "weight" and suf_name in layer_names:
+                    exp_avg.mul_(layer_pattern[suf_name])
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
         return loss

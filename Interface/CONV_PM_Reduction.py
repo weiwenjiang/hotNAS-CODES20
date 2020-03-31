@@ -64,6 +64,13 @@ if __name__== "__main__":
         model = globals()[model_name]()
         # print(model)
 
+        np = model.named_parameters()
+
+        print(np)
+        sys.exit(0)
+
+
+
         input = torch.Tensor(torch.Size([1,3,224,224])).to(torch.float32)
 
         Last_CNN = 0

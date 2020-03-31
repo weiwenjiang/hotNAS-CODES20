@@ -25,7 +25,7 @@ except ImportError:
 
 
 def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    percent, pattern, data_loader_test, arg_rho, apex=False):
+                    layer_pattern, apex=False):
     Z, U = utils.initialize_Z_and_U(model, layer_names)
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
@@ -38,7 +38,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
     header = 'Epoch: [{}]'.format(epoch)
 
     batch_idx = 0
-    rho = arg_rho
+
     for image, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = time.time()
         image, target = image.to(device), target.to(device)
@@ -52,7 +52,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
                 scaled_loss.backward()
         else:
             loss.backward()
-        optimizer.step()
+        optimizer.prune_step(layer_names, layer_pattern)
 
         acc1, acc5 = utils.accuracy(output, target, topk=(1, 5))
         batch_size = image.shape[0]
@@ -64,7 +64,6 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         batch_idx += 1
 
 
-    # evaluate(model, criterion, data_loader_test, device=device)
 
 
 
@@ -367,8 +366,8 @@ def main(args):
     optimizer = torch.optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-    admm_optimizer = torch.optim.Adam(
-        model.parameters(), lr=args.lr, eps=args.adam_epsilon)
+    admm_optimizer = pruneAdam(
+        model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     if args.apex:
         model, optimizer = amp.initialize(model, optimizer,
@@ -391,7 +390,7 @@ def main(args):
 
     if args.test_only:
         # for name, param in model.named_parameters():
-        #     print(name)
+        #     print(name)git oull
         #     print(param)
 
         layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
@@ -407,6 +406,50 @@ def main(args):
 
         # evaluate(model, criterion, data_loader_test, device=device)
         return
+
+    if args.retrain_only:
+        epoch = 999
+        print("Start re-training")
+        start_time = time.time()
+        print("=" * 10, "Applying pruning model")
+        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
+        utils.print_prune(model, layer_names, layer_pattern)
+
+        for layer_name in layer_names:
+            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True,
+                                  pattern=layer_pattern[layer_name].to(device))
+
+        print(model)
+        model.to(device)
+        evaluate(model, criterion, data_loader_test, device=device)
+
+        print("=" * 10, "Retrain")
+
+        re_train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, args.print_freq,
+                           layer_names, layer_pattern, args.apex)
+
+        evaluate(model, criterion, data_loader_test, device=device)
+
+        if args.output_dir:
+            checkpoint = {
+                'model': model_without_ddp.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'lr_scheduler': lr_scheduler.state_dict(),
+                'epoch': epoch + 1,
+                'args': args}
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'checkpoint.pth'))
+
+        total_time = time.time() - start_time
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+        print('Training time {}'.format(total_time_str))
+
+        return
+
 
     print("Start training")
     start_time = time.time()
@@ -528,6 +571,14 @@ def parse_args():
         help="Only test the model",
         action="store_true",
     )
+
+    parser.add_argument(
+        "--retrain-only",
+        dest="retrain_only",
+        help="Only retrain the model",
+        action="store_true",
+    )
+
     parser.add_argument(
         "--pretrained",
         dest="pretrained",
