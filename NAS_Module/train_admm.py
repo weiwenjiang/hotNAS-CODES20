@@ -366,7 +366,10 @@ def main(args):
     optimizer = torch.optim.SGD(
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-    admm_optimizer = pruneAdam(
+    admm_optimizer = torch.optim.Adam(
+        model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
+
+    admm_re_train_optimizer = pruneAdam(
         model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     if args.apex:
@@ -425,7 +428,7 @@ def main(args):
 
         print("=" * 10, "Retrain")
 
-        re_train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, args.print_freq,
+        re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
                            layer_names, layer_pattern, args.apex)
 
         evaluate(model, criterion, data_loader_test, device=device)
