@@ -390,9 +390,20 @@ def main(args):
         args.start_epoch = checkpoint['epoch'] + 1
 
     if args.test_only:
-        for name, param in model.named_parameters():
-            print(name)
-            print(param)
+        # for name, param in model.named_parameters():
+        #     print(name)
+        #     print(param)
+
+        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
+        utils.print_prune(model, layer_names, layer_pattern)
+
+        for layer_name in layer_names:
+            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True,
+                                  pattern=layer_pattern[layer_name].to(device))
+
+        print(model)
+        model.to(device)
+        evaluate(model, criterion, data_loader_test, device=device)
 
         # evaluate(model, criterion, data_loader_test, device=device)
         return
