@@ -64,14 +64,14 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         batch_idx += 1
 
 
-    evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
+    # evaluate(model, criterion, data_loader_test, device=device)
 
 
 
 def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    percent, pattern, data_loader_test, arg_rho, apex=False):
+                    percent, pattern, Z, U, arg_rho, apex=False):
 
-    Z, U = utils.initialize_Z_and_U(model,layer_names)
+
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
 
@@ -82,7 +82,7 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
 
     header = 'Epoch: [{}]'.format(epoch)
 
-    batch_idx = 0
+
     rho = arg_rho
     for image, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = time.time()
@@ -108,14 +108,13 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
         metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
-        batch_idx+=1
 
-        if batch_idx%1500 == 0:
-            print("=" * 10, "Entering ADMM Optimization")
-            X = utils.update_X(model, layer_names)
-            Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
-            U = utils.update_U(U, X, Z, layer_names)
-            rho = rho*10
+    print("=" * 10, "Entering ADMM Optimization")
+    X = utils.update_X(model, layer_names)
+    Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
+    U = utils.update_U(U, X, Z, layer_names)
+
+    return Z,U
 
 
 
@@ -395,12 +394,17 @@ def main(args):
     print("Start training")
     start_time = time.time()
 
-
+    Z, U = utils.initialize_Z_and_U(model, layer_names)
+    rho = args.rho
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, args.print_freq,
-                                        layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+
+
+        Z, U = train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, args.print_freq,
+                                        layer_names, percent, pattern, Z, U, rho, args.apex)
+
+        rho = rho*10
         lr_scheduler.step()
 
         if args.output_dir:
@@ -417,39 +421,40 @@ def main(args):
                 checkpoint,
                 os.path.join(args.output_dir, 'checkpoint.pth'))
 
-
-        print(model)
         evaluate(model, criterion, data_loader_test, device=device)
 
-        print("="*10,"Applying pruning model")
-        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
-        utils.print_prune(model, layer_names, layer_pattern)
 
-        for layer_name in layer_names:
-            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
+    print("="*10,"Applying pruning model")
+    layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
+    utils.print_prune(model, layer_names, layer_pattern)
 
-        print(model)
-        model.to(device)
-        evaluate(model, criterion, data_loader_test, device=device)
+    for layer_name in layer_names:
+        ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
 
-        re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
-                           layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+    print(model)
+    model.to(device)
+    evaluate(model, criterion, data_loader_test, device=device)
 
-        evaluate(model, criterion, data_loader_test, device=device)
+    print("=" * 10, "Retrain")
 
-        if args.output_dir:
-            checkpoint = {
-                'model': model_without_ddp.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'lr_scheduler': lr_scheduler.state_dict(),
-                'epoch': epoch+1,
-                'args': args}
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'checkpoint.pth'))
+    re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
+                       layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+
+    evaluate(model, criterion, data_loader_test, device=device)
+
+    if args.output_dir:
+        checkpoint = {
+            'model': model_without_ddp.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'lr_scheduler': lr_scheduler.state_dict(),
+            'epoch': epoch+1,
+            'args': args}
+        utils.save_on_master(
+            checkpoint,
+            os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+        utils.save_on_master(
+            checkpoint,
+            os.path.join(args.output_dir, 'checkpoint.pth'))
 
 
     total_time = time.time() - start_time
