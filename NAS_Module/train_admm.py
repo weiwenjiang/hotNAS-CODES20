@@ -367,7 +367,7 @@ def main(args):
         model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
     admm_optimizer = torch.optim.Adam(
-        model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
+        model.parameters(), lr=args.lr, eps=args.adam_epsilon)
 
     admm_re_train_optimizer = pruneAdam(
         model.named_parameters(), lr=args.lr, eps=args.adam_epsilon)
