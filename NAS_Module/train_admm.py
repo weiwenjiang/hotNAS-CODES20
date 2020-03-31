@@ -26,7 +26,7 @@ except ImportError:
 
 def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
                     layer_pattern, apex=False):
-    Z, U = utils.initialize_Z_and_U(model, layer_names)
+    # Z, U = utils.initialize_Z_and_U(model, layer_names)
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
 
@@ -44,7 +44,8 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         image, target = image.to(device), target.to(device)
         output = model(image)
 
-        loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
+        # loss = utils.admm_loss(device, model, layer_names, criterion, Z, U, output, target, rho)
+        loss = criterion(output, target)
 
         optimizer.zero_grad()
         if apex:
