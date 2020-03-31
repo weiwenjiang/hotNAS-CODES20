@@ -330,7 +330,8 @@ def main(args):
 
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
-            if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
+            # if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
+            if is_same(layer.kernel_size) == 3:
                 layer_names.append(layer_name)
                 layers[layer_name] = layer
 
@@ -343,13 +344,13 @@ def main(args):
 
     #model = modify_model(model)
 
-
-    for name, param in model.named_parameters():
-        names = [n + "." for n in name.split(".")[:-1]]
-        if "".join(names)[:-1] not in layer_names:
-            param.requires_grad = False
-        else:
-            break
+    #
+    # for name, param in model.named_parameters():
+    #     names = [n + "." for n in name.split(".")[:-1]]
+    #     if "".join(names)[:-1] not in layer_names:
+    #         param.requires_grad = False
+    #     else:
+    #         break
 
     for name, param in model.named_parameters():
         print(name, param.requires_grad, param.data.shape)
