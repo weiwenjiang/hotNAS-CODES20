@@ -25,7 +25,7 @@ except ImportError:
 
 
 def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    layer_pattern, apex=False):
+                    layer_pattern, data_loader_test, apex=False):
     # Z, U = utils.initialize_Z_and_U(model, layer_names)
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
@@ -63,8 +63,8 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-
-
+        if batch_idx%100==0:
+            evaluate(model, criterion, data_loader_test, device=device)
 
 
 
@@ -441,7 +441,7 @@ def main(args):
         print("=" * 10, "Retrain")
 
         re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
-                           layer_names, layer_pattern, args.apex)
+                           layer_names, layer_pattern, data_loader_test, args.apex)
 
         evaluate(model, criterion, data_loader_test, device=device)
 
@@ -512,8 +512,8 @@ def main(args):
 
     print("=" * 10, "Retrain")
 
-    re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
-                       layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+    re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
+                       layer_names, layer_pattern, data_loader_test, args.apex)
 
     evaluate(model, criterion, data_loader_test, device=device)
 
