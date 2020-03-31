@@ -328,6 +328,7 @@ def main(args):
     pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32)
     pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32)
 
+    # for layer_name, layer in model.named_modules():
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
             # if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
@@ -389,7 +390,11 @@ def main(args):
         args.start_epoch = checkpoint['epoch'] + 1
 
     if args.test_only:
-        evaluate(model, criterion, data_loader_test, device=device)
+        for name, param in model.named_parameters():
+            print(name)
+            print(param)
+
+        # evaluate(model, criterion, data_loader_test, device=device)
         return
 
     print("Start training")
