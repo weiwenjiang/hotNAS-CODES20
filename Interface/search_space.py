@@ -11,7 +11,7 @@ search_space = {
 
 
 HW_constraints = {
-    "r_Ports_BW": 256,
+    "r_Ports_BW": 512,
     "r_DSP": 2520,
     "r_BRAM": 1824,
     "r_BRAM_Size": 18000,

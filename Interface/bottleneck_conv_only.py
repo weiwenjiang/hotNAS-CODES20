@@ -67,11 +67,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='alexnet'
+        default='resnet18'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default='100, 25, 32, 32, 11, 8, 2, 2',
+        default='70, 36, 32, 32, 7, 8, 4, 4',
         help="hardware desgin of cconv",
     )
 
