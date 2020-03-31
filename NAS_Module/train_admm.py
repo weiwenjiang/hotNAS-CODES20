@@ -110,9 +110,7 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
 
         batch_idx+=1
 
-        break
-
-        if batch_idx%1000 == 0:
+        if batch_idx%1500 == 0:
             print("=" * 10, "Entering ADMM Optimization")
             X = utils.update_X(model, layer_names)
             Z, layer_pattern = utils.update_Z_Pattern(X, U, layer_names, pattern)
@@ -419,16 +417,17 @@ def main(args):
                 checkpoint,
                 os.path.join(args.output_dir, 'checkpoint.pth'))
 
-        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
-        utils.print_prune(model, layer_names, layer_pattern)
 
         print(model)
         evaluate(model, criterion, data_loader_test, device=device)
 
         print("="*10,"Applying pruning model")
+        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
+        utils.print_prune(model, layer_names, layer_pattern)
 
         for layer_name in layer_names:
             ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
+
         print(model)
         model.to(device)
         evaluate(model, criterion, data_loader_test, device=device)
@@ -437,6 +436,21 @@ def main(args):
                            layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
 
         evaluate(model, criterion, data_loader_test, device=device)
+
+        if args.output_dir:
+            checkpoint = {
+                'model': model_without_ddp.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'lr_scheduler': lr_scheduler.state_dict(),
+                'epoch': epoch+1,
+                'args': args}
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'checkpoint.pth'))
+
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
