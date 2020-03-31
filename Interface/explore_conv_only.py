@@ -95,6 +95,17 @@ if __name__== "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
+    print("="*10,"Model:",model_name,"="*10)
+    print("-"*10,"Search Space","-"*10)
+    print("\tTm", search_space["hw_only_cconv"][0])
+    print("\tTr", search_space["hw_only_cconv"][1])
+    print("\tTc", search_space["hw_only_cconv"][2])
+    print("\tW_p", search_space["hw_only_cconv"][3])
+    print("\tI_p", search_space["hw_only_cconv"][4])
+    print("\tO_p", search_space["hw_only_cconv"][5])
+
+
+
     start_time = time.time()
 
     best_lat,best_design = do_exploration(model)
