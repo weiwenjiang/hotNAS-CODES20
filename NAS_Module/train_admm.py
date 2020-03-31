@@ -323,16 +323,27 @@ def main(args):
     percent = []
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32)
-    pattern[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32)
-    pattern[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32)
-    pattern[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32)
+    pattern[0] = torch.tensor([[0, 1, 1],
+                               [1, 1, 1],
+                               [0, 1, 1]], dtype=torch.float32)
+
+    pattern[1] = torch.tensor([[1, 1, 1],
+                               [1, 1, 1],
+                               [1, 0, 0]], dtype=torch.float32)
+
+    pattern[2] = torch.tensor([[1, 1, 0],
+                               [1, 1, 1],
+                               [1, 1, 0]], dtype=torch.float32)
+
+    pattern[3] = torch.tensor([[1, 0, 0],
+                               [1, 1, 1],
+                               [1, 1, 1]], dtype=torch.float32)
 
     # for layer_name, layer in model.named_modules():
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
-            # if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
-            if is_same(layer.kernel_size) == 3:
+            if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
+            # if is_same(layer.kernel_size) == 3:
                 layer_names.append(layer_name)
                 layers[layer_name] = layer
 
