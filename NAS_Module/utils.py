@@ -363,7 +363,7 @@ def apply_prune(model, layer_names, device, percent):
     return dict_mask
 
 
-def apply_prune_pattern(model, layer_names, pattern, device):
+def get_layers_pattern(model, layer_names, pattern, device):
     print("Apply Pruning based on pattern")
     # for name in layer_names:
     #     model.state_dict()[name + ".weight"][:].data.mul_((layer_pattern[name]).to(device))
@@ -390,12 +390,12 @@ def apply_prune_pattern(model, layer_names, pattern, device):
                       (after_norm_2 == max_norm).float() * pattern[2] + \
                       (after_norm_3 == max_norm).float() * pattern[3]
 
-        model.state_dict()[name + ".weight"][:].data.mul_((tmp_pattern).to(device))
-        layer_pattern[name] = tmp_pattern
+        # model.state_dict()[name + ".weight"][:].data.mul_((tmp_pattern).to(device))
+        layer_pattern[name] = tmp_pattern.to(device)
 
     return layer_pattern
 
-def print_prune(model, layer_names):
+def print_prune(model, layer_names, layer_pattern):
     prune_param, total_param = 0, 0
 
     if len(layer_names)==0:
@@ -403,11 +403,11 @@ def print_prune(model, layer_names):
     else:
         for name in layer_names:
             print("[at weight {}]".format(name))
-            print("percentage of pruned: {:.4f}%".format(100 * (abs(model.state_dict()[name + ".weight"][:]) == 0).sum().item() / model.state_dict()[name + ".weight"][:].numel()))
-            print("nonzero parameters after pruning: {} / {}\n".format((model.state_dict()[name + ".weight"][:] != 0).sum().item(), model.state_dict()[name + ".weight"][:].numel()))
+            print("percentage of pruned: {:.4f}%".format(100 * (abs(model.state_dict()[name + ".weight"][:]*layer_pattern[name]) == 0).sum().item() / model.state_dict()[name + ".weight"][:].numel()))
+            print("nonzero parameters after pruning: {} / {}\n".format((model.state_dict()[name + ".weight"][:]*layer_pattern[name] != 0).sum().item(), model.state_dict()[name + ".weight"][:].numel()))
 
             total_param += model.state_dict()[name + ".weight"][:].numel()
-            prune_param += (model.state_dict()[name + ".weight"][:] != 0).sum().item()
+            prune_param += (model.state_dict()[name + ".weight"][:]*layer_pattern[name] != 0).sum().item()
 
         print("total nonzero parameters after pruning: {} / {} ({:.4f}%)".
               format(prune_param, total_param,

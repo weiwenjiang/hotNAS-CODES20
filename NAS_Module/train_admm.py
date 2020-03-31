@@ -110,7 +110,7 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
 
         batch_idx+=1
 
-
+        break
 
         if batch_idx%1000 == 0:
             print("=" * 10, "Entering ADMM Optimization")
@@ -120,15 +120,10 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
             rho = rho*10
 
 
-    evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern= pattern)
 
 
-
-def evaluate(model, criterion, data_loader, device, print_freq=100, layer_names=[], percent=[], pattern=[]):
+def evaluate(model, criterion, data_loader, device, print_freq=100):
     model.eval()
-
-    utils.apply_prune_pattern(model, layer_names, pattern, device)
-    utils.print_prune(model, layer_names)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
@@ -326,6 +321,7 @@ def main(args):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
+    layers = {}
     layer_names = []
     percent = []
 
@@ -339,6 +335,7 @@ def main(args):
         if isinstance(layer, nn.Conv2d):
             if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
                 layer_names.append(layer_name)
+                layers[layer_name] = layer
 
 
         # print(layer_name)
@@ -394,7 +391,7 @@ def main(args):
         args.start_epoch = checkpoint['epoch'] + 1
 
     if args.test_only:
-        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, percent=percent)
+        evaluate(model, criterion, data_loader_test, device=device)
         return
 
     print("Start training")
@@ -408,10 +405,6 @@ def main(args):
                                         layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
         lr_scheduler.step()
 
-        re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
-                        layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
-
-        evaluate(model, criterion, data_loader_test, device=device, layer_names=layer_names, pattern=pattern)
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),
@@ -425,6 +418,24 @@ def main(args):
             utils.save_on_master(
                 checkpoint,
                 os.path.join(args.output_dir, 'checkpoint.pth'))
+
+        layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
+        utils.print_prune(model, layer_names, layer_pattern)
+
+        print(model)
+        evaluate(model, criterion, data_loader_test, device=device)
+
+        print("="*10,"Applying pruning model")
+
+        for layer_name in layer_names:
+            ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=pattern)
+        print(model)
+        evaluate(model, criterion, data_loader_test, device=device)
+
+        re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
+                           layer_names, percent, pattern, data_loader_test, args.rho, args.apex)
+
+        evaluate(model, criterion, data_loader_test, device=device)
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
