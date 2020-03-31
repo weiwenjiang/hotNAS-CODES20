@@ -430,6 +430,7 @@ def main(args):
         for layer_name in layer_names:
             ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
         print(model)
+        model.to(device)
         evaluate(model, criterion, data_loader_test, device=device)
 
         re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq,
