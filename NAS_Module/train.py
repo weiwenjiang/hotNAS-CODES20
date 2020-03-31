@@ -287,7 +287,7 @@ def main(args):
                 #
                 # print(weight)
 
-                ztNAS_add_kernel_mask(model, layer, layer_name, is_pattern=True, pattern=pattern)
+                ztNAS_add_kernel_mask(model, layer, layer_name, is_pattern=True, pattern=pattern.to(device))
 
     #model = modify_model(model)
 
