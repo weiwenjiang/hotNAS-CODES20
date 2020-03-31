@@ -77,13 +77,13 @@ class _ConvNd(Module):
 class Conv2d_Custom(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
-                 bias=True, padding_mode='zeros', mask=0):
+                 bias=True, padding_mode='zeros', is_pattern=False, pattern={}):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
         dilation = _pair(dilation)
-        self.mask = mask
-        self.kernel_size = _pair(kernel_size)
+        self.pattern = pattern
+        self.is_pattern = is_pattern
         super(Conv2d_Custom, self).__init__(
             in_channels, out_channels, kernel_size, stride, padding, dilation,
             False, _pair(0), groups, bias, padding_mode)
@@ -95,10 +95,13 @@ class Conv2d_Custom(_ConvNd):
             return F.conv2d(F.pad(input, expanded_padding, mode='circular'),
                             weight, self.bias, self.stride,
                             _pair(0), self.dilation, self.groups)
-        return F.conv2d(input, weight, self.bias, self.stride,
+
+        return  F.conv2d(torch.zeros_like(input), torch.zeros_like(weight), self.bias, self.stride,
                         self.padding, self.dilation, self.groups)
 
+
     def forward(self, input):
-        if (self.mask==0 or self.mask.shape != self.kernel_size):
-            return self.conv2d_forward(input, self.weight)
-        return self.conv2d_forward(input, self.weight * self.mask)
+        if not self.is_pattern:
+            return self.conv2d_forward(input, torch.zeros_like(self.weight))
+
+        return self.conv2d_forward(input, self.weight * self.pattern)

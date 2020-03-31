@@ -252,9 +252,42 @@ def main(args):
         if isinstance(layer, nn.Conv2d):
             print(layer_name)
             if is_same(layer.kernel_size) == 3 and layer.in_channels==512:
-                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                mask = torch.tensor([[1, 1, 1], [1, 1, 0], [1, 0, 0]], dtype=torch.float32, device=device)
-                ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
+                # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                # mask = torch.tensor([[1, 1, 1], [1, 1, 0], [1, 0, 0]], dtype=torch.float32, device=device)
+                # ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
+
+                pattern3_3 = {}
+                pattern3_3[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32, device=device)
+                pattern3_3[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32, device=device)
+                pattern3_3[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+                pattern3_3[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32, device=device)
+
+                weight_shape = model.state_dict()[layer_name + ".weight"][:].shape
+                shape = list(model.state_dict()[layer_name + ".weight"][:].shape[:-2])
+                shape.append(1)
+                shape.append(1)
+                after_pattern_0 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[0]
+                after_norm_0 = after_pattern_0.norm(dim=(2, 3)).reshape(shape)
+                after_pattern_1 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[1]
+                after_norm_1 = after_pattern_1.norm(dim=(2, 3)).reshape(shape)
+                after_pattern_2 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[2]
+                after_norm_2 = after_pattern_2.norm(dim=(2, 3)).reshape(shape)
+                after_pattern_3 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[3]
+                after_norm_3 = after_pattern_3.norm(dim=(2, 3)).reshape(shape)
+
+                max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
+                pattern = torch.zeros_like(model.state_dict()[layer_name + ".weight"][:])
+
+                pattern = pattern + (after_norm_0 == max_norm).float() * pattern3_3[0] + \
+                          (after_norm_1 == max_norm).float() * pattern3_3[1] + \
+                          (after_norm_2 == max_norm).float() * pattern3_3[2] + \
+                          (after_norm_3 == max_norm).float() * pattern3_3[3]
+
+                # weight = model.state_dict()[layer_name + ".weight"][:] * pattern
+                #
+                # print(weight)
+
+                ztNAS_add_kernel_mask(model, layer, layer_name, is_pattern=True, pattern=pattern)
 
     #model = modify_model(model)
 

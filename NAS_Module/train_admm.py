@@ -340,7 +340,8 @@ def main(args):
             if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
                 layer_names.append(layer_name)
 
-            # print(layer_name)
+
+        # print(layer_name)
             # if is_same(layer.kernel_size) == 3 and layer.in_channels==512:
             #     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             #     mask = torch.tensor([[1, 1, 1], [1, 1, 0], [1, 0, 0]], dtype=torch.float32, device=device)

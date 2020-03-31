@@ -41,7 +41,7 @@ def ztNAS_modify_kernel_shape(model,layer, layer_name,var_k,increase=True):
     ## Weiwen: 03-29
     ## Step 2: Backup weights and bias if exist
     ##
-    if b:
+    if type(b)==nn.Parameter:
         ori_para_w = model.state_dict()[layer_name + ".weight"][:]
         ori_para_b = model.state_dict()[layer_name + ".bias"][:]
     else:
@@ -71,7 +71,7 @@ def ztNAS_modify_kernel_shape(model,layer, layer_name,var_k,increase=True):
     ## Weiwen: 03-29
     ## Step 4: Setup new parameters from backup
     ##
-    if b:
+    if type(b)==nn.Parameter:
         model.state_dict()[layer_name + ".bias"][:] = ori_para_b
 
     if var_k>0:
@@ -82,7 +82,7 @@ def ztNAS_modify_kernel_shape(model,layer, layer_name,var_k,increase=True):
 
 
 
-def ztNAS_add_kernel_mask(model,layer, layer_name,mask):
+def ztNAS_add_kernel_mask(model,layer, layer_name, is_pattern, pattern):
     [M, N, K, S, G, P, b] = (
         layer.out_channels, layer.in_channels, is_same(layer.kernel_size),
         is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
@@ -96,7 +96,7 @@ def ztNAS_add_kernel_mask(model,layer, layer_name,mask):
     ## Weiwen: 03-29
     ## Step 2: Backup weights and bias if exist
     ##
-    if b:
+    if type(b)==nn.Parameter:
         ori_para_b = model.state_dict()[layer_name + ".bias"][:]
     ori_para_w = model.state_dict()[layer_name + ".weight"][:]
 
@@ -106,18 +106,18 @@ def ztNAS_add_kernel_mask(model,layer, layer_name,mask):
     if last_not_digit == len(seq) - 1:
         # last one is the attribute, directly setattr
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=b, mask=mask)
+                             padding=(P,P), groups=G, bias=b, is_pattern=is_pattern, pattern=pattern)
         setattr(pre_attr, seq[-1], new_conv)
     elif last_not_digit == len(seq) - 2:
         # one index last_attr[]
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=b, mask=mask)
+                             padding=(P,P), groups=G, bias=b, is_pattern=is_pattern, pattern=pattern)
         last_attr[int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-2], last_attr)
     elif last_not_digit == len(seq) - 3:
         # two index last_attr[][]
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=b, mask=mask)
+                             padding=(P,P), groups=G, bias=b, is_pattern=is_pattern, pattern=pattern)
         last_attr[int(seq[-2])][int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-3], last_attr)
     else:
@@ -127,7 +127,9 @@ def ztNAS_add_kernel_mask(model,layer, layer_name,mask):
     ## Weiwen: 03-29
     ## Step 4: Setup new parameters from backup
     ##
-    if b:
+    if type(b)==nn.Parameter:
         model.state_dict()[layer_name + ".bias"][:] = ori_para_b
     model.state_dict()[layer_name + ".weight"][:] = ori_para_w
+
+    # print(ori_para_w)
 
