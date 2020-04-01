@@ -79,6 +79,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
+            evaluate(model, criterion, data_loader_test, device=device)
         elif batch_idx%1000==0:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
