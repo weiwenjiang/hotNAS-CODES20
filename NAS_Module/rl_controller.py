@@ -244,7 +244,7 @@ class Controller(object):
             arachitecture_batch = []
 
             if episode % 50 == 0 and episode != 0:
-                print("Process:", str(float(episode) / controller_params['max_episodes'] * 100) + "%")
+                print("Process:", str(float(episode) / controller_params['max_episodes'] * 100) + "%", file=sys.stderr)
                 self.plot_history(self.reward_history, ylim=(min(self.reward_history)-0.01, max(self.reward_history)+0.01))
 
             for sub_child in range(controller_params["num_children_per_episode"]):
