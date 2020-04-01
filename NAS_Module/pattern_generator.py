@@ -12,7 +12,7 @@ def pattern_sets_generate_3(kernal_shape):
     for i in range(num_one-2):
         for j in range(i+1,num_one-1):
             for k in range(j+1,num_one):
-                if i==5 or j==5 or k==5:
+                if i==4 or j==4 or k==4:
                     continue
                 tmp_tensor = base_tensor.clone()
                 tmp_tensor[i] = 0
