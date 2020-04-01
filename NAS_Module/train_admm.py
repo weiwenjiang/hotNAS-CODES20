@@ -30,6 +30,9 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
 
+    start_time = time.time()
+
+
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
@@ -64,8 +67,19 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
 
         batch_idx += 1
         if batch_idx%100==0:
+            total_time = time.time() - start_time
+            total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+            print("Elapsed Time {}".format(total_time_str) )
+
             evaluate(model, criterion, data_loader_test, device=device)
+        elif batch_idx%1000==0:
+            total_time = time.time() - start_time
+            total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+            print("Elapsed Time {}".format(total_time_str))
+            evaluate(model, criterion, data_loader_test, device=device)
+
             return
+
 
 
 def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, print_freq, layer_names,
