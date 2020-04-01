@@ -361,20 +361,20 @@ def main(args):
     ki_layers = {}
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 0, 0],
+    pattern[0] = torch.tensor([[0, 1, 0],
                                [1, 1, 1],
-                               [1, 1, 1]], dtype=torch.float32)
+                               [1, 0, 1]], dtype=torch.float32)
 
-    pattern[1] = torch.tensor([[1, 1, 1],
+    pattern[1] = torch.tensor([[1, 0, 1],
                                [1, 1, 1],
-                               [0, 0, 0]], dtype=torch.float32)
+                               [0, 1, 0]], dtype=torch.float32)
 
     pattern[2] = torch.tensor([[1, 1, 0],
-                               [1, 1, 0],
+                               [0, 1, 1],
                                [1, 1, 0]], dtype=torch.float32)
 
     pattern[3] = torch.tensor([[0, 1, 1],
-                               [0, 1, 1],
+                               [1, 1, 0],
                                [0, 1, 1]], dtype=torch.float32)
 
     # for layer_name, layer in model.named_modules():
