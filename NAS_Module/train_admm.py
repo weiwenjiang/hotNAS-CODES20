@@ -68,7 +68,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx==30:
+        if batch_idx==50:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {}".format(total_time_str) )
@@ -480,7 +480,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
             ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True,
                                   pattern=layer_pattern[layer_name].to(device))
 
-        print(model)
+        # print(model)
         model.to(device)
         evaluate(model, criterion, data_loader_test, device=device)
 
@@ -502,7 +502,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         for layer_name in layer_kernel_inc:
             ztNAS_modify_kernel_shape(model,ki_layers[layer_name], layer_name,2)
 
-        print(model)
+        # print(model)
         model.to(device)
         # evaluate(model, criterion, data_loader_test, device=device)
 
@@ -605,6 +605,8 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
     # print('Training time {}'.format(total_time_str))
 
 
+
+
 def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
@@ -692,7 +694,11 @@ if __name__ == "__main__":
     args = parse_args()
     pattern_num = 4
 
-    for outer_idx in range(2):
+    start_time = time.time()
+
+    search_counts = 500
+
+    for outer_idx in range(search_counts):
 
         search_point = {}
 
@@ -739,25 +745,6 @@ if __name__ == "__main__":
 
 
         k_expand = random.choice(range(4))
-
-        pattern = {}
-        pattern[0] = torch.tensor([[0, 0, 0],
-                                   [1, 1, 1],
-                                   [1, 1, 1]], dtype=torch.float32)
-
-        pattern[1] = torch.tensor([[1, 1, 1],
-                                   [1, 1, 1],
-                                   [0, 0, 0]], dtype=torch.float32)
-
-        pattern[2] = torch.tensor([[1, 1, 0],
-                                   [1, 1, 0],
-                                   [1, 1, 0]], dtype=torch.float32)
-
-        pattern[3] = torch.tensor([[0, 1, 1],
-                                   [0, 1, 1],
-                                   [0, 1, 1]], dtype=torch.float32)
-        k_expand = 0
-
         search_point[pattern_num] = k_expand
         if k_expand==0:
             layer_k_expand_train_para = []
@@ -784,7 +771,11 @@ if __name__ == "__main__":
         layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
 
         main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
-        print("*" * 100)
+        print("*" * 46,outer_idx,"*" * 46)
         for k, v in search_point.items():
             print(k, v)
         print("*" * 100)
+
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+    print('Search time {}'.format(total_time_str))
