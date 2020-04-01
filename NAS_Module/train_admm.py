@@ -139,12 +139,13 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
 
 
 
-def evaluate(model, criterion, data_loader, device, print_freq=100):
+def evaluate(model, criterion, data_loader, device, explore=False, print_freq=100):
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
     with torch.no_grad():
+        batch_idx = 0
         for image, target in metric_logger.log_every(data_loader, print_freq, header):
             image = image.to(device, non_blocking=True)
             target = target.to(device, non_blocking=True)
@@ -158,6 +159,9 @@ def evaluate(model, criterion, data_loader, device, print_freq=100):
             metric_logger.update(loss=loss.item())
             metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
+
+            if explore and batch_idx == 50:
+                return metric_logger.acc1, metric_logger.acc5
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
 
@@ -516,7 +520,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
                            layer_names, layer_pattern, data_loader_test, args.exploration, args.apex)
 
-        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, args.exploration)
 
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
