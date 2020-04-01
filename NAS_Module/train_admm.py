@@ -484,7 +484,7 @@ def main(args):
                                   pattern=layer_pattern[layer_name].to(device))
 
         for layer_name in layer_kernel_inc:
-            ztNAS_modify_kernel_shape(model,ki_layers[layer_name], layer_name,1)
+            ztNAS_modify_kernel_shape(model,ki_layers[layer_name], layer_name,2)
 
         print(model)
         model.to(device)
