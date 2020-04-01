@@ -375,20 +375,20 @@ def main(args):
     ki_layers = {}
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 1, 0],
+    pattern[0] = torch.tensor([[0, 0, 0],
                                [1, 1, 1],
-                               [1, 0, 1]], dtype=torch.float32)
+                               [1, 1, 1]], dtype=torch.float32)
 
-    pattern[1] = torch.tensor([[1, 0, 1],
+    pattern[1] = torch.tensor([[1, 1, 1],
                                [1, 1, 1],
-                               [0, 1, 0]], dtype=torch.float32)
+                               [0, 0, 0]], dtype=torch.float32)
 
     pattern[2] = torch.tensor([[1, 1, 0],
-                               [0, 1, 1],
+                               [1, 1, 0],
                                [1, 1, 0]], dtype=torch.float32)
 
     pattern[3] = torch.tensor([[0, 1, 1],
-                               [1, 1, 0],
+                               [0, 1, 1],
                                [0, 1, 1]], dtype=torch.float32)
 
     # for layer_name, layer in model.named_modules():
@@ -574,7 +574,7 @@ def main(args):
 
     print(model)
     model.to(device)
-    evaluate(model, criterion, data_loader_test, device=device)
+    # evaluate(model, criterion, data_loader_test, device=device)
 
     print("=" * 10, "Retrain")
 
