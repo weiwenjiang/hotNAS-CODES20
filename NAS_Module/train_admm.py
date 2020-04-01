@@ -170,7 +170,7 @@ def evaluate(model, criterion, data_loader, device, exploration=False, print_fre
     print(' * Acc@1 {top1.global_avg:.3f} Acc@5 {top5.global_avg:.3f}'
           .format(top1=metric_logger.acc1, top5=metric_logger.acc5))
     # return metric_logger.acc1.global_avg
-    return metric_logger.acc1, metric_logger.acc5
+    return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
 
 
 def _get_cache_path(filepath):
