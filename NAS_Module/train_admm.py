@@ -18,6 +18,8 @@ from optimizer import PruneAdam
 from termplot import Plot
 
 
+import random
+
 try:
     from apex import amp
 except ImportError:
@@ -66,7 +68,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx==100:
+        if batch_idx==10:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {}".format(total_time_str) )
@@ -299,7 +301,7 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
 
 
-def main(args):
+def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
     if args.apex:
         if sys.version_info < (3, 0):
             raise RuntimeError("Apex currently only supports Python 3. Aborting.")
@@ -332,65 +334,65 @@ def main(args):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
+
+
+    # layer_train_para = [
+    #     "layer1.0.conv1.weight",
+    #     "layer1.0.bn1.weight",
+    #     "layer1.0.bn1.bias",
+    #     "layer1.0.conv2.weight",
+    #     "layer1.0.bn2.weight",
+    #     "layer1.0.bn2.bias",
+    #     "layer1.1.conv1.weight",
+    #     "layer1.1.bn1.weight",
+    #     "layer1.1.bn1.bias",
+    #     "layer1.1.conv2.weight",
+    #     "layer1.1.bn2.weight",
+    #     "layer1.1.bn2.bias",
+    #     "layer2.0.conv2.weight",
+    #     "layer2.0.bn2.weight",
+    #     "layer2.0.bn2.bias",
+    #     "layer2.0.conv1.weight",
+    #     "layer2.0.bn1.weight",
+    #     "layer2.0.bn1.bias",
+    #     "layer2.0.downsample.0.weight",
+    #     "layer2.0.downsample.1.weight",
+    #     "layer2.0.downsample.1.bias"]
+    #
+    # layer_names = [
+    #     "layer1.0.conv1",
+    #     "layer1.0.conv2",
+    #     "layer1.1.conv1",
+    #     "layer1.1.conv2",
+    #     "layer2.0.conv2",
+    #     "layer2.1.conv1",
+    #     "layer2.1.conv2"
+    # ]
+    #
+    # layer_kernel_inc = [
+    #     # "layer2.0.conv1",
+    #     # "layer2.0.downsample.0"
+    # ]
+    #
+    # pattern = {}
+    # pattern[0] = torch.tensor([[0, 0, 0],
+    #                            [1, 1, 1],
+    #                            [1, 1, 1]], dtype=torch.float32)
+    #
+    # pattern[1] = torch.tensor([[1, 1, 1],
+    #                            [1, 1, 1],
+    #                            [0, 0, 0]], dtype=torch.float32)
+    #
+    # pattern[2] = torch.tensor([[1, 1, 0],
+    #                            [1, 1, 0],
+    #                            [1, 1, 0]], dtype=torch.float32)
+    #
+    # pattern[3] = torch.tensor([[0, 1, 1],
+    #                            [0, 1, 1],
+    #                            [0, 1, 1]], dtype=torch.float32)
+
     layers = {}
-    layer_names = []
-
-    layer_train_para = [
-        "layer1.0.conv1.weight",
-        "layer1.0.bn1.weight",
-        "layer1.0.bn1.bias",
-        "layer1.0.conv2.weight",
-        "layer1.0.bn2.weight",
-        "layer1.0.bn2.bias",
-        "layer1.1.conv1.weight",
-        "layer1.1.bn1.weight",
-        "layer1.1.bn1.bias",
-        "layer1.1.conv2.weight",
-        "layer1.1.bn2.weight",
-        "layer1.1.bn2.bias",
-        "layer2.0.conv2.weight",
-        "layer2.0.bn2.weight",
-        "layer2.0.bn2.bias",
-        "layer2.0.conv1.weight",
-        "layer2.0.bn1.weight",
-        "layer2.0.bn1.bias",
-        "layer2.0.downsample.0.weight",
-        "layer2.0.downsample.1.weight",
-        "layer2.0.downsample.1.bias"]
-
-    layer_names = [
-        "layer1.0.conv1",
-        "layer1.0.conv2",
-        "layer1.1.conv1",
-        "layer1.1.conv2",
-        "layer2.0.conv2",
-        "layer2.1.conv1",
-        "layer2.1.conv2"
-    ]
-
-    layer_kernel_inc = [
-        # "layer2.0.conv1",
-        # "layer2.0.downsample.0"
-    ]
     ki_layers = {}
-
-    pattern = {}
-    pattern[0] = torch.tensor([[0, 0, 0],
-                               [1, 1, 1],
-                               [1, 1, 1]], dtype=torch.float32)
-
-    pattern[1] = torch.tensor([[1, 1, 1],
-                               [1, 1, 1],
-                               [0, 0, 0]], dtype=torch.float32)
-
-    pattern[2] = torch.tensor([[1, 1, 0],
-                               [1, 1, 0],
-                               [1, 1, 0]], dtype=torch.float32)
-
-    pattern[3] = torch.tensor([[0, 1, 1],
-                               [0, 1, 1],
-                               [0, 1, 1]], dtype=torch.float32)
-
     # for layer_name, layer in model.named_modules():
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
@@ -688,4 +690,83 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args)
+    pattern_num = 4
+
+    for outer_idx in range(1):
+
+        search_point = {}
+
+        pattern = {}
+        for i in range(pattern_num):
+            P = torch.ones(9)
+            P[random.sample(range(9),3)] = 0
+            search_point[i] = P
+            pattern[i] = P.reshape((3,3))
+        # print(pattern)
+
+        layer_pattern_train_para = [
+            "layer1.0.conv1.weight",
+            "layer1.0.bn1.weight",
+            "layer1.0.bn1.bias",
+            "layer1.0.conv2.weight",
+            "layer1.0.bn2.weight",
+            "layer1.0.bn2.bias",
+            "layer1.1.conv1.weight",
+            "layer1.1.bn1.weight",
+            "layer1.1.bn1.bias",
+            "layer1.1.conv2.weight",
+            "layer1.1.bn2.weight",
+            "layer1.1.bn2.bias",
+            "layer2.0.conv2.weight",
+            "layer2.0.bn2.weight",
+            "layer2.0.bn2.bias",
+            "layer2.1.conv1.weight",
+            "layer2.1.bn1.weight",
+            "layer2.1.bn1.bias",
+            "layer2.1.conv2.weight",
+            "layer2.1.bn2.weight",
+            "layer2.1.bn2.bias"]
+
+        layer_names = [
+            "layer1.0.conv1",
+            "layer1.0.conv2",
+            "layer1.1.conv1",
+            "layer1.1.conv2",
+            "layer2.0.conv2",
+            "layer2.1.conv1",
+            "layer2.1.conv2"
+        ]
+
+
+        k_expand = random.choice(range(4))
+        search_point[pattern_num] = k_expand
+        if k_expand==0:
+            layer_k_expand_train_para = []
+            layer_kernel_inc = []
+        elif k_expand==1:
+            layer_k_expand_train_para = ["layer2.0.conv1.weight","layer2.0.bn1.weight","layer2.0.bn1.bias"]
+            layer_kernel_inc = ["layer2.0.conv1"]
+        elif k_expand==2:
+            layer_k_expand_train_para = ["layer2.0.downsample.0.weight","layer2.0.downsample.1.weight","layer2.0.downsample.1.bias"]
+            layer_kernel_inc = ["layer2.0.downsample.0"]
+        else:
+            layer_k_expand_train_para = [
+                "layer2.0.conv1.weight",
+                "layer2.0.bn1.weight",
+                "layer2.0.bn1.bias",
+                "layer2.0.downsample.0.weight",
+                "layer2.0.downsample.1.weight",
+                "layer2.0.downsample.1.bias"]
+            layer_kernel_inc = [
+                "layer2.0.conv1",
+                "layer2.0.downsample.0"
+            ]
+
+        layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
+
+        print("*"*100)
+        for k,v in search_point.items():
+            print(k,v)
+        print("*" * 100)
+
+        main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
