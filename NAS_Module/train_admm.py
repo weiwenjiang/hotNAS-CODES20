@@ -139,7 +139,7 @@ def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch
 
 
 
-def evaluate(model, criterion, data_loader, device, explore=False, print_freq=100):
+def evaluate(model, criterion, data_loader, device, exploration=False, print_freq=100):
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -160,7 +160,7 @@ def evaluate(model, criterion, data_loader, device, explore=False, print_freq=10
             metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
 
-            if explore and batch_idx == 50:
+            if exploration and batch_idx == 50:
                 return metric_logger.acc1, metric_logger.acc5
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
