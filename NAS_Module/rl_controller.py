@@ -312,6 +312,7 @@ class Controller(object):
                         else:
                             # comment: train network and obtain accuracy for updating controller
                             acc1 = random.uniform(0, 1)
+                            acc5 = random.uniform(0, 1)
 
                             # given_para = {}
                             # idx = 0
