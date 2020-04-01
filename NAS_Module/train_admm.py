@@ -520,7 +520,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
                            layer_names, layer_pattern, data_loader_test, args.exploration, args.apex)
 
-        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, args.exploration)
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, exploration = args.exploration)
 
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
