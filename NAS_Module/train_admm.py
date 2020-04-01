@@ -429,10 +429,10 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         else:
             param.requires_grad = False
 
-    for name, param in model.named_parameters():
-        print(name, param.requires_grad, param.data.shape)
+    # for name, param in model.named_parameters():
+    #     print(name, param.requires_grad, param.data.shape)
 
-    print(model)
+    # print(model)
 
     model.to(device)
     if args.distributed and args.sync_bn:
@@ -739,6 +739,25 @@ if __name__ == "__main__":
 
 
         k_expand = random.choice(range(4))
+
+        pattern = {}
+        pattern[0] = torch.tensor([[0, 0, 0],
+                                   [1, 1, 1],
+                                   [1, 1, 1]], dtype=torch.float32)
+
+        pattern[1] = torch.tensor([[1, 1, 1],
+                                   [1, 1, 1],
+                                   [0, 0, 0]], dtype=torch.float32)
+
+        pattern[2] = torch.tensor([[1, 1, 0],
+                                   [1, 1, 0],
+                                   [1, 1, 0]], dtype=torch.float32)
+
+        pattern[3] = torch.tensor([[0, 1, 1],
+                                   [0, 1, 1],
+                                   [0, 1, 1]], dtype=torch.float32)
+        k_expand = 0
+
         search_point[pattern_num] = k_expand
         if k_expand==0:
             layer_k_expand_train_para = []
