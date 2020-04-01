@@ -342,7 +342,7 @@ class Controller(object):
                         reward = -1
 
                 logger.info("====================Results=======================")
-                logger.info("--------->NN: {}, Accuracy: {}".format(str_NNs, accuracy))
+                logger.info("--------->NN: {}, Top-1: {}, Top-5: {}".format(str_NNs, acc1, acc5))
                 # logger.info("--------->HW: {}, Specs.: {}".format(str_HWs, HW_Eff))
                 for p in Para_NN1[:-1]:
                     logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
