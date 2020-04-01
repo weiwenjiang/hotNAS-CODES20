@@ -27,7 +27,7 @@ except ImportError:
 
 
 def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    layer_pattern, data_loader_test, expore_reduction, apex=False):
+                    layer_pattern, data_loader_test, explore, apex=False):
     # Z, U = utils.initialize_Z_and_U(model, layer_names)
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
@@ -73,7 +73,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
             # evaluate(model, criterion, data_loader_test, device=device)
-            if expore_reduction:
+            if explore:
                 return
         elif batch_idx==100:
             total_time = time.time() - re_train_start_time
@@ -163,7 +163,8 @@ def evaluate(model, criterion, data_loader, device, print_freq=100):
 
     print(' * Acc@1 {top1.global_avg:.3f} Acc@5 {top5.global_avg:.3f}'
           .format(top1=metric_logger.acc1, top5=metric_logger.acc5))
-    return metric_logger.acc1.global_avg
+    # return metric_logger.acc1.global_avg
+    return metric_logger.acc1, metric_logger.acc5
 
 
 def _get_cache_path(filepath):
@@ -513,29 +514,15 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         print("=" * 10, "Retrain")
 
         re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
-                           layer_names, layer_pattern, data_loader_test, args.expore_reduction, args.apex)
+                           layer_names, layer_pattern, data_loader_test, args.exploration, args.apex)
 
-        evaluate(model, criterion, data_loader_test, device=device)
-
-        if args.output_dir:
-            checkpoint = {
-                'model': model_without_ddp.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'lr_scheduler': lr_scheduler.state_dict(),
-                'epoch': epoch + 1,
-                'args': args}
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'checkpoint.pth'))
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
 
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
         print('Training time {}'.format(total_time_str))
 
-        return
+        return acc1, acc5
 
 
     print("Start training")
@@ -585,7 +572,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
     print("=" * 10, "Retrain")
 
     re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
-                       layer_names, layer_pattern, data_loader_test, args.expore_reduction, args.apex)
+                       layer_names, layer_pattern, data_loader_test, args.exploration, args.apex)
 
     evaluate(model, criterion, data_loader_test, device=device)
 
@@ -676,6 +663,13 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--exploration",
+        dest="exporation",
+        help="Help to exit retrain early",
+        action="store_true",
+    )
+
+    parser.add_argument(
         "--pretrained",
         dest="pretrained",
         help="Use pre-trained models from the modelzoo",
@@ -699,6 +693,90 @@ def parse_args():
     args = parser.parse_args()
 
     return args
+
+
+
+def explore_one(args,pattern,k_expand):
+    pattern_num = 4
+
+    start_time = time.time()
+
+    # Manually finetune
+
+    for i in range(pattern_num):
+        pattern[i] = pattern[i].reshape((3, 3))
+
+    layer_pattern_train_para = [
+        "layer1.0.conv1.weight",
+        "layer1.0.bn1.weight",
+        "layer1.0.bn1.bias",
+        "layer1.0.conv2.weight",
+        "layer1.0.bn2.weight",
+        "layer1.0.bn2.bias",
+        "layer1.1.conv1.weight",
+        "layer1.1.bn1.weight",
+        "layer1.1.bn1.bias",
+        "layer1.1.conv2.weight",
+        "layer1.1.bn2.weight",
+        "layer1.1.bn2.bias",
+        "layer2.0.conv2.weight",
+        "layer2.0.bn2.weight",
+        "layer2.0.bn2.bias",
+        "layer2.1.conv1.weight",
+        "layer2.1.bn1.weight",
+        "layer2.1.bn1.bias",
+        "layer2.1.conv2.weight",
+        "layer2.1.bn2.weight",
+        "layer2.1.bn2.bias"]
+
+    layer_names = [
+        "layer1.0.conv1",
+        "layer1.0.conv2",
+        "layer1.1.conv1",
+        "layer1.1.conv2",
+        "layer2.0.conv2",
+        "layer2.1.conv1",
+        "layer2.1.conv2"
+    ]
+
+
+    if k_expand == 0:
+        layer_k_expand_train_para = []
+        layer_kernel_inc = []
+    elif k_expand == 1:
+        layer_k_expand_train_para = ["layer2.0.conv1.weight", "layer2.0.bn1.weight", "layer2.0.bn1.bias"]
+        layer_kernel_inc = ["layer2.0.conv1"]
+    elif k_expand == 2:
+        layer_k_expand_train_para = ["layer2.0.downsample.0.weight", "layer2.0.downsample.1.weight",
+                                     "layer2.0.downsample.1.bias"]
+        layer_kernel_inc = ["layer2.0.downsample.0"]
+    else:
+        layer_k_expand_train_para = [
+            "layer2.0.conv1.weight",
+            "layer2.0.bn1.weight",
+            "layer2.0.bn1.bias",
+            "layer2.0.downsample.0.weight",
+            "layer2.0.downsample.1.weight",
+            "layer2.0.downsample.1.bias"]
+        layer_kernel_inc = [
+            "layer2.0.conv1",
+            "layer2.0.downsample.0"
+        ]
+
+    layer_train_para = layer_pattern_train_para + layer_k_expand_train_para
+
+    acc1, acc5 = main(args, layer_train_para, layer_names, layer_kernel_inc, pattern)
+    print("*" * 40, "Manually explore", "*" * 40)
+    for k, v in pattern.items():
+        print(k, v)
+    print("4", k_expand)
+
+    print("*" * 100)
+
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+    print('Search time {}'.format(total_time_str))
+    return acc1, acc5
 
 
 if __name__ == "__main__":
