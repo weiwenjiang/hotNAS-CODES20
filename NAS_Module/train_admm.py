@@ -369,8 +369,8 @@ def main(args):
     ]
 
     layer_kernel_inc = [
-        "layer2.0.conv1",
-        "layer2.0.downsample.0"
+        # "layer2.0.conv1",
+        # "layer2.0.downsample.0"
     ]
     ki_layers = {}
 
