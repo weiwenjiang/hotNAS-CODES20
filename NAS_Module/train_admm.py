@@ -68,7 +68,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx==50:
+        if batch_idx==100:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
