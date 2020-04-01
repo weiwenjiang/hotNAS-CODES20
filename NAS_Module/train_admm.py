@@ -771,7 +771,7 @@ if __name__ == "__main__":
         layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
 
         main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
-        print("*" * 46,outer_idx,"*" * 46)
+        print("*" * 40,outer_idx,"/",search_counts,"*" * 40)
         for k, v in search_point.items():
             print(k, v)
         print("*" * 100)
