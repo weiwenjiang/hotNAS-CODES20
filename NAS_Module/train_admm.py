@@ -692,7 +692,7 @@ if __name__ == "__main__":
     args = parse_args()
     pattern_num = 4
 
-    for outer_idx in range(1):
+    for outer_idx in range(2):
 
         search_point = {}
 
