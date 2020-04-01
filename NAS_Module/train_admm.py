@@ -27,7 +27,7 @@ except ImportError:
 
 
 def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, layer_names,
-                    layer_pattern, data_loader_test, apex=False):
+                    layer_pattern, data_loader_test, expore_reduction, apex=False):
     # Z, U = utils.initialize_Z_and_U(model, layer_names)
 
     # Plot([float(x) for x in list(Z[layer_names[-1]].flatten())], plot_type=2)
@@ -71,16 +71,19 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         if batch_idx==50:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-            print("Elapsed Time {}".format(total_time_str) )
+            print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
             # evaluate(model, criterion, data_loader_test, device=device)
-            return
+            if expore_reduction:
+                return
+        elif batch_idx==100:
+            total_time = time.time() - re_train_start_time
+            total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+            print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
         elif batch_idx%1000==0:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-            print("Elapsed Time {}".format(total_time_str))
+            print("Elapsed Time {} for {} batches".format(total_time_str,batch_idx))
             evaluate(model, criterion, data_loader_test, device=device)
-
-            return
 
 
 
@@ -509,7 +512,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         print("=" * 10, "Retrain")
 
         re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
-                           layer_names, layer_pattern, data_loader_test, args.apex)
+                           layer_names, layer_pattern, data_loader_test, args.expore_reduction, args.apex)
 
         evaluate(model, criterion, data_loader_test, device=device)
 
@@ -581,7 +584,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
     print("=" * 10, "Retrain")
 
     re_train_one_epoch(model, criterion, admm_re_train_optimizer, data_loader, device, epoch, args.print_freq,
-                       layer_names, layer_pattern, data_loader_test, args.apex)
+                       layer_names, layer_pattern, data_loader_test, args.expore_reduction, args.apex)
 
     evaluate(model, criterion, data_loader_test, device=device)
 
@@ -665,6 +668,13 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--explore-reduction",
+        dest="expore_reduction",
+        help="Only explore reduction the model",
+        action="store_true",
+    )
+
+    parser.add_argument(
         "--pretrained",
         dest="pretrained",
         help="Use pre-trained models from the modelzoo",
@@ -696,19 +706,96 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    search_counts = 300
 
-    for outer_idx in range(search_counts):
+    if args.expore_reduction:
+        search_counts = 300
 
-        search_point = {}
+        for outer_idx in range(search_counts):
+
+            search_point = {}
+
+            pattern = {}
+            for i in range(pattern_num):
+                P = torch.ones(9)
+                P[random.sample(range(9),3)] = 0
+                search_point[i] = P
+                pattern[i] = P.reshape((3,3))
+            # print(pattern)
+
+            layer_pattern_train_para = [
+                "layer1.0.conv1.weight",
+                "layer1.0.bn1.weight",
+                "layer1.0.bn1.bias",
+                "layer1.0.conv2.weight",
+                "layer1.0.bn2.weight",
+                "layer1.0.bn2.bias",
+                "layer1.1.conv1.weight",
+                "layer1.1.bn1.weight",
+                "layer1.1.bn1.bias",
+                "layer1.1.conv2.weight",
+                "layer1.1.bn2.weight",
+                "layer1.1.bn2.bias",
+                "layer2.0.conv2.weight",
+                "layer2.0.bn2.weight",
+                "layer2.0.bn2.bias",
+                "layer2.1.conv1.weight",
+                "layer2.1.bn1.weight",
+                "layer2.1.bn1.bias",
+                "layer2.1.conv2.weight",
+                "layer2.1.bn2.weight",
+                "layer2.1.bn2.bias"]
+
+            layer_names = [
+                "layer1.0.conv1",
+                "layer1.0.conv2",
+                "layer1.1.conv1",
+                "layer1.1.conv2",
+                "layer2.0.conv2",
+                "layer2.1.conv1",
+                "layer2.1.conv2"
+            ]
+
+
+            k_expand = random.choice(range(4))
+            search_point[pattern_num] = k_expand
+            if k_expand==0:
+                layer_k_expand_train_para = []
+                layer_kernel_inc = []
+            elif k_expand==1:
+                layer_k_expand_train_para = ["layer2.0.conv1.weight","layer2.0.bn1.weight","layer2.0.bn1.bias"]
+                layer_kernel_inc = ["layer2.0.conv1"]
+            elif k_expand==2:
+                layer_k_expand_train_para = ["layer2.0.downsample.0.weight","layer2.0.downsample.1.weight","layer2.0.downsample.1.bias"]
+                layer_kernel_inc = ["layer2.0.downsample.0"]
+            else:
+                layer_k_expand_train_para = [
+                    "layer2.0.conv1.weight",
+                    "layer2.0.bn1.weight",
+                    "layer2.0.bn1.bias",
+                    "layer2.0.downsample.0.weight",
+                    "layer2.0.downsample.1.weight",
+                    "layer2.0.downsample.1.bias"]
+                layer_kernel_inc = [
+                    "layer2.0.conv1",
+                    "layer2.0.downsample.0"
+                ]
+
+            layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
+
+            main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
+            print("*" * 40,outer_idx,"/",search_counts,"*" * 40)
+            for k, v in search_point.items():
+                print(k, v)
+            print("*" * 100)
+    else:
+
+        # Manually finetune
 
         pattern = {}
-        for i in range(pattern_num):
-            P = torch.ones(9)
-            P[random.sample(range(9),3)] = 0
-            search_point[i] = P
-            pattern[i] = P.reshape((3,3))
-        # print(pattern)
+        pattern[0] = torch.tensor([1., 1., 1., 1., 0., 1., 1., 0., 0.])
+        pattern[1] = torch.tensor([0., 0., 1., 1., 1., 1., 1., 0., 1.])
+        pattern[2] = torch.tensor([1., 1., 0., 1., 1., 0., 1., 1., 0.])
+        pattern[3] = torch.tensor([1., 0., 0., 1., 1., 1., 0., 1., 1.])
 
         layer_pattern_train_para = [
             "layer1.0.conv1.weight",
@@ -743,17 +830,17 @@ if __name__ == "__main__":
             "layer2.1.conv2"
         ]
 
+        k_expand = 1
 
-        k_expand = random.choice(range(4))
-        search_point[pattern_num] = k_expand
-        if k_expand==0:
+        if k_expand == 0:
             layer_k_expand_train_para = []
             layer_kernel_inc = []
-        elif k_expand==1:
-            layer_k_expand_train_para = ["layer2.0.conv1.weight","layer2.0.bn1.weight","layer2.0.bn1.bias"]
+        elif k_expand == 1:
+            layer_k_expand_train_para = ["layer2.0.conv1.weight", "layer2.0.bn1.weight", "layer2.0.bn1.bias"]
             layer_kernel_inc = ["layer2.0.conv1"]
-        elif k_expand==2:
-            layer_k_expand_train_para = ["layer2.0.downsample.0.weight","layer2.0.downsample.1.weight","layer2.0.downsample.1.bias"]
+        elif k_expand == 2:
+            layer_k_expand_train_para = ["layer2.0.downsample.0.weight", "layer2.0.downsample.1.weight",
+                                         "layer2.0.downsample.1.bias"]
             layer_kernel_inc = ["layer2.0.downsample.0"]
         else:
             layer_k_expand_train_para = [
@@ -768,14 +855,20 @@ if __name__ == "__main__":
                 "layer2.0.downsample.0"
             ]
 
-        layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
+        layer_train_para = layer_pattern_train_para + layer_k_expand_train_para
 
-        main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
-        print("*" * 40,outer_idx,"/",search_counts,"*" * 40)
-        for k, v in search_point.items():
-            print(k, v)
+        main(args, layer_train_para, layer_names, layer_kernel_inc, pattern)
+        print("*" * 40, "Manually explore", "*" * 40)
+        for k,v in pattern.items():
+            print(k,v)
+        print("4",k_expand)
+
         print("*" * 100)
+
+
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Search time {}'.format(total_time_str))
+
+
