@@ -1,5 +1,5 @@
 controller_params = {
-    "sw_space": (list(range(84)),list(range(84)),list(range(84)),list(range(84)),list(range(4))),
+    "sw_space": (list(range(56)),list(range(56)),list(range(56)),list(range(56)),list(range(4))),
     # dataflow 1, dataflow 2, PE for d1, BW for d1
     "hw_space": (list(range(8,50,8)),list(range(1,9,1)),[32,64],[32,64],[3],[2],[2],[2]),
     'max_episodes': 500,
