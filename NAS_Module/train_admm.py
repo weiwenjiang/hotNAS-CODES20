@@ -68,11 +68,11 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx==10:
+        if batch_idx==30:
             total_time = time.time() - re_train_start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print("Elapsed Time {}".format(total_time_str) )
-            evaluate(model, criterion, data_loader_test, device=device)
+            # evaluate(model, criterion, data_loader_test, device=device)
             return
         elif batch_idx%1000==0:
             total_time = time.time() - re_train_start_time
@@ -504,7 +504,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
 
         print(model)
         model.to(device)
-        evaluate(model, criterion, data_loader_test, device=device)
+        # evaluate(model, criterion, data_loader_test, device=device)
 
         print("=" * 10, "Retrain")
 
@@ -574,7 +574,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
     for layer_name in layer_names:
         ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True, pattern=layer_pattern[layer_name].to(device))
 
-    print(model)
+    # print(model)
     model.to(device)
     # evaluate(model, criterion, data_loader_test, device=device)
 
@@ -602,7 +602,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-    print('Training time {}'.format(total_time_str))
+    # print('Training time {}'.format(total_time_str))
 
 
 def parse_args():
@@ -783,9 +783,8 @@ if __name__ == "__main__":
 
         layer_train_para = layer_pattern_train_para+layer_k_expand_train_para
 
-        print("*"*100)
-        for k,v in search_point.items():
-            print(k,v)
-        print("*" * 100)
-
         main(args,layer_train_para,layer_names,layer_kernel_inc,pattern)
+        print("*" * 100)
+        for k, v in search_point.items():
+            print(k, v)
+        print("*" * 100)
