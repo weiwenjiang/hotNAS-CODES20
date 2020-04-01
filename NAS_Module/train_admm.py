@@ -65,7 +65,7 @@ def re_train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, 
         batch_idx += 1
         if batch_idx%100==0:
             evaluate(model, criterion, data_loader_test, device=device)
-
+            return
 
 
 def train_one_epoch(model, criterion, admm_optimizer, data_loader, device, epoch, print_freq, layer_names,
