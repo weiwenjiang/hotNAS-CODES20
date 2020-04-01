@@ -320,31 +320,58 @@ def main(args):
 
     layers = {}
     layer_names = []
-    percent = []
+
+    layer_train_para = [
+        "layer1.0.conv1.weight",
+        "layer1.0.bn1.weight",
+        "layer1.0.bn1.bias",
+        "layer1.0.conv2.weight",
+        "layer1.0.bn2.weight",
+        "layer1.0.bn2.bias",
+        "layer1.1.conv1.weight",
+        "layer1.1.bn1.weight",
+        "layer1.1.bn1.bias",
+        "layer1.1.conv2.weight",
+        "layer1.1.bn2.weight",
+        "layer1.1.bn2.bias",
+        "layer2.0.conv2.weight",
+        "layer2.0.bn2.weight",
+        "layer2.0.bn2.bias"]
+
+    layer_names = [
+        "layer1.0.conv1",
+        "layer1.0.conv2",
+        "layer1.1.conv1",
+        "layer1.1.conv2",
+        "layer2.0.conv2",
+        "layer2.1.conv1",
+        "layer2.1.conv2"
+    ]
 
     pattern = {}
-    pattern[0] = torch.tensor([[0, 1, 1],
+    pattern[0] = torch.tensor([[0, 0, 0],
                                [1, 1, 1],
-                               [0, 1, 1]], dtype=torch.float32)
+                               [1, 1, 1]], dtype=torch.float32)
 
     pattern[1] = torch.tensor([[1, 1, 1],
                                [1, 1, 1],
-                               [1, 0, 0]], dtype=torch.float32)
+                               [0, 0, 0]], dtype=torch.float32)
 
     pattern[2] = torch.tensor([[1, 1, 0],
-                               [1, 1, 1],
+                               [1, 1, 0],
                                [1, 1, 0]], dtype=torch.float32)
 
-    pattern[3] = torch.tensor([[1, 0, 0],
-                               [1, 1, 1],
-                               [1, 1, 1]], dtype=torch.float32)
+    pattern[3] = torch.tensor([[0, 1, 1],
+                               [0, 1, 1],
+                               [0, 1, 1]], dtype=torch.float32)
 
     # for layer_name, layer in model.named_modules():
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
-            if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
+            # if is_same(layer.kernel_size) == 3 and layer.in_channels == 512:
             # if is_same(layer.kernel_size) == 3:
-                layer_names.append(layer_name)
+            if layer_name in layer_names:
+                # layer_names.append(layer_name)
                 layers[layer_name] = layer
 
 
@@ -357,12 +384,18 @@ def main(args):
     #model = modify_model(model)
 
 
+    # for name, param in model.named_parameters():
+    #     names = [n + "." for n in name.split(".")[:-1]]
+    #     if "".join(names)[:-1] not in layer_names:
+    #         param.requires_grad = False
+    #     else:
+    #         break
+
     for name, param in model.named_parameters():
-        names = [n + "." for n in name.split(".")[:-1]]
-        if "".join(names)[:-1] not in layer_names:
-            param.requires_grad = False
+        if name in layer_train_para:
+            param.requires_grad = True
         else:
-            break
+            param.requires_grad = False
 
     for name, param in model.named_parameters():
         print(name, param.requires_grad, param.data.shape)

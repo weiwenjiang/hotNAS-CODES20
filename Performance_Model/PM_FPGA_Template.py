@@ -163,7 +163,12 @@ class FPGA_Templates:
         else:
             bottle_neck = "wired"
 
-        return Lat, bottle_neck
+        I = lat_I_mem * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
+        O = lat_O_mem * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
+        W = lat_W_mem * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
+        C = lat_Comp  * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
+
+        return Lat, bottle_neck, [I,O,W,C]
 
     def get_dconv_latency(self, Layer):
         [B, M, N, R, C, K, S, T] = Layer.getPara()

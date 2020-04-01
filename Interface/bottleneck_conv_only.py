@@ -50,8 +50,9 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
                 if acc_1.Success==False:
                     return -1
                 else:
-                    cTT += acc_1.get_layer_latency(Layer)[0]
-                    print(layer_name,acc_1.get_layer_latency(Layer))
+                    perf = acc_1.get_layer_latency(Layer)
+                    cTT += perf[0]
+                    print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -67,17 +68,24 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='vgg16_bn'
+        default='resnet18'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default='70, 36, 256, 32, 3, 12, 10, 8',
+        default="70, 36, 64, 64, 7, 18, 6, 6",
         help="hardware desgin of cconv",
     )
 
     args = parser.parse_args()
     model_name = args.model
     model = globals()[model_name]()
+
+    print(model)
+
+    for name,para in model.named_parameters():
+        print(name)
+
+    print("="*100)
 
     print(args.cconv)
     print(args.cconv.split(","))
