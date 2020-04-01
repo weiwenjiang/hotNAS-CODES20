@@ -29,8 +29,8 @@ def get_last_attr_idx(model,seq):
 
 def ztNAS_modify_kernel_shape(model,layer, layer_name,var_k,increase=True):
 
-    print("Debug:")
-    print("name:",layer_name)
+    # print("Debug:")
+    # print("name:",layer_name)
 
     [M, N, K, S, G, P, b] = (
         layer.out_channels, layer.in_channels, is_same(layer.kernel_size),
@@ -54,7 +54,7 @@ def ztNAS_modify_kernel_shape(model,layer, layer_name,var_k,increase=True):
     ## Weiwen: 03-29
     ## Step 3: Translate layer name to locate layer module
     ##
-    print("last_not_digit:", last_not_digit, "in", len(seq))
+    # print("last_not_digit:", last_not_digit, "in", len(seq))
     if last_not_digit == len(seq) - 1:
         # last one is the attribute, directly setattr
         new_conv = nn.Conv2d(N, M, kernel_size=(K + var_k, K + var_k), stride=(S, S), padding=(int(P + var_k/2), int(P + var_k/2)), groups=G, bias=b)
