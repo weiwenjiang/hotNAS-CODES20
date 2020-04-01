@@ -329,7 +329,16 @@ class Controller(object):
 
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
-                        reward = float(acc1)
+
+                        if acc1>69.758:
+                            reward = 1
+                        elif acc1<60:
+                            reward = -1
+                        else:
+                            reward = (reward-0.6)/(0.69-0.6)*2-1
+
+                        #
+                        # reward = float(acc1)
 
                         # Help us to build the history table to avoid optimization for the same network
                         # Weiwen 01-24: We comment this for exploration of hardware
