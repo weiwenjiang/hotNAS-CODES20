@@ -335,7 +335,7 @@ class Controller(object):
                         elif acc1<60:
                             reward = -1
                         else:
-                            reward = (reward-0.6)/(0.69-0.6)*2-1
+                            reward = (acc1-0.6)/(0.69-0.6)*2-1
 
                         #
                         # reward = float(acc1)
