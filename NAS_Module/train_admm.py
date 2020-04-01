@@ -504,7 +504,7 @@ def main(args,layer_train_para,layer_names,layer_kernel_inc,pattern):
         start_time = time.time()
         print("=" * 10, "Applying pruning model")
         layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, device)
-        utils.print_prune(model, layer_names, layer_pattern)
+        # utils.print_prune(model, layer_names, layer_pattern)
 
         for layer_name in layer_names:
             ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True,
