@@ -311,17 +311,17 @@ class Controller(object):
                             accuracy = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
-                            # acc1 = random.uniform(0, 1)
-                            # acc5 = random.uniform(0, 1)
+                            acc1 = random.uniform(0, 1)
+                            acc5 = random.uniform(0, 1)
 
-                            given_para = {}
-                            idx = 0
-                            for p in Para_NN1[:-1]:
-                                given_para[idx] = self.pattern_space[p]
-                                idx+=1
-                            k_expand = Para_NN1[-1]
-
-                            acc1,acc5 = train_admm.explore_one(self.args, given_para,k_expand)
+                            # given_para = {}
+                            # idx = 0
+                            # for p in Para_NN1[:-1]:
+                            #     given_para[idx] = self.pattern_space[p]
+                            #     idx+=1
+                            # k_expand = Para_NN1[-1]
+                            #
+                            # acc1,acc5 = train_admm.explore_one(self.args, given_para,k_expand)
 
                             # Keep history trained data
 
