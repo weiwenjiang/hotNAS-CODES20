@@ -336,7 +336,13 @@ def main(args):
         "layer1.1.bn2.bias",
         "layer2.0.conv2.weight",
         "layer2.0.bn2.weight",
-        "layer2.0.bn2.bias"]
+        "layer2.0.bn2.bias",
+        "layer2.0.conv1.weight",
+        "layer2.0.bn1.weight",
+        "layer2.0.bn1.bias",
+        "layer2.0.downsample.0.weight",
+        "layer2.0.downsample.1.weight",
+        "layer2.0.downsample.1.bias"]
 
     layer_names = [
         "layer1.0.conv1",
@@ -347,6 +353,12 @@ def main(args):
         "layer2.1.conv1",
         "layer2.1.conv2"
     ]
+
+    layer_kernel_inc = [
+        "layer2.0.conv1",
+        "layer2.0.downsample.0"
+    ]
+    ki_layers = {}
 
     pattern = {}
     pattern[0] = torch.tensor([[0, 0, 0],
@@ -373,6 +385,9 @@ def main(args):
             if layer_name in layer_names:
                 # layer_names.append(layer_name)
                 layers[layer_name] = layer
+            if layer_name in layer_kernel_inc:
+                ki_layers[layer_name] = layer
+
 
 
         # print(layer_name)
@@ -382,6 +397,7 @@ def main(args):
             #     ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
 
     #model = modify_model(model)
+
 
 
     # for name, param in model.named_parameters():
@@ -466,6 +482,9 @@ def main(args):
         for layer_name in layer_names:
             ztNAS_add_kernel_mask(model, layers[layer_name], layer_name, is_pattern=True,
                                   pattern=layer_pattern[layer_name].to(device))
+
+        for layer_name in layer_kernel_inc:
+            ztNAS_modify_kernel_shape(model,ki_layers[layer_name], layer_name,1)
 
         print(model)
         model.to(device)
