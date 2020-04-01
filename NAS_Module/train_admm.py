@@ -797,6 +797,9 @@ if __name__ == "__main__":
         pattern[2] = torch.tensor([1., 1., 0., 1., 1., 0., 1., 1., 0.])
         pattern[3] = torch.tensor([1., 0., 0., 1., 1., 1., 0., 1., 1.])
 
+        for i in range(pattern_num):
+            pattern[i] = pattern[i].reshape((3, 3))
+
         layer_pattern_train_para = [
             "layer1.0.conv1.weight",
             "layer1.0.bn1.weight",
