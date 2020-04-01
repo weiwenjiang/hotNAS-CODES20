@@ -664,7 +664,7 @@ def parse_args():
 
     parser.add_argument(
         "--exploration",
-        dest="exporation",
+        dest="exploration",
         help="Help to exit retrain early",
         action="store_true",
     )
