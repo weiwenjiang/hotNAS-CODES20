@@ -328,7 +328,7 @@ class Controller(object):
 
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
-                        reward = acc1
+                        reward = float(acc1)
 
                         # Help us to build the history table to avoid optimization for the same network
                         # Weiwen 01-24: We comment this for exploration of hardware
@@ -349,6 +349,7 @@ class Controller(object):
                 logger.info("--------->Parameter: {}".format(Para_NN1[-1]))
                 logger.info("--------->Reward: {}".format(reward))
                 logger.info("=" * 50)
+
 
                 episode_reward_buffer.append(reward)
                 identified_arch = np.array(
