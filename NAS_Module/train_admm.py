@@ -696,7 +696,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    search_counts = 500
+    search_counts = 300
 
     for outer_idx in range(search_counts):
 
