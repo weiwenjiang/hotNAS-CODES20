@@ -67,8 +67,10 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
 
     pattern_space = pattern_sets_generate_3((3, 3))
     pattern = {}
+    i = 0
     for idx in pattern_idx:
-        pattern[idx] = pattern_space[idx].reshape((3, 3))
+        pattern[i] = pattern_space[idx].reshape((3, 3))
+        i+=1
     layer_names = ["layer1.0.conv1","layer1.0.conv2","layer1.1.conv1",
         "layer1.1.conv2","layer2.0.conv2","layer2.1.conv1","layer2.1.conv2"]
 
