@@ -121,6 +121,19 @@ if __name__ == "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
+    model = resnet_18_space(model, [1, 22, 49, 54], 3, [128, 240, 240, 480, 480], args)
+
+    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    print("=" * 10, model_name, "performance analysis:")
+    total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
+    print(total_lat)
+
+    print()
+    print("Success")
+
+
+    sys.exit(0)
+
     # print(model)
 
     pattern_num = 4

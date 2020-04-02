@@ -184,7 +184,7 @@ def main(args):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    model = resnet_18_space(model,[1,22,49,54], 3, [100,210,210,470,470], args)
+    model = resnet_18_space(model, [1, 22, 49, 54], 3, [128, 240, 240, 480, 480], args)
 
     model.to(device)
     if args.distributed and args.sync_bn:

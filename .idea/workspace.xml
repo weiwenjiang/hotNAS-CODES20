@@ -4,6 +4,7 @@
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NAS_Module/model_modify.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_modify.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +59,7 @@
       <recent name="$PROJECT_DIR$/Interface" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pattern_generator">
+  <component name="RunManager" selected="Python.model_modify">
     <configuration name="CONV_PM_Reduction" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="reverseNAS" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -171,8 +172,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.pattern_generator" />
         <item itemvalue="Python.model_modify" />
+        <item itemvalue="Python.pattern_generator" />
         <item itemvalue="Python.bottleneck_conv_only" />
         <item itemvalue="Python.pattern_kernel" />
         <item itemvalue="Python.CONV_PM_Reduction" />
@@ -202,7 +203,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="19615000" />
+      <workItem from="1585780216815" duration="20395000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1585341010149</created>
@@ -505,7 +506,21 @@
       <option name="project" value="LOCAL" />
       <updated>1585801804891</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="Model Generator">
+      <created>1585802143233</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1585802143233</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Model Generator">
+      <created>1585802447484</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1585802447484</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -534,34 +549,40 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585801804749">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2" timestamp="1585802447313">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801804749" />
-    <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585405221433">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802447313" />
+    <state x="1685" y="159" width="1400" height="702" key="DiffContextDialog" timestamp="1585802430508">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585405221433" />
+    <state x="1685" y="159" key="DiffContextDialog/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802430508" />
     <state x="544" y="192" width="501" height="513" key="FileChooserDialogImpl" timestamp="1585316341535">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="544" y="192" width="501" height="513" key="FileChooserDialogImpl/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585316341535" />
-    <state width="1554" height="309" key="GridCell.Tab.0.bottom" timestamp="1585801174293">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state width="1253" height="191" key="GridCell.Tab.0.bottom" timestamp="1585802901604">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state width="1554" height="309" key="GridCell.Tab.0.bottom/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801174293" />
-    <state width="1554" height="309" key="GridCell.Tab.0.center" timestamp="1585801174293">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state width="1253" height="191" key="GridCell.Tab.0.bottom/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802901604" />
+    <state width="1253" height="191" key="GridCell.Tab.0.center" timestamp="1585802901604">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state width="1554" height="309" key="GridCell.Tab.0.center/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801174293" />
-    <state width="1554" height="309" key="GridCell.Tab.0.left" timestamp="1585801174292">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state width="1253" height="191" key="GridCell.Tab.0.center/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802901604" />
+    <state width="1253" height="191" key="GridCell.Tab.0.left" timestamp="1585802901603">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state width="1554" height="309" key="GridCell.Tab.0.left/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801174292" />
-    <state width="1554" height="309" key="GridCell.Tab.0.right" timestamp="1585801174293">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state width="1253" height="191" key="GridCell.Tab.0.left/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802901603" />
+    <state width="1253" height="191" key="GridCell.Tab.0.right" timestamp="1585802901604">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state width="1554" height="309" key="GridCell.Tab.0.right/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801174293" />
+    <state width="1253" height="191" key="GridCell.Tab.0.right/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802901604" />
     <state x="564" y="161" width="462" height="575" key="RollbackChangesDialog" timestamp="1585405453846">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -574,10 +595,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585801807439">
-      <screen x="0" y="159" width="1600" height="741" />
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585802451810">
+      <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801807439" />
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585802451810" />
     <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585786445352">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -615,13 +637,13 @@
     <SUITE FILE_PATH="coverage/reverseNAS$bottleneck_conv_only.coverage" NAME="bottleneck_conv_only Coverage Results" MODIFIED="1585794995315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$3D_Data.coverage" NAME="3D_Data Coverage Results" MODIFIED="1585424807758" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/util/conv_dconv_dse" />
     <SUITE FILE_PATH="coverage/reverseNAS$pattern_kernel.coverage" NAME="pattern_kernel Coverage Results" MODIFIED="1585527859957" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
-    <SUITE FILE_PATH="coverage/reverseNAS$model_modify.coverage" NAME="model_modify Coverage Results" MODIFIED="1585800506805" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module" />
+    <SUITE FILE_PATH="coverage/reverseNAS$model_modify.coverage" NAME="model_modify Coverage Results" MODIFIED="1585802901586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module" />
     <SUITE FILE_PATH="coverage/reverseNAS$explore_conv_only.coverage" NAME="explore_conv_only Coverage Results" MODIFIED="1585433781253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$PM_FPGA_Template.coverage" NAME="PM_FPGA_Template Coverage Results" MODIFIED="1585325643621" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Performance_Model" />
     <SUITE FILE_PATH="coverage/reverseNAS$explore_conv_dconv.coverage" NAME="explore_conv_dconv Coverage Results" MODIFIED="1585370342322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$CONV_PM_Reduction.coverage" NAME="CONV_PM_Reduction Coverage Results" MODIFIED="1585525992744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$3D_Data__1_.coverage" NAME="3D_Data (1) Coverage Results" MODIFIED="1585491375616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/util/conv_only_dse" />
-    <SUITE FILE_PATH="coverage/reverseNAS$pattern_generator.coverage" NAME="pattern_generator Coverage Results" MODIFIED="1585801174276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module" />
+    <SUITE FILE_PATH="coverage/reverseNAS$pattern_generator.coverage" NAME="pattern_generator Coverage Results" MODIFIED="1585802835553" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module" />
     <SUITE FILE_PATH="coverage/reverseNAS$CONV_PM_IF.coverage" NAME="CONV_PM_IF Coverage Results" MODIFIED="1585346751253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
   </component>
 </project>
