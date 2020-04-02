@@ -53,7 +53,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx += 1
         if batch_idx == 100:
-            evaluate(model, criterion, data_loader_test, device=device)
+            return
 
         if batch_idx % 1000 == 0:
             evaluate(model, criterion, data_loader_test, device=device)
@@ -82,7 +82,8 @@ def evaluate(model, criterion, data_loader, device, print_freq=100):
 
     print(' * Acc@1 {top1.global_avg:.3f} Acc@5 {top5.global_avg:.3f}'
           .format(top1=metric_logger.acc1, top5=metric_logger.acc5))
-    return metric_logger.acc1.global_avg
+    return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
+
 
 
 def _get_cache_path(filepath):
@@ -151,7 +152,11 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args):
+def main(args, dna):
+    pat_point, exp_point, ch_point = dna[0:3], dna[4], dna[5:9]
+    print("==============Train==========")
+    print(pat_point, exp_point, ch_point)
+
     if args.apex:
         if sys.version_info < (3, 0):
             raise RuntimeError("Apex currently only supports Python 3. Aborting.")
@@ -184,7 +189,7 @@ def main(args):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    model = resnet_18_space(model, [1, 22, 49, 54], 3, [128, 240, 240, 480, 480], args)
+    model = resnet_18_space(model, pat_point, exp_point, ch_point, args)
 
     model.to(device)
     if args.distributed and args.sync_bn:
@@ -225,24 +230,26 @@ def main(args):
             train_sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex, data_loader_test)
         lr_scheduler.step()
-        evaluate(model, criterion, data_loader_test, device=device)
-        if args.output_dir:
-            checkpoint = {
-                'model': model_without_ddp.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'lr_scheduler': lr_scheduler.state_dict(),
-                'epoch': epoch,
-                'args': args}
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
-            utils.save_on_master(
-                checkpoint,
-                os.path.join(args.output_dir, 'checkpoint.pth'))
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
+        return acc1, acc5
+        # if args.output_dir:
+        #     checkpoint = {
+        #         'model': model_without_ddp.state_dict(),
+        #         'optimizer': optimizer.state_dict(),
+        #         'lr_scheduler': lr_scheduler.state_dict(),
+        #         'epoch': epoch,
+        #         'args': args}
+        #     utils.save_on_master(
+        #         checkpoint,
+        #         os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+        #     utils.save_on_master(
+        #         checkpoint,
+        #         os.path.join(args.output_dir, 'checkpoint.pth'))
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
+
 
 
 def parse_args():
@@ -316,4 +323,4 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args)
+    main(args, [1, 22, 49, 54, 3, 128, 240, 240, 480, 480])
