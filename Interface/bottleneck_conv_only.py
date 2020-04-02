@@ -100,7 +100,8 @@ if __name__== "__main__":
 
     print(model)
 
-
+    print(dict(model.named_modules())["layer4.0.conv1"])
+    sys.exit(0)
 
     print("="*10,model_name,"performance analysis:")
 

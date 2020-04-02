@@ -170,6 +170,8 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         ##
 
         if N != layer.out_channels and M != layer.in_channels:
+            print([M, N, K, S, G, P])
+            print(layer)
             print("Not support cut channels for both IFM and OFM at once, do it sequentially")
             sys.exit(0)
 
