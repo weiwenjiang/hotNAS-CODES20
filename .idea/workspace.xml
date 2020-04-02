@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,7 +202,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="6461000" />
+      <workItem from="1585780216815" duration="6484000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1585341010149</created>
@@ -428,7 +428,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585788563301</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="cut channel">
+      <created>1585788640019</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1585788640019</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -456,10 +463,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585788563091">
+    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585788639726">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788563091" />
+    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788639726" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585405221433">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
