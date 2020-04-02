@@ -190,8 +190,8 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
 
 
         elif N != layer.in_channels:
-            if N != layer.out_channels and M != layer.in_channels:
-                print("Not support cut channels for IFM first, cut previous layer OFM first")
+            if layer_name not in INDEX.keys():
+                print("[ERROR]: IFM index must be obtained from previous OFM")
                 sys.exit(0)
 
             # IFM Filtering
