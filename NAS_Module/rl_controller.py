@@ -308,11 +308,11 @@ class Controller(object):
                     if True:
 
                         if str_NNs in self.trained_network.keys():
-                            accuracy = self.trained_network[str_NNs]
+                            (acc1,acc5) = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
-                            acc1 = random.uniform(0, 1)
-                            acc5 = random.uniform(0, 1)
+                            # acc1 = random.uniform(0, 1)
+                            # acc5 = random.uniform(0, 1)
 
                             given_para = {}
                             idx = 0
@@ -325,7 +325,7 @@ class Controller(object):
 
                             # Keep history trained data
 
-                            # self.trained_network[str_NNs] = accuracy
+                            self.trained_network[str_NNs] = (acc1,acc5)
 
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only

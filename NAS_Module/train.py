@@ -12,7 +12,7 @@ from torchvision import transforms
 
 sys.path.append("../Interface")
 from ztNAS_model_change import *
-
+from model_modify import *
 import utils
 
 try:
@@ -147,79 +147,6 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-#
-# def modify_model(vgg):
-#
-#     for param in vgg.parameters():
-#         param.requires_grad = False
-#     layers = list(vgg.layer4[0].children())[:-1]
-#
-#     bck1 = vgg.state_dict()["layer4.0.conv1.weight"][:]
-#     bck2 = vgg.state_dict()["layer4.0.bn1.weight"][:]
-#     bck3 = vgg.state_dict()["layer4.0.bn1.bias"][:]
-#     bck4 = vgg.state_dict()["layer4.0.conv2.weight"][:]
-#     bck5 =  vgg.state_dict()["layer4.0.bn1.running_mean"][:]
-#     bck6 =  vgg.state_dict()["layer4.0.bn1.running_var"][:]
-#
-#     ch = 460
-#
-#     print("="*100)
-#     for name, param in vgg.named_parameters():
-#         print (name,param.requires_grad,param.data.shape,param.data.min())
-#
-#
-#     layers[0] = torch.nn.Conv2d(256, ch, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-#     layers[1] = torch.nn.BatchNorm2d(ch, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-#     layers[3] = torch.nn.Conv2d(ch, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-#
-#     vgg.layer4[0].conv1 = layers[0]
-#     vgg.layer4[0].bn1 = layers[1]
-#     vgg.layer4[0].conv2 = layers[3]
-#
-#     print(bck1.shape, bck4.shape)
-#
-#     vgg.state_dict()["layer4.0.conv1.weight"][:] = bck1[0:ch,:,:,:]
-#     vgg.state_dict()["layer4.0.bn1.weight"][:] = bck2[0:ch]
-#     vgg.state_dict()["layer4.0.bn1.bias"][:] = bck3[0:ch]
-#     vgg.state_dict()["layer4.0.conv2.weight"][:] = bck4[:,0:ch,:,:]
-#     vgg.state_dict()["layer4.0.bn1.running_mean"][:] = bck5[0:ch]
-#     vgg.state_dict()["layer4.0.bn1.running_var"][:] =bck6[0:ch]
-#
-#
-#
-#     print("="*100)
-#     for name, param in vgg.named_parameters():
-#         print (name,param.requires_grad,param.data.shape,param.data.min())
-#
-#
-#     ''' VGG Modifications
-#     for param in vgg.parameters():
-#         param.requires_grad = False
-#     layers = list(vgg.features.children())[:-1]
-#
-#     features_3_weight = vgg.state_dict()["features.3.weight"][:]
-#     features_3_bias = vgg.state_dict()["features.3.bias"][:]
-#     features_6_weight = vgg.state_dict()["features.6.weight"][:]
-#     features_6_bias = vgg.state_dict()["features.6.bias"][:]
-#
-#     ch = 126
-#
-#     layers[3] = torch.nn.Conv2d(64, ch, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-#     layers[6] = torch.nn.Conv2d(ch, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-#
-#     features = torch.nn.Sequential(*layers)
-#     vgg.features = features
-#
-#     vgg.state_dict()["features.3.weight"][:] = features_3_weight[0:ch,:,:,:]
-#     vgg.state_dict()["features.3.bias"][:] = features_3_bias[0:ch]
-#     vgg.state_dict()["features.6.weight"][:] = features_6_weight[:,0:ch,:,:]
-#     vgg.state_dict()["features.6.bias"][:] = features_6_bias[:]
-#
-#     '''
-#     return vgg
-
-
-
 def main(args):
     if args.apex:
         if sys.version_info < (3, 0):
@@ -253,64 +180,7 @@ def main(args):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    # for layer_name, layer in model.named_modules():
-    #     if isinstance(layer, nn.Conv2d):
-    #         print(layer_name)
-    #         if is_same(layer.kernel_size) == 3 and layer.in_channels==512:
-    #             # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    #             # mask = torch.tensor([[1, 1, 1], [1, 1, 0], [1, 0, 0]], dtype=torch.float32, device=device)
-    #             # ztNAS_add_kernel_mask(model, layer, layer_name, mask=mask)
-    #
-    #             pattern3_3 = {}
-    #             pattern3_3[0] = torch.tensor([[0, 1, 0], [1, 1, 0], [0, 1, 0]], dtype=torch.float32)
-    #             pattern3_3[1] = torch.tensor([[0, 1, 0], [1, 1, 1], [0, 0, 0]], dtype=torch.float32)
-    #             pattern3_3[2] = torch.tensor([[0, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=torch.float32)
-    #             pattern3_3[3] = torch.tensor([[0, 0, 0], [1, 1, 1], [0, 1, 0]], dtype=torch.float32)
-    #
-    #             weight_shape = model.state_dict()[layer_name + ".weight"][:].shape
-    #             shape = list(model.state_dict()[layer_name + ".weight"][:].shape[:-2])
-    #             shape.append(1)
-    #             shape.append(1)
-    #             after_pattern_0 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[0]
-    #             after_norm_0 = after_pattern_0.norm(dim=(2, 3)).reshape(shape)
-    #             after_pattern_1 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[1]
-    #             after_norm_1 = after_pattern_1.norm(dim=(2, 3)).reshape(shape)
-    #             after_pattern_2 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[2]
-    #             after_norm_2 = after_pattern_2.norm(dim=(2, 3)).reshape(shape)
-    #             after_pattern_3 = model.state_dict()[layer_name + ".weight"][:] * pattern3_3[3]
-    #             after_norm_3 = after_pattern_3.norm(dim=(2, 3)).reshape(shape)
-    #
-    #             max_norm = (torch.max(torch.max(torch.max(after_norm_0, after_norm_1), after_norm_2), after_norm_3))
-    #             pattern = torch.zeros_like(model.state_dict()[layer_name + ".weight"][:])
-    #
-    #             pattern = pattern + (after_norm_0 == max_norm).float() * pattern3_3[0] + \
-    #                       (after_norm_1 == max_norm).float() * pattern3_3[1] + \
-    #                       (after_norm_2 == max_norm).float() * pattern3_3[2] + \
-    #                       (after_norm_3 == max_norm).float() * pattern3_3[3]
-    #
-    #             # weight = model.state_dict()[layer_name + ".weight"][:] * pattern
-    #             #
-    #             # print(weight)
-    #
-    #             ztNAS_add_kernel_mask(model, layer, layer_name, is_pattern=True, pattern=pattern.to(device))
-    #
-    # #model = modify_model(model)
-
-    conv_modify = {}
-    conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 480, ["layer4.1.bn1", "layer4.1.conv2"])
-    conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 480, 512, [])
-    bn_modifiy = {}
-    bn_modifiy["layer4.1.bn1"] = (dict(model.named_modules())["layer4.1.bn1"], 480)
-    ztNAS_cut_channel(model, conv_modify, bn_modifiy)
-
-    conv_modify = {}
-    conv_modify["layer4.0.conv1"] = (dict(model.named_modules())["layer4.0.conv1"], 256, 480, ["layer4.0.bn1", "layer4.0.conv2"])
-    conv_modify["layer4.0.conv2"] = (dict(model.named_modules())["layer4.0.conv2"], 480, 512, [])
-    bn_modifiy = {}
-    bn_modifiy["layer4.0.bn1"] = (dict(model.named_modules())["layer4.0.bn1"], 480)
-    ztNAS_cut_channel(model, conv_modify, bn_modifiy)
-
-    print(model)
+    model = resnet_18_space(model,[1,22,49,54], 3, [100,210,210,470,470])
 
     model.to(device)
     if args.distributed and args.sync_bn:

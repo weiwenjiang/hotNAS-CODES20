@@ -6,10 +6,11 @@ class Layer_Class:
         self.B = B # batch size
         self.M = M # output channel
         self.N = N # input channel
-        self.R = R+P*2 # output row
-        self.C = C+P*2 # output col
+        self.R = R # output row
+        self.C = C # output col
         self.K = K # weight kernel size
         self.S = S # stride
+        self.P = P # Padding
 
         if T=="cconv" or T=="dconv":
             self.T = T
@@ -22,4 +23,4 @@ class Layer_Class:
 
     def getPara(self):
         return float(self.B), float(self.M), float(self.N), float(self.R), float(self.C), \
-               float(self.K), float(self.S), self.T
+               float(self.K), float(self.S), self.T, self.P

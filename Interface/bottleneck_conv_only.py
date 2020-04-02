@@ -13,7 +13,7 @@ from search_space import *
 from CONV_PM_IF import *
 import argparse
 from ztNAS_model_change import *
-
+import copy_conv2d
 
 def get_max_k(model):
     max_k = 0
@@ -28,7 +28,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
     input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
     cTT = 0
     for layer_name, layer in model.named_modules():
-        if isinstance(layer, nn.Conv2d):
+        if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
@@ -43,6 +43,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
                                                                    HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                                                                    HW_constraints["BITWIDTH"])
 
+                print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
@@ -50,7 +51,10 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
                 if acc_1.Success==False:
                     return -1
                 else:
-                    perf = acc_1.get_layer_latency(Layer)
+                    if isinstance(layer,copy_conv2d.Conv2d_Custom):
+                        perf = acc_1.get_layer_latency(Layer,layer.pattern_ones)
+                    else:
+                        perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
                     print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
 
@@ -59,6 +63,8 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
             input = layer(input)
     # print("\tTotal Time:", (cTT) / 10 ** 5)
     return cTT / 10 ** 5
+
+
 
 
 
@@ -89,19 +95,20 @@ if __name__== "__main__":
     for name,para in model.named_parameters():
         print(name)
 
-    print("="*100)
-
-    print(args.cconv)
-    print(args.cconv.split(","))
+    # print("="*100)
+    #
+    # print(args.cconv)
+    # print(args.cconv.split(","))
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     # Tk = get_max_k(model)
     # Tn = math.floor((HW_constraints["r_DSP"]-Tm) / Tm)
 
 
-    print(model)
 
-    print(dict(model.named_modules())["layer4.0.conv1"])
-    sys.exit(0)
+
+
+    # print(dict(model.named_modules())["layer4.0.conv1"])
+
 
     print("="*10,model_name,"performance analysis:")
 
@@ -109,23 +116,23 @@ if __name__== "__main__":
 
     print(total_lat)
 
-
-    conv_modify = {}
-    conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 440, ["layer4.1.bn1","layer4.1.conv2"])
-    conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 440, 512, [])
-
-
-    bn_modifiy = {}
-    bn_modifiy["layer4.1.bn1"] = (dict(model.named_modules())["layer4.1.bn1"], 440)
-
-    print("="*100)
-    ztNAS_cut_channel(model, conv_modify, bn_modifiy)
-
-    print("=" * 10, model_name, "performance analysis:")
-
-    total_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-    print(total_lat)
-    sys.exit(0)
+    #
+    # conv_modify = {}
+    # conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 440, ["layer4.1.bn1","layer4.1.conv2"])
+    # conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 440, 512, [])
+    #
+    #
+    # bn_modifiy = {}
+    # bn_modifiy["layer4.1.bn1"] = (dict(model.named_modules())["layer4.1.bn1"], 440)
+    #
+    # print("="*100)
+    # ztNAS_cut_channel(model, conv_modify, bn_modifiy)
+    #
+    # print("=" * 10, model_name, "performance analysis:")
+    #
+    # total_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
+    # print(total_lat)
+    # sys.exit(0)
     #
     # print("="*100)
     #

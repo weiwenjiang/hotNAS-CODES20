@@ -77,13 +77,14 @@ class _ConvNd(Module):
 class Conv2d_Custom(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
-                 bias=True, padding_mode='zeros', is_pattern=False, pattern={}):
+                 bias=True, padding_mode='zeros', is_pattern=False, pattern={}, pattern_ones=-1):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
         dilation = _pair(dilation)
         self.pattern = pattern
         self.is_pattern = is_pattern
+        self.pattern_ones = pattern_ones
         super(Conv2d_Custom, self).__init__(
             in_channels, out_channels, kernel_size, stride, padding, dilation,
             False, _pair(0), groups, bias, padding_mode)
@@ -104,4 +105,5 @@ class Conv2d_Custom(_ConvNd):
         if not self.is_pattern:
             return self.conv2d_forward(input, torch.zeros_like(self.weight))
 
+        # print("Pattern take effects")
         return self.conv2d_forward(input, self.weight * self.pattern)

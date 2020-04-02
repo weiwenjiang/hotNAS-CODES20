@@ -30,4 +30,5 @@ def pattern_sets_generate_3(kernal_shape):
 if __name__ == "__main__":
     pattern_space = pattern_sets_generate_3((3,3))
 
-    print(pattern_space.keys())
+    for k,v in pattern_space.items():
+        print(k,v.reshape((3,3)))

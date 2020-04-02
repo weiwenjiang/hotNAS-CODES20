@@ -120,7 +120,7 @@ class FPGA_Templates:
         return 1
 
     def layer_template_match_check(self, Layer):
-        [B, M, N, R, C, K, S, T] = Layer.getPara()
+        [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         if K > Tk:
             #print("[Error] <From class Conv2D_FPGA_Template> Kernel Size {} of input conv is larger than the template supported {}".format(
@@ -136,15 +136,18 @@ class FPGA_Templates:
             return False
         return True
 
-    def get_cconv_latency(self, Layer):
-        [B, M, N, R, C, K, S, T] = Layer.getPara()
+    def get_cconv_latency(self, Layer, pattern_ones=-1):
+        [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         [W_p, I_p, O_p] = (self.W_p, self.I_p, self.O_p)
 
         lat_W_mem = Tm * Tn * K * K / W_p
         lat_I_mem = Tn * min(Tr,R) * min(Tc,C) / I_p
         lat_O_mem = Tm * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
-        lat_Comp = K * K * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S)
+        if pattern_ones!=-1:
+            lat_Comp = pattern_ones * ceil(min(Tr, R+P*2) / S) * ceil(min(Tc, C+P*2) / S)
+        else:
+            lat_Comp = K * K * ceil(min(Tr,R+P*2) / S) * ceil(min(Tc,C+P*2) / S)
 
         Lat1 = max(lat_I_mem, lat_W_mem, lat_Comp)
         Lat2 = max(ceil(N / Tn) * Lat1, lat_O_mem)
@@ -164,6 +167,7 @@ class FPGA_Templates:
             bottle_neck = "wired"
 
         I = lat_I_mem * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
+        # print(Tn, min(Tr,R), min(Tc,C), I_p, lat_I_mem, ceil(N / Tn) , B , ceil(R / Tr) , ceil(C / Tc) , ceil(M / Tm), lat_I_mem * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm))
         O = lat_O_mem * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
         W = lat_W_mem * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
         C = lat_Comp  * ceil(N / Tn) * B * ceil(R / Tr) * ceil(C / Tc) * ceil(M / Tm)
@@ -171,14 +175,14 @@ class FPGA_Templates:
         return Lat, bottle_neck, [I,O,W,C]
 
     def get_dconv_latency(self, Layer):
-        [B, M, N, R, C, K, S, T] = Layer.getPara()
+        [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         [W_p, I_p, O_p] = (self.W_p, self.I_p, self.O_p)
 
         lat_W_mem = Tm * 1 * K * K / W_p
         lat_I_mem = Tn * min(Tr,R) * min(Tc,C) / I_p
         lat_O_mem = Tm * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
-        lat_Comp = K * K * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S)
+        lat_Comp = K * K * ceil(min(Tr,R+P*2) / S) * ceil(min(Tc,C+P*2) / S)
 
         Lat1 = max(lat_I_mem, lat_W_mem, lat_Comp)
         Lat2 = max(ceil(N / Tn) * Lat1, lat_O_mem)
@@ -197,10 +201,10 @@ class FPGA_Templates:
 
         return Lat, bottle_neck
 
-    def get_layer_latency(self, Layer):
+    def get_layer_latency(self, Layer, pattern_ones=-1):
         if self.layer_template_match_check(Layer):
             if self.T == "cconv":
-                return self.get_cconv_latency(Layer)
+                return self.get_cconv_latency(Layer, pattern_ones)
             else:
                 return self.get_dconv_latency(Layer)
         else:
