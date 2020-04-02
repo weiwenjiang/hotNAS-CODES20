@@ -35,7 +35,7 @@ def ema(values):
 class Controller(object):
 
     def __init__(self):
-        self.args = train_admm.parse_args()
+        self.args = train.parse_args()
 
         self.graph = tf.Graph()
 
