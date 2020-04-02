@@ -96,9 +96,6 @@ def ztNAS_add_kernel_mask(model,layer, layer_name, is_pattern, pattern, pattern_
         layer.out_channels, layer.in_channels, is_same(layer.kernel_size),
         is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
 
-
-
-
     ## Weiwen: 03-29
     ## Step 1: Translate layer name to locate layer module
     ##
@@ -147,7 +144,59 @@ def ztNAS_add_kernel_mask(model,layer, layer_name, is_pattern, pattern, pattern_
     model.state_dict()[layer_name + ".weight"][:] = ori_para_w
 
 
-    # print(ori_para_w)
+
+
+def ztNAS_add_kernel_quant(model,layer, layer_name, is_quant, quan_paras):
+    [M, N, K, S, G, P, b] = (
+        layer.out_channels, layer.in_channels, is_same(layer.kernel_size),
+        is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
+
+    ## Weiwen: 03-29
+    ## Step 1: Translate layer name to locate layer module
+    ##
+    seq = layer_name.split(".")
+    (pre_attr, last_attr, last_not_digit) = get_last_attr_idx(model, seq)
+
+
+    ## Weiwen: 03-29
+    ## Step 2: Backup weights and bias if exist
+    ##
+    is_b = False
+    if type(b)==nn.Parameter:
+        ori_para_b = model.state_dict()[layer_name + ".bias"][:]
+        is_b = True
+    ori_para_w = model.state_dict()[layer_name + ".weight"][:]
+
+    ## Weiwen: 03-29
+    ## Step 3: Translate layer name to locate layer module
+    ##
+    if last_not_digit == len(seq) - 1:
+        # last one is the attribute, directly setattr
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+        setattr(pre_attr, seq[-1], new_conv)
+    elif last_not_digit == len(seq) - 2:
+        # one index last_attr[]
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+        last_attr[int(seq[-1])] = new_conv
+        setattr(pre_attr, seq[-2], last_attr)
+    elif last_not_digit == len(seq) - 3:
+        # two index last_attr[][]
+        new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+        last_attr[int(seq[-2])][int(seq[-1])] = new_conv
+        setattr(pre_attr, seq[-3], last_attr)
+    else:
+        print("more than 2 depth of index from last layer is not support!")
+        sys.exit(0)
+
+    ## Weiwen: 03-29
+    ## Step 4: Setup new parameters from backup
+    ##
+    if is_b:
+        model.state_dict()[layer_name + ".bias"][:] = ori_para_b
+    model.state_dict()[layer_name + ".weight"][:] = ori_para_w
 
 
 
@@ -162,9 +211,6 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         [M, N, K, S, G, P, b] = (
             int(v[2]), int(v[1]), is_same(layer.kernel_size),
             is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
-
-
-
 
         ## Weiwen: 03-29
         ## Step 1: Translate layer name to locate layer module

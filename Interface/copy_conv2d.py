@@ -7,7 +7,15 @@ from torch.nn import init
 from torch.nn.modules.utils import _single, _pair, _triple
 from torch._jit_internal import List
 
-
+def quantize(x, num_int_bits, num_frac_bits, signed=True):
+    precision = 1 / 2 ** num_frac_bits
+    x = torch.round(x / precision) * precision
+    if signed is True:
+        bound = 2 ** (num_int_bits - 1)
+        return torch.clamp(x, -bound, bound - precision)
+    else:
+        bound = 2 ** num_int_bits
+        return torch.clamp(x, 0, bound - precision)
 
 class _ConvNd(Module):
 
@@ -74,10 +82,14 @@ class _ConvNd(Module):
         if not hasattr(self, 'padding_mode'):
             self.padding_mode = 'zeros'
 
+
+
 class Conv2d_Custom(_ConvNd):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1,
                  padding=0, dilation=1, groups=1,
-                 bias=True, padding_mode='zeros', is_pattern=False, pattern={}, pattern_ones=-1):
+                 bias=True, padding_mode='zeros',
+                 is_pattern=False, pattern={}, pattern_ones=-1,
+                 is_quant=False, quan_paras=[]):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
@@ -85,9 +97,13 @@ class Conv2d_Custom(_ConvNd):
         self.pattern = pattern
         self.is_pattern = is_pattern
         self.pattern_ones = pattern_ones
+        self.is_quant = is_quant
+        self.quan_paras = quan_paras
         super(Conv2d_Custom, self).__init__(
             in_channels, out_channels, kernel_size, stride, padding, dilation,
             False, _pair(0), groups, bias, padding_mode)
+
+
 
     def conv2d_forward(self, input, weight):
         if self.padding_mode == 'circular':
@@ -102,8 +118,15 @@ class Conv2d_Custom(_ConvNd):
 
 
     def forward(self, input):
-        if not self.is_pattern:
-            return self.conv2d_forward(input, torch.zeros_like(self.weight))
+        if self.is_pattern and not self.is_quant:
+            return self.conv2d_forward(input, self.weight * self.pattern)
+        elif not self.is_pattern and self.is_quant:
+            return self.conv2d_forward(input, quantize(self.weight, self.quan_paras[0], self.quan_paras[1],
+                                                       signed=self.quan_paras[2]))
+        elif self.is_pattern and self.is_quant:
+            return self.conv2d_forward(input, quantize(self.weight * self.pattern, self.quan_paras[0],
+                                                       self.quan_paras[1],signed=self.quan_paras[2]))
+        else:
+            return self.conv2d_forward(input, self.weight)
 
         # print("Pattern take effects")
-        return self.conv2d_forward(input, self.weight * self.pattern)
