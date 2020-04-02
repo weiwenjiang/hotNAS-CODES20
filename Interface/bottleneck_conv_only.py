@@ -98,6 +98,9 @@ if __name__== "__main__":
     # Tn = math.floor((HW_constraints["r_DSP"]-Tm) / Tm)
 
 
+    print(model)
+
+
 
     print("="*10,model_name,"performance analysis:")
 
