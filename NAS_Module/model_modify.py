@@ -103,8 +103,8 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
 
     quant_layers = ["layer4.1.conv1", "layer4.1.conv2"]
     quan_paras = {}
-    quan_paras["layer4.1.conv1"] = [0, 10, True]
-    quan_paras["layer4.1.conv2"] = [0, 10, True]
+    quan_paras["layer4.1.conv1"] = [0, 2, True]
+    quan_paras["layer4.1.conv2"] = [0, 2, True]
 
     # Channel_Cut(model, channel_cut_layers)
     # Kernel_Patter(model, layer_names, pattern, args)
