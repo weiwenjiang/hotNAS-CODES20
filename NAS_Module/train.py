@@ -304,8 +304,7 @@ def main(args):
     ztNAS_cut_channel(model, conv_modify, bn_modifiy)
 
     conv_modify = {}
-    conv_modify["layer4.0.conv1"] = (
-    dict(model.named_modules())["layer4.0.conv1"], 256, 480, ["layer4.0.bn1", "layer4.0.conv2"])
+    conv_modify["layer4.0.conv1"] = (dict(model.named_modules())["layer4.0.conv1"], 256, 480, ["layer4.0.bn1", "layer4.0.conv2"])
     conv_modify["layer4.0.conv2"] = (dict(model.named_modules())["layer4.0.conv2"], 480, 512, [])
     bn_modifiy = {}
     bn_modifiy["layer4.0.bn1"] = (dict(model.named_modules())["layer4.0.bn1"], 480)

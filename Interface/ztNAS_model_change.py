@@ -169,7 +169,7 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         ## Step 2: Backup weights and bias if exist
         ##
 
-        if N != layer.out_channels and M != layer.in_channels:
+        if M!= layer.out_channels and N != layer.in_channels:
             print([M, N, K, S, G, P])
             print(layer)
             print("Not support cut channels for both IFM and OFM at once, do it sequentially")
