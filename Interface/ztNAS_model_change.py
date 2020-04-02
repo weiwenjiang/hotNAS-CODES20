@@ -160,7 +160,7 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         layer_name = k
         layer = v[0]
         [M, N, K, S, G, P, b] = (
-            v[2], v[1], is_same(layer.kernel_size),
+            int(v[2]), int(v[1]), is_same(layer.kernel_size),
             is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
 
 
