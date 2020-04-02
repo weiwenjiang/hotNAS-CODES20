@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="cut channel">
-      <change afterPath="$PROJECT_DIR$/NAS_Module/model_modify.py" afterDir="false" />
+    <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/bottleneck_conv_only.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/bottleneck_conv_only.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/copy_conv2d.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/copy_conv2d.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/pattern_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/pattern_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/rl_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/rl_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Performance_Model/PM_FPGA_Template.py" beforeDir="false" afterPath="$PROJECT_DIR$/Performance_Model/PM_FPGA_Template.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Performance_Model/PM_Layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Performance_Model/PM_Layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_modify.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_modify.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +202,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="18808000" />
+      <workItem from="1585780216815" duration="18967000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1585341010149</created>
@@ -485,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585790767342</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Model Generator">
+      <created>1585801349591</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1585801349591</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -502,7 +501,8 @@
     <MESSAGE value="weight pattern pruning" />
     <MESSAGE value="to gpu" />
     <MESSAGE value="cut channel" />
-    <option name="LAST_COMMIT_MESSAGE" value="cut channel" />
+    <MESSAGE value="Model Generator" />
+    <option name="LAST_COMMIT_MESSAGE" value="Model Generator" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="110" width="800" height="677" key="#Notifications" timestamp="1585405034104">
@@ -513,10 +513,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585796048668">
+    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585801349417">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585796048668" />
+    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801349417" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585405221433">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -553,10 +553,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585790770122">
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585801353158">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585790770122" />
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585801353158" />
     <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585786445352">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
