@@ -27,7 +27,7 @@ def Kernel_Patter(model,layer_names,pattern,args):
     for layer_name in layer_names:
         layer = dict(model.named_modules())[layer_name]
         ztNAS_add_kernel_mask(model, layer, layer_name, is_pattern=True,
-                          pattern=layer_pattern[layer_name].to(device), pattern_ones=pattern_ones)
+                          pattern=layer_pattern[layer_name].to(args.device), pattern_ones=pattern_ones)
 
 
 def Kenel_Expand(model,layer_kernel_inc,var_k=2):
