@@ -21,7 +21,7 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False, data_loader_test=0):
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
@@ -52,8 +52,12 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx==100:
-            return
+        if batch_idx == 100:
+            evaluate(model, criterion, data_loader_test, device=device)
+
+        if batch_idx % 1000 == 0:
+            evaluate(model, criterion, data_loader_test, device=device)
+
 
 def evaluate(model, criterion, data_loader, device, print_freq=100):
     model.eval()
@@ -219,7 +223,7 @@ def main(args):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex)
+        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex, data_loader_test)
         lr_scheduler.step()
         evaluate(model, criterion, data_loader_test, device=device)
         if args.output_dir:
