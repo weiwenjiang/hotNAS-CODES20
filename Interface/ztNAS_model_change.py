@@ -184,15 +184,21 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
                 is_b = True
             ori_para_w = model.state_dict()[layer_name + ".weight"][Idx]
 
-            if v[3]!="":
-                INDEX[v[3]] = Idx
+            if len(v[3])!=0:
+                for layer_n in v[3]:
+                    INDEX[layer_n] = Idx
 
 
         elif N != layer.in_channels:
-            # IFM Filtering
+            if N != layer.out_channels and M != layer.in_channels:
+                print("Not support cut channels for IFM first, cut previous layer OFM first")
+                sys.exit(0)
 
-            W = model.state_dict()[layer_name + ".weight"][:]
-            Idx = W.norm(dim=(2, 3)).sum(dim=0).topk(N)[1]
+            # IFM Filtering
+            Idx = INDEX[layer_name]
+
+            # W = model.state_dict()[layer_name + ".weight"][:]
+            # Idx = W.norm(dim=(2, 3)).sum(dim=0).topk(N)[1]
 
             is_b = False
             if type(b) == nn.Parameter:

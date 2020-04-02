@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Interface/bottleneck_conv_only.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/bottleneck_conv_only.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -204,7 +203,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="5568000" />
+      <workItem from="1585780216815" duration="6390000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <created>1585341010149</created>
@@ -416,7 +415,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585527929157</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="cut channel">
+      <created>1585787750333</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1585787750333</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -432,7 +438,8 @@
     <MESSAGE value="model change" />
     <MESSAGE value="weight pattern pruning" />
     <MESSAGE value="to gpu" />
-    <option name="LAST_COMMIT_MESSAGE" value="to gpu" />
+    <MESSAGE value="cut channel" />
+    <option name="LAST_COMMIT_MESSAGE" value="cut channel" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="110" width="800" height="677" key="#Notifications" timestamp="1585405034104">
@@ -443,10 +450,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585528366044">
+    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2" timestamp="1585787749802">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585528366044" />
+    <state x="413" y="45" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787749802" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585405221433">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -455,22 +462,22 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="544" y="192" width="501" height="513" key="FileChooserDialogImpl/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585316341535" />
-    <state width="1554" height="346" key="GridCell.Tab.0.bottom" timestamp="1585787632498">
+    <state width="1554" height="330" key="GridCell.Tab.0.bottom" timestamp="1585788364659">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state width="1554" height="346" key="GridCell.Tab.0.bottom/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787632498" />
-    <state width="1554" height="346" key="GridCell.Tab.0.center" timestamp="1585787632498">
+    <state width="1554" height="330" key="GridCell.Tab.0.bottom/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788364659" />
+    <state width="1554" height="330" key="GridCell.Tab.0.center" timestamp="1585788364658">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state width="1554" height="346" key="GridCell.Tab.0.center/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787632498" />
-    <state width="1554" height="346" key="GridCell.Tab.0.left" timestamp="1585787632498">
+    <state width="1554" height="330" key="GridCell.Tab.0.center/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788364658" />
+    <state width="1554" height="330" key="GridCell.Tab.0.left" timestamp="1585788364658">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state width="1554" height="346" key="GridCell.Tab.0.left/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787632498" />
-    <state width="1554" height="346" key="GridCell.Tab.0.right" timestamp="1585787632498">
+    <state width="1554" height="330" key="GridCell.Tab.0.left/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788364658" />
+    <state width="1554" height="330" key="GridCell.Tab.0.right" timestamp="1585788364658">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state width="1554" height="346" key="GridCell.Tab.0.right/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787632498" />
+    <state width="1554" height="330" key="GridCell.Tab.0.right/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585788364658" />
     <state x="564" y="161" width="462" height="575" key="RollbackChangesDialog" timestamp="1585405453846">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -483,10 +490,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585528369118">
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585787753406">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585528369118" />
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585787753406" />
     <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585786445352">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
