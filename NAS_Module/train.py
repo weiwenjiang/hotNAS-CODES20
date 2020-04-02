@@ -292,8 +292,8 @@ def main(args):
     # #model = modify_model(model)
 
     conv_modify = {}
-    conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 440, "layer4.1.bn1")
-    conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 440, 512, "")
+    conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 440, ["layer4.1.bn1", "layer4.1.conv2"])
+    conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 440, 512, [])
 
     bn_modifiy = {}
     bn_modifiy["layer4.1.bn1"] = (dict(model.named_modules())["layer4.1.bn1"], 440)
