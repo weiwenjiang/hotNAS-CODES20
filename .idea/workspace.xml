@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/ztNAS_model_change.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/rl_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/rl_controller.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,14 +202,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="21913000" />
-    </task>
-    <task id="LOCAL-00001" summary="first commit">
-      <created>1585341010149</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1585341010149</updated>
+      <workItem from="1585780216815" duration="22467000" />
     </task>
     <task id="LOCAL-00002" summary="accuracy &amp; performance res">
       <created>1585351528878</created>
@@ -547,7 +540,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585804313584</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Model Generator">
+      <created>1585804445062</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1585804445062</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -576,11 +576,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2" timestamp="1585804313467">
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2" timestamp="1585804444918">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585803937890" />
-    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585804313467" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585804444918" />
     <state x="1685" y="159" width="1400" height="702" key="DiffContextDialog" timestamp="1585802430508">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
@@ -622,11 +622,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585804315883">
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585804449939">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585803981666" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585804315883" />
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585804449939" />
     <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585786445352">
       <screen x="0" y="159" width="1600" height="741" />
     </state>

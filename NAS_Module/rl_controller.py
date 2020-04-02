@@ -347,15 +347,13 @@ class Controller(object):
                         # self.explored_info[str_NNs][1] = reward
                         # self.explored_info[str_NNs][2] = HW_Eff
 
-                    else:
-                        accuracy = 0
-                        reward = -1
+
 
                 logger.info("====================Results=======================")
                 logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, reward: {}".format(str_NNs, acc1, acc5,reward))
                 # logger.info("--------->HW: {}, Specs.: {}".format(str_HWs, HW_Eff))
-                for p in Para_NN1[:-1]:
-                    logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
+                # for p in Para_NN1[:-1]:
+                #     logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
                 logger.info("--------->Parameter: {}".format(Para_NN1[-1]))
                 logger.info("--------->Reward: {}".format(reward))
                 logger.info("=" * 50)
