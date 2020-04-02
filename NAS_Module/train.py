@@ -153,9 +153,9 @@ def load_data(traindir, valdir, cache_dataset, distributed):
     return dataset, dataset_test, train_sampler, test_sampler
 
 def main(args, dna):
-    pat_point, exp_point, ch_point = dna[0:3], dna[4], dna[5:9]
-    print("==============Train==========")
-    print(pat_point, exp_point, ch_point)
+    pat_point, exp_point, ch_point = dna[0:4], dna[4], dna[5:10]
+    # print("==============Train==========")
+    # print(pat_point, exp_point, ch_point)
 
     if args.apex:
         if sys.version_info < (3, 0):
