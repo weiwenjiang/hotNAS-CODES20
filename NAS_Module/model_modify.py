@@ -63,7 +63,7 @@ def Channel_Cut(model,layers):
 
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def resnet_18_space(model, pattern_idx, k_expand, ch_list):
+def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
 
     pattern_space = pattern_sets_generate_3((3, 3))
     pattern = {}
