@@ -101,10 +101,31 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
                           ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, ch_list[3], 512)],
                           ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
 
-    quant_layers = ["layer4.1.conv1", "layer4.1.conv2"]
+    quant_layers = ["layer1.0.conv1", "layer1.0.conv2",
+                    "layer1.1.conv1", "layer1.1.conv2",
+                    "layer2.0.conv1", "layer2.0.conv2",
+                    "layer2.1.conv1", "layer2.1.conv2",
+                    "layer3.0.conv1", "layer3.0.conv2",
+                    "layer3.1.conv1", "layer3.1.conv2",
+                    "layer4.0.conv1", "layer4.0.conv2",
+                    "layer4.1.conv1", "layer4.1.conv2"]
     quan_paras = {}
+
+    quan_paras["layer1.0.conv1"] = [0, 10, True]
+    quan_paras["layer1.0.conv2"] = [0, 10, True]
+    quan_paras["layer1.1.conv1"] = [0, 10, True]
+    quan_paras["layer1.1.conv2"] = [0, 10, True]
+    quan_paras["layer2.0.conv1"] = [0, 10, True]
+    quan_paras["layer2.0.conv2"] = [0, 10, True]
+    quan_paras["layer2.0.conv1"] = [0, 10, True]
+    quan_paras["layer2.1.conv2"] = [0, 10, True]
+    quan_paras["layer3.0.conv1"] = [0, 10, True]
+    quan_paras["layer3.1.conv2"] = [0, 10, True]
+    quan_paras["layer4.0.conv1"] = [0, 10, True]
+    quan_paras["layer4.1.conv2"] = [0, 10, True]
     quan_paras["layer4.1.conv1"] = [0, 10, True]
     quan_paras["layer4.1.conv2"] = [0, 10, True]
+
 
     # Channel_Cut(model, channel_cut_layers)
     # Kernel_Patter(model, layer_names, pattern, args)
