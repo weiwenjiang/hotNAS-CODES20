@@ -129,10 +129,10 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
     quan_paras["layer4.1.conv2"] = [0, 16, True]
 
 
-    # Channel_Cut(model, channel_cut_layers)
-    # Kernel_Patter(model, layer_names, pattern, args)
-    # Kenel_Expand(model, layer_kernel_inc)
-    Kenel_Quantization(model, quant_layers, quan_paras)
+    Channel_Cut(model, channel_cut_layers)
+    Kernel_Patter(model, layer_names, pattern, args)
+    Kenel_Expand(model, layer_kernel_inc)
+    # Kenel_Quantization(model, quant_layers, quan_paras)
 
     return model
 
@@ -151,23 +151,33 @@ if __name__ == "__main__":
         default="70, 36, 64, 64, 7, 20, 6, 6",
         help="hardware desgin of cconv",
     )
+    parser.add_argument(
+        '-d', '--dna',
+        default="23 35 37 41 2 128 256 256 496 480",
+        help="exploration results",
+    )
     parser.add_argument('--device', default='cpu', help='device')
 
     args = parser.parse_args()
     model_name = args.model
     model = globals()[model_name]()
 
-    model = resnet_18_space(model, [1, 22, 49, 54], 3, [128, 240, 240, 480, 480], args)
+    dna = [int(x) for x in args.dna.split(" ")]
+    pat_point, exp_point, ch_point = dna[0:4], dna[4], dna[5:10]
+
+    model = resnet_18_space(model, pat_point, exp_point, ch_point, args)
+
+
 
     print(model)
 
-    # [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    # print("=" * 10, model_name, "performance analysis:")
-    # total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-    # print(total_lat)
-    #
-    # print()
-    # print("Success")
+    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    print("=" * 10, model_name, "performance analysis:")
+    total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
+    print(total_lat)
+
+    print()
+    print("Success")
 
 
 
