@@ -228,6 +228,10 @@ def main(args, dna, HW, data_loader, data_loader_test):
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, isreinfoce=args.reinfoce)
 
         if args.reinfoce:
+            total_time = time.time() - start_time
+            total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+            print('Training time {}'.format(total_time_str))
+
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
                 total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
                                                                  HW[4], HW[5], HW[6], HW[7], device)
