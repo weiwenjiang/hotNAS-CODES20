@@ -387,15 +387,17 @@ class Controller(object):
 
 
                 logger.info("====================Results=======================")
-                logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, Lat {}, reward: {}".format(str_NNs, acc1, acc5,lat,reward))
+                # logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, Lat {}, reward: {}".format(str_NNs, acc1, acc5,lat,reward))
 
                 dna = Para_NN1
                 pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[
                                                                                                                    18:21]
 
+                logger.info("--------->Parameter: {}".format(str_NNs))
                 logger.info("--------->Top-1: {}%".format(acc1))
                 logger.info("--------->Top-5: {}%".format(acc5))
                 logger.info("--------->Lat: {}ms".format(lat))
+                logger.info("--------->Reward: {}".format(reward))
                 for p in pat_point:
                     logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
                 logger.info("--------->Exp Selection: {}".format(exp_point))
@@ -405,8 +407,7 @@ class Controller(object):
                 # logger.info("--------->HW: {}, Specs.: {}".format(str_HWs, HW_Eff))
                 # for p in Para_NN1[:-1]:
                 #     logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
-                logger.info("--------->Parameter: {}".format(Para_NN1))
-                logger.info("--------->Reward: {}".format(reward))
+
                 logger.info("=" * 50)
 
 
