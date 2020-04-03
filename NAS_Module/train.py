@@ -229,7 +229,8 @@ def main(args, dna, HW, data_loader, data_loader_test):
 
         if args.reinfoce:
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
-                total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3], HW[4], HW[5], HW[6], HW[7])
+                total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
+                                                                 HW[4], HW[5], HW[6], HW[7], device)
                 return acc1, acc5, total_lat
             else:
                 return acc1, acc5, -1
