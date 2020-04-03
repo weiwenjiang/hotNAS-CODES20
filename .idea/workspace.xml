@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Interface/run_dse_conv_dconv.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/exploration_res/conv_only" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/train-proxyless.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/train-proxyless.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,14 +205,7 @@
       <option name="presentableId" value="Default" />
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
-      <workItem from="1585780216815" duration="40478000" />
-    </task>
-    <task id="LOCAL-00025" summary="to gpu">
-      <created>1585526520763</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1585526520763</updated>
+      <workItem from="1585780216815" duration="41074000" />
     </task>
     <task id="LOCAL-00026" summary="to gpu">
       <created>1585526659232</created>
@@ -548,7 +543,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585894507617</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="proxyless">
+      <created>1585894627951</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1585894627951</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -577,14 +579,14 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="395" y="110" width="800" height="677" key="#Notifications/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585405034104" />
-    <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1585434157070">
+    <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1585895158152">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="471" y="254" width="658" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585434157070" />
-    <state x="465" y="33" width="748" height="741" key="CommitChangelistDialog2" timestamp="1585894507459">
+    <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
+    <state x="465" y="33" width="748" height="741" key="CommitChangelistDialog2" timestamp="1585894627815">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585894507459" />
+    <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585894627815" />
     <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585890972262" />
     <state x="1685" y="159" width="1400" height="702" key="DiffContextDialog" timestamp="1585802430508">
       <screen x="1600" y="132" width="1366" height="768" />
@@ -631,15 +633,15 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585894510554">
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1585894636504">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585894510554" />
+    <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585894636504" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1585890978662" />
-    <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585786445352">
+    <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1585895082156">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
-    <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585786445352" />
+    <state x="453" y="78" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895082156" />
     <state x="568" y="369" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1585433735613">
       <screen x="0" y="159" width="1600" height="741" />
     </state>

@@ -133,9 +133,11 @@ if __name__== "__main__":
     )
     args = parser.parse_args()
     model_name = args.model
-    model = globals()[model_name]()
 
-    model = torch.hub.load('mit-han-lab/ProxylessNAS', "proxyless_mobile")
+    if "Proxyless" in model_name:
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
+    else:
+        model = globals()[model_name]()
 
     start_time = time.time()
 
