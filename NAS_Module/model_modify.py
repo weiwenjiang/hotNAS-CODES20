@@ -11,6 +11,7 @@ from ztNAS_model_change import *
 import utils
 import bottleneck_conv_only
 from pattern_generator import *
+from search_space import *
 
 def Kernel_Patter(model,layer_names,pattern,args):
     layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, args.device)
@@ -140,7 +141,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '-d', '--dna',
-        default="35 41 21 15 1 128 256 256 496 512",
+        # default="35 41 21 15 1 128 224 224 464 464 4 4 4 4 4 4 4 4 0 0 0",
+        default="35 41 21 15 1 128 256 256 512 512 16 16 16 16 16 16 16 16 0 0 0",
         help="exploration results",
     )
     parser.add_argument('--device', default='cpu', help='device')
@@ -150,9 +152,10 @@ if __name__ == "__main__":
     model = globals()[model_name]()
 
     dna = [int(x) for x in args.dna.split(" ")]
-    pat_point, exp_point, ch_point = dna[0:4], dna[4], dna[5:10]
 
-    model = resnet_18_space(model, pat_point, exp_point, ch_point, args)
+    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+
+    model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
 
 
@@ -160,8 +163,12 @@ if __name__ == "__main__":
 
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     print("=" * 10, model_name, "performance analysis:")
-    total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-    print(total_lat)
+    if W_p+comm_point[0] + I_p+comm_point[1] + O_p+comm_point[2] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
+        total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p+comm_point[0], I_p+comm_point[1], O_p+comm_point[2])
+        print(total_lat)
+    else:
+        print("-1")
+
 
     print()
     print("Success")

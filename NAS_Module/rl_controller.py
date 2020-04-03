@@ -308,7 +308,7 @@ class Controller(object):
                     if True:
 
                         if str_NNs in self.trained_network.keys():
-                            (acc1,acc5) = self.trained_network[str_NNs]
+                            (acc1,acc5,lat) = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
                             # acc1 = random.uniform(0, 1)
@@ -321,21 +321,32 @@ class Controller(object):
                             #     idx+=1
                             # k_expand = Para_NN1[-1]
 
-                            acc1,acc5 = train.main(self.args, Para_NN1)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1)
 
                             # Keep history trained data
 
-                            self.trained_network[str_NNs] = (acc1,acc5)
+                            self.trained_network[str_NNs] = (acc1,acc5,lat)
 
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
-                        if acc1>69.758:
-                            reward = 1
-                        elif acc1<60:
-                            reward = -1
+
+                        if acc1>89.078:
+                            acc_reward = 1
+                        elif acc1<80:
+                            acc_reward = -1
                         else:
-                            reward = (acc1/100-0.60)/(0.69-0.60)*2-1
+                            acc_reward = (acc1-89.078)/(89.078-80)*2-1
+
+                        if lat>10:
+                            lat_reward = -1
+                        elif lat<8:
+                            lat_reward = 1
+                        else:
+                            lat_reward = (10-lat)/(10-8)*2-1
+
+                        reward = acc_reward * 0.7 + lat_reward*0.3
+
 
                         #
                         # reward = float(acc1)
@@ -350,11 +361,21 @@ class Controller(object):
 
 
                 logger.info("====================Results=======================")
-                logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, reward: {}".format(str_NNs, acc1, acc5,reward))
+                logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, Lat {}, reward: {}".format(str_NNs, acc1, acc5,lat,reward))
+
+                dna = Para_NN1
+                pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[
+                                                                                                                   18:21]
+                for p in pat_point:
+                    logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
+                logger.info("--------->Exp Selection: {}".format(exp_point))
+                logger.info("--------->Cutting Ch Selection: {}".format(ch_point))
+                logger.info("--------->Quantization Selection: {}".format(quant_point))
+                logger.info("--------->Communication Selection: {}".format(comm_point))
                 # logger.info("--------->HW: {}, Specs.: {}".format(str_HWs, HW_Eff))
                 # for p in Para_NN1[:-1]:
                 #     logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
-                logger.info("--------->Parameter: {}".format(Para_NN1[-1]))
+                logger.info("--------->Parameter: {}".format(Para_NN1))
                 logger.info("--------->Reward: {}".format(reward))
                 logger.info("=" * 50)
 

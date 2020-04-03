@@ -15,6 +15,7 @@ from ztNAS_model_change import *
 from model_modify import *
 import utils
 import bottleneck_conv_only
+from search_space import *
 
 try:
     from apex import amp
@@ -239,8 +240,11 @@ def main(args, dna, HW):
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
 
         if args.reinfoce:
-            total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3], HW[4], HW[5], HW[6], HW[7])
-            return acc1, acc5
+            if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
+                total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3], HW[4], HW[5], HW[6], HW[7])
+                return acc1, acc5, total_lat
+            else:
+                return acc1, acc5, -1
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),
