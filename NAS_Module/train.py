@@ -56,7 +56,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx == 30:
+        if batch_idx == 100:
             # evaluate(model, criterion, data_loader_test, device=device)
             if isreinfoce:
                 return
@@ -87,10 +87,10 @@ def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=Fa
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
 
             batch_idx += 1
-            if batch_idx == 30:
-                # evaluate(model, criterion, data_loader_test, device=device)
-                if isreinfoce:
-                    return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
+            # if batch_idx == 30:
+            #     # evaluate(model, criterion, data_loader_test, device=device)
+            #     if isreinfoce:
+            #         return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
 
@@ -224,6 +224,14 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         evaluate(model, criterion, data_loader_test, device=device)
         return
 
+    if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
+        total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
+                                                         HW[4], HW[5], HW[6], HW[7], device)
+    else:
+        return 0, 0, -1
+    if total_lat>10:
+        return 0, 0, -1
+
     print("Start training")
     start_time = time.time()
     for epoch in range(args.start_epoch, args.epochs):
@@ -238,13 +246,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
             total_time = time.time() - start_time
             total_time_str = str(datetime.timedelta(seconds=int(total_time)))
             print('Training time {}'.format(total_time_str))
+            return acc1, acc5, total_lat
 
-            if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
-                total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
-                                                                 HW[4], HW[5], HW[6], HW[7], device)
-                return acc1, acc5, total_lat
-            else:
-                return acc1, acc5, -1
         if args.output_dir:
             checkpoint = {
                 'model': model_without_ddp.state_dict(),
