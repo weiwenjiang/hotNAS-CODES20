@@ -58,12 +58,12 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
+                    # print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
             input = layer(input)
-    print("\tTotal Time:", (cTT) / 10 ** 5)
+    # print("\tTotal Time:", (cTT) / 10 ** 5)
     return cTT / 10 ** 5
 
 
