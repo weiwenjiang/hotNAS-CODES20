@@ -33,7 +33,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
             if device is not None:
-                input.to(device)
+                input = input.to(device)
             input = layer(input)
 
             [B, M, N, R, C, K, S, T, P] = (

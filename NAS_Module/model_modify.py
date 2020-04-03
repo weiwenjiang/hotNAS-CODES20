@@ -122,6 +122,8 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     Kenel_Expand(model, layer_kernel_inc)
     Kenel_Quantization(model, quant_layers, quan_paras)
 
+    print(model)
+
     return model
 
 
