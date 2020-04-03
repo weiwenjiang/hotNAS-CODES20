@@ -54,8 +54,8 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx == 100:
-            evaluate(model, criterion, data_loader_test, device=device)
+        if batch_idx == 30:
+            # evaluate(model, criterion, data_loader_test, device=device)
             if isreinfoce:
                 return
 
@@ -63,10 +63,12 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             evaluate(model, criterion, data_loader_test, device=device)
 
 
-def evaluate(model, criterion, data_loader, device, print_freq=100):
+def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=False):
     model.eval()
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
+    batch_idx = 0
+
     with torch.no_grad():
         for image, target in metric_logger.log_every(data_loader, print_freq, header):
             image = image.to(device, non_blocking=True)
@@ -81,6 +83,12 @@ def evaluate(model, criterion, data_loader, device, print_freq=100):
             metric_logger.update(loss=loss.item())
             metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
+
+            batch_idx += 1
+            if batch_idx == 30:
+                # evaluate(model, criterion, data_loader_test, device=device)
+                if isreinfoce:
+                    return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
 
@@ -156,7 +164,7 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args, dna, HW):
+def main(args, dna, HW, data_loader, data_loader_test):
     pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
     HW[5],HW[6],HW[7] = comm_point[18], comm_point[19], comm_point[20]
 
@@ -170,27 +178,7 @@ def main(args, dna, HW):
             raise RuntimeError("Failed to import apex. Please install apex from https://www.github.com/nvidia/apex "
                                "to enable mixed-precision training.")
 
-    if args.output_dir:
-        utils.mkdir(args.output_dir)
-
-    utils.init_distributed_mode(args)
-    print(args)
-
     device = torch.device(args.device)
-
-    torch.backends.cudnn.benchmark = True
-
-    train_dir = os.path.join(args.data_path, 'train')
-    val_dir = os.path.join(args.data_path, 'val')
-    dataset, dataset_test, train_sampler, test_sampler = load_data(train_dir, val_dir,
-                                                                   args.cache_dataset, args.distributed)
-    data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=args.batch_size,
-        sampler=train_sampler, num_workers=args.workers, pin_memory=True)
-
-    data_loader_test = torch.utils.data.DataLoader(
-        dataset_test, batch_size=args.batch_size,
-        sampler=test_sampler, num_workers=args.workers, pin_memory=True)
 
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
@@ -237,7 +225,7 @@ def main(args, dna, HW):
         train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex,
                         data_loader_test, args.reinfoce)
         lr_scheduler.step()
-        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, isreinfoce=args.reinfoce)
 
         if args.reinfoce:
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):

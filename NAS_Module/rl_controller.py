@@ -15,6 +15,7 @@ import torch
 import os
 
 import train
+import utils
 
 from pattern_generator import pattern_sets_generate_3
 
@@ -36,6 +37,30 @@ class Controller(object):
 
     def __init__(self):
         self.args = train.parse_args()
+
+        args = self.args
+        if args.output_dir:
+            utils.mkdir(args.output_dir)
+
+        utils.init_distributed_mode(args)
+        print(args)
+
+        torch.backends.cudnn.benchmark = True
+
+        train_dir = os.path.join(args.data_path, 'train')
+        val_dir = os.path.join(args.data_path, 'val')
+        dataset, dataset_test, train_sampler, test_sampler = train.load_data(train_dir, val_dir,
+                                                                             args.cache_dataset, args.distributed)
+        self.data_loader = torch.utils.data.DataLoader(
+            dataset, batch_size=args.batch_size,
+            sampler=train_sampler, num_workers=args.workers, pin_memory=True)
+
+        self.data_loader_test = torch.utils.data.DataLoader(
+            dataset_test, batch_size=args.batch_size,
+            sampler=test_sampler, num_workers=args.workers, pin_memory=True)
+
+        [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+        self.HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
 
         self.graph = tf.Graph()
 
@@ -82,6 +107,7 @@ class Controller(object):
         self.target_HW_Eff = HW_constraints["target_HW_Eff"]
 
         self.pattern_space = pattern_sets_generate_3((3,3))
+
 
 
     def build_controller(self):
@@ -321,7 +347,7 @@ class Controller(object):
                             #     idx+=1
                             # k_expand = Para_NN1[-1]
 
-                            acc1,acc5,lat = train.main(self.args, Para_NN1)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
 
                             # Keep history trained data
 
