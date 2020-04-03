@@ -364,7 +364,9 @@ class Controller(object):
                         else:
                             acc_reward = (acc5-80)/(93-80)*2-1
 
-                        if lat>10:
+                        if lat==-1:
+                            lat_reward = -1
+                        elif lat>10:
                             lat_reward = -1
                         elif lat<8:
                             lat_reward = 1
