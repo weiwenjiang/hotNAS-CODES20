@@ -392,6 +392,10 @@ class Controller(object):
                 dna = Para_NN1
                 pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[
                                                                                                                    18:21]
+
+                logger.info("--------->Top-1: {}%".format(acc1))
+                logger.info("--------->Top-5: {}%".format(acc5))
+                logger.info("--------->Lat: {}ms".format(lat))
                 for p in pat_point:
                     logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
                 logger.info("--------->Exp Selection: {}".format(exp_point))
