@@ -53,7 +53,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
 
         batch_idx += 1
         if batch_idx == 100:
-            return
+            evaluate(model, criterion, data_loader_test, device=device)
 
         if batch_idx % 1000 == 0:
             evaluate(model, criterion, data_loader_test, device=device)
