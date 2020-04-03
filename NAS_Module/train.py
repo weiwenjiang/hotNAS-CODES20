@@ -4,6 +4,8 @@ import os
 import time
 import sys
 
+import copy
+
 import torch
 import torch.utils.data
 from torch import nn
@@ -164,9 +166,14 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args, dna, HW, data_loader, data_loader_test):
+def main(args, dna, ori_HW, data_loader, data_loader_test):
     pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
-    HW[5],HW[6],HW[7] = comm_point[0], comm_point[1], comm_point[2]
+
+    HW = copy.deepcopy(ori_HW)
+
+    HW[5] += comm_point[0]
+    HW[6] += comm_point[1]
+    HW[7] += comm_point[2]
 
     # print("==============Train==========")
     # print(pat_point, exp_point, ch_point)
