@@ -335,8 +335,11 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    # model = torch.hub.load('mit-han-lab/ProxylessNAS', "proxyless_gpu", pretrained=True)
+    # model.eval()
+    #
     args = parse_args()
     dna = "35 41 21 15 1 128 256 256 496 512"
-
+    #
     main(args, [int(x) for x in dna.split(" ")])
 
