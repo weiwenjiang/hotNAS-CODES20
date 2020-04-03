@@ -56,7 +56,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx == 100:
+        if batch_idx == 30:
             # evaluate(model, criterion, data_loader_test, device=device)
             if isreinfoce:
                 return
@@ -87,10 +87,10 @@ def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=Fa
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
 
             batch_idx += 1
-            # if batch_idx == 30:
-            #     # evaluate(model, criterion, data_loader_test, device=device)
-            #     if isreinfoce:
-            #         return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
+            if batch_idx == 30:
+                # evaluate(model, criterion, data_loader_test, device=device)
+                if isreinfoce:
+                    return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
 
