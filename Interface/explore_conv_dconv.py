@@ -135,6 +135,8 @@ if __name__== "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
+    model = torch.hub.load('mit-han-lab/ProxylessNAS', "proxyless_mobile")
+
     start_time = time.time()
 
     best_lat,best_design = do_exploration(model)

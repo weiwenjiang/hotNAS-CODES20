@@ -84,15 +84,16 @@ if __name__== "__main__":
 
     args = parser.parse_args()
     model_name = args.model
-    model = globals()[model_name]()
+    # model = globals()[model_name]()
 
 
 
 
+    model = torch.hub.load('mit-han-lab/ProxylessNAS',"proxyless_mobile")
 
     print(model)
 
-    for name,para in model.named_parameters():
+    for name, para in model.named_parameters():
         print(name)
 
     # print("="*100)
