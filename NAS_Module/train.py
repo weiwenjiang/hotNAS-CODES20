@@ -323,5 +323,7 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args, [6,  53, 17, 10, 2, 128, 256, 256, 496, 480])
+    dna = "35 41 21 15 1 128 256 256 496 512"
+
+    main(args, [int(x) for x in dna.split(" ")])
 
