@@ -24,7 +24,7 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=Null):
+def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
     input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
     cTT = 0
     for layer_name, layer in model.named_modules():
@@ -32,7 +32,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=Null):
             input_shape = list(input.shape)
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
-            if device!=Null:
+            if device is not None:
                 input.to(device)
             input = layer(input)
 
