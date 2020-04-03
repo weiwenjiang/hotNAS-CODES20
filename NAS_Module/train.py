@@ -290,45 +290,16 @@ def parse_args():
     parser.add_argument('--lr-gamma', default=0.1, type=float, help='decrease lr by a factor of lr-gamma')
     parser.add_argument('--print-freq', default=10, type=int, help='print frequency')
     parser.add_argument('--output-dir', default='.', help='path where to save')
-    parser.add_argument('--resume', default='', help='resume from checkpoint')
     parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                         help='start epoch')
-    parser.add_argument(
-        "--cache-dataset",
-        dest="cache_dataset",
-        help="Cache the datasets for quicker initialization. It also serializes the transforms",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--sync-bn",
-        dest="sync_bn",
-        help="Use sync batch norm",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--test-only",
-        dest="test_only",
-        help="Only test the model",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "--rl",
-        dest="reinfoce",
-        help="execute reinforcement leraning",
-        action="store_true",
-    )
-
-    parser.add_argument(
-        "--pretrained",
-        dest="pretrained",
-        help="Use pre-trained models from the modelzoo",
-        action="store_true",
-    )
+    parser.add_argument("--cache-dataset",dest="cache_dataset",help="Cache the datasets for quicker initialization. It also serializes the transforms",
+                        action="store_true",)
+    parser.add_argument("--sync-bn",dest="sync_bn",help="Use sync batch norm",action="store_true",)
+    parser.add_argument("--pretrained",dest="pretrained",help="Use pre-trained models from the modelzoo",
+                        action="store_true",)
 
     # Mixed precision training parameters
-    parser.add_argument('--apex', action='store_true',
-                        help='Use apex for mixed precision training')
+    parser.add_argument('--apex', action='store_true',help='Use apex for mixed precision training')
     parser.add_argument('--apex-opt-level', default='O1', type=str,
                         help='For apex mixed precision training'
                              'O0 for FP32 training, O1 for mixed precision training.'
@@ -336,27 +307,60 @@ def parse_args():
                         )
 
     # distributed training parameters
-    parser.add_argument('--world-size', default=1, type=int,
-                        help='number of distributed processes')
+    parser.add_argument('--world-size', default=1, type=int,help='number of distributed processes')
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
-    parser.add_argument(
-        '-c', '--cconv',
-        default="70, 36, 64, 64, 7, 18, 6, 6",
-        help="hardware desgin of cconv",
-    )
+    # NAS related options
+    parser.add_argument("--test-only", dest="test_only", help="Only test the model", action="store_true", )
+    parser.add_argument('--resume', default='', help='resume from checkpoint')
+
+    parser.add_argument("--rl", dest="reinfoce", help="execute reinforcement leraning", action="store_true", )
+    parser.add_argument('-c', '--cconv',default="70, 36, 64, 64, 7, 18, 6, 6",help="hardware desgin of cconv",)
+    parser.add_argument('-f', '--finetue_dna', default="48 14 9 7 0 128 240 224 464 496 16 16 16 16 8 8 12 8 2 -1 1", help="hardware desgin of cconv", )
+    parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
+
+    # parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
 
     args = parser.parse_args()
 
     return args
 
+def get_data_loader(args):
+
+    if args.output_dir:
+        utils.mkdir(args.output_dir)
+
+    utils.init_distributed_mode(args)
+    print(args)
+
+    torch.backends.cudnn.benchmark = True
+
+    train_dir = os.path.join(args.data_path, 'train')
+    val_dir = os.path.join(args.data_path, 'val')
+    dataset, dataset_test, train_sampler, test_sampler = load_data(train_dir, val_dir,
+                                                                         args.cache_dataset, args.distributed)
+    data_loader = torch.utils.data.DataLoader(
+        dataset, batch_size=args.batch_size,
+        sampler=train_sampler, num_workers=args.workers, pin_memory=True)
+
+    data_loader_test = torch.utils.data.DataLoader(
+        dataset_test, batch_size=args.batch_size,
+        sampler=test_sampler, num_workers=args.workers, pin_memory=True)
+
+    return data_loader,data_loader_test
 
 if __name__ == "__main__":
     args = parse_args()
-    dna = "30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2"
+
+
+    data_loader,data_loader_test = get_data_loader(args)
+
+
+    dna = args.finetue_dna
 
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
 
-    main(args, [int(x) for x in dna.split(" ")], HW)
+    acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
+    # main(args, [int(x) for x in dna.split(" ")], HW)
 
