@@ -323,4 +323,5 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args, [23, 35, 37, 41, 2, 128, 256, 256, 496, 480])
+    main(args, [6,  53, 17, 10, 2, 128, 256, 256, 496, 480])
+
