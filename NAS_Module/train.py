@@ -343,7 +343,7 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    dna = "35 41 21 15 1 128 256 256 496 512 16 16 8 8 4 4 16 16 -1 2 1"
+    dna = "30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2"
 
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]

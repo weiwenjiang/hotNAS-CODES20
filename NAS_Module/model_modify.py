@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-d', '--dna',
         # default="35 41 21 15 1 128 224 224 464 464 4 4 4 4 4 4 4 4 0 0 0",
-        default="35 41 21 15 1 128 256 256 512 512 16 16 16 16 16 16 16 16 0 0 0",
+        default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",
     )
     parser.add_argument('--device', default='cpu', help='device')
