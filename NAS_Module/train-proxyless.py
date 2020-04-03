@@ -191,7 +191,7 @@ def main(args, dna):
     print("Creating model")
     # model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    model = torch.hub.load('mit-han-lab/ProxylessNAS',"proxyless_mobile",pretrained=args.pretrained)
+    model = torch.hub.load('mit-han-lab/ProxylessNAS',"proxyless_cpu",pretrained=args.pretrained)
 
     model.to(device)
     if args.distributed and args.sync_bn:
