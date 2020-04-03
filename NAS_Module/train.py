@@ -14,6 +14,7 @@ sys.path.append("../Interface")
 from ztNAS_model_change import *
 from model_modify import *
 import utils
+import bottleneck_conv_only
 
 try:
     from apex import amp
@@ -154,8 +155,10 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args, dna):
-    pat_point, exp_point, ch_point = dna[0:4], dna[4], dna[5:10]
+def main(args, dna, HW):
+    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+    HW[5],HW[6],HW[7] = comm_point[18], comm_point[19], comm_point[20]
+
     # print("==============Train==========")
     # print(pat_point, exp_point, ch_point)
 
@@ -191,7 +194,7 @@ def main(args, dna):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    model = resnet_18_space(model, pat_point, exp_point, ch_point, args)
+    model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
     model.to(device)
     if args.distributed and args.sync_bn:
@@ -236,6 +239,7 @@ def main(args, dna):
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
 
         if args.reinfoce:
+            total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3], HW[4], HW[5], HW[6], HW[7])
             return acc1, acc5
         if args.output_dir:
             checkpoint = {
@@ -329,6 +333,12 @@ def parse_args():
                         help='number of distributed processes')
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
+    parser.add_argument(
+        '-c', '--cconv',
+        default="70, 36, 64, 64, 7, 18, 6, 6",
+        help="hardware desgin of cconv",
+    )
+
     args = parser.parse_args()
 
     return args
@@ -336,7 +346,10 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    dna = "35 41 21 15 1 128 256 256 496 512"
+    dna = "35 41 21 15 1 128 256 256 496 512 16 16 8 8 4 4 16 16 -1 2 1"
 
-    main(args, [int(x) for x in dna.split(" ")])
+    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+
+    main(args, [int(x) for x in dna.split(" ")], HW)
 
