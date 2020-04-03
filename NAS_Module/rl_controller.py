@@ -357,12 +357,12 @@ class Controller(object):
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
 
-                        if acc1>89.078:
+                        if acc5>89.078:
                             acc_reward = 1
-                        elif acc1<80:
+                        elif acc5<80:
                             acc_reward = -1
                         else:
-                            acc_reward = (acc1-93)/(93-80)*2-1
+                            acc_reward = (acc5-93)/(93-80)*2-1
 
                         if lat>10:
                             lat_reward = -1
