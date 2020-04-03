@@ -356,7 +356,7 @@ if __name__ == "__main__":
     data_loader,data_loader_test = get_data_loader(args)
 
 
-    dna = [int(x.strip()) for x in args.finetue_dna]
+    dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
 
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
