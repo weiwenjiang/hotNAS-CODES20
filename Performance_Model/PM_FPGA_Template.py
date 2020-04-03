@@ -136,12 +136,16 @@ class FPGA_Templates:
             return False
         return True
 
-    def get_cconv_latency(self, Layer, pattern_ones=-1):
+    def get_cconv_latency(self, Layer, pattern_ones=-1, quan_paras=[]):
         [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         [W_p, I_p, O_p] = (self.W_p, self.I_p, self.O_p)
 
-        lat_W_mem = Tm * Tn * K * K / W_p
+        if len(quan_paras)!=0:
+            bits = quan_paras[0]+quan_paras[1]
+            lat_W_mem = Tm * Tn * K * K / floor(W_p*16/float(bits))
+        else:
+            lat_W_mem = Tm * Tn * K * K / W_p
         lat_I_mem = Tn * min(Tr,R) * min(Tc,C) / I_p
         lat_O_mem = Tm * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
         if pattern_ones!=-1:
@@ -201,10 +205,10 @@ class FPGA_Templates:
 
         return Lat, bottle_neck
 
-    def get_layer_latency(self, Layer, pattern_ones=-1):
+    def get_layer_latency(self, Layer, pattern_ones=-1, quan_paras=[]):
         if self.layer_template_match_check(Layer):
             if self.T == "cconv":
-                return self.get_cconv_latency(Layer, pattern_ones)
+                return self.get_cconv_latency(Layer, pattern_ones, quan_paras)
             else:
                 return self.get_dconv_latency(Layer)
         else:

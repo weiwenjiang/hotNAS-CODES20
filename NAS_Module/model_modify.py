@@ -101,38 +101,25 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list,args):
                           ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, ch_list[3], 512)],
                           ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
 
-    quant_layers = ["layer1.0.conv1", "layer1.0.conv2",
-                    "layer1.1.conv1", "layer1.1.conv2",
-                    "layer2.0.conv1", "layer2.0.conv2",
-                    "layer2.1.conv1", "layer2.1.conv2",
-                    "layer3.0.conv1", "layer3.0.conv2",
+    quant_layers = ["layer3.0.conv1", "layer3.0.conv2",
                     "layer3.1.conv1", "layer3.1.conv2",
                     "layer4.0.conv1", "layer4.0.conv2",
                     "layer4.1.conv1", "layer4.1.conv2"]
     quan_paras = {}
-
-    quan_paras["layer1.0.conv1"] = [0, 16, True]
-    quan_paras["layer1.0.conv2"] = [0, 16, True]
-    quan_paras["layer1.1.conv1"] = [0, 16, True]
-    quan_paras["layer1.1.conv2"] = [0, 16, True]
-    quan_paras["layer2.0.conv1"] = [0, 16, True]
-    quan_paras["layer2.0.conv2"] = [0, 16, True]
-    quan_paras["layer2.1.conv1"] = [0, 16, True]
-    quan_paras["layer2.1.conv2"] = [0, 16, True]
-    quan_paras["layer3.0.conv1"] = [0, 16, True]
-    quan_paras["layer3.0.conv2"] = [0, 16, True]
-    quan_paras["layer3.1.conv1"] = [0, 16, True]
-    quan_paras["layer3.1.conv2"] = [0, 16, True]
-    quan_paras["layer4.0.conv1"] = [0, 16, True]
-    quan_paras["layer4.0.conv2"] = [0, 16, True]
-    quan_paras["layer4.1.conv1"] = [0, 16, True]
-    quan_paras["layer4.1.conv2"] = [0, 16, True]
+    quan_paras["layer3.0.conv1"] = [0, 8, True]
+    quan_paras["layer3.0.conv2"] = [0, 8, True]
+    quan_paras["layer3.1.conv1"] = [0, 8, True]
+    quan_paras["layer3.1.conv2"] = [0, 8, True]
+    quan_paras["layer4.0.conv1"] = [0, 8, True]
+    quan_paras["layer4.0.conv2"] = [0, 8, True]
+    quan_paras["layer4.1.conv1"] = [0, 8, True]
+    quan_paras["layer4.1.conv2"] = [0, 8, True]
 
 
     Channel_Cut(model, channel_cut_layers)
     Kernel_Patter(model, layer_names, pattern, args)
     Kenel_Expand(model, layer_kernel_inc)
-    # Kenel_Quantization(model, quant_layers, quan_paras)
+    Kenel_Quantization(model, quant_layers, quan_paras)
 
     return model
 
@@ -153,7 +140,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '-d', '--dna',
-        default="23 35 37 41 2 128 256 256 496 480",
+        default="35 41 21 15 1 128 256 256 496 512",
         help="exploration results",
     )
     parser.add_argument('--device', default='cpu', help='device')

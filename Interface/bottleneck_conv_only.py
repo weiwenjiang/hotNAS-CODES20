@@ -52,7 +52,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
                     return -1
                 else:
                     if isinstance(layer,copy_conv2d.Conv2d_Custom):
-                        perf = acc_1.get_layer_latency(Layer,layer.pattern_ones)
+                        perf = acc_1.get_layer_latency(Layer,layer.pattern_ones,layer.quan_paras)
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]

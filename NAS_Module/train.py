@@ -21,7 +21,7 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False, data_loader_test=0):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False, data_loader_test=0,isreinfoce=False):
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
@@ -54,6 +54,8 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         batch_idx += 1
         if batch_idx == 100:
             evaluate(model, criterion, data_loader_test, device=device)
+            if isreinfoce:
+                return
 
         if batch_idx % 1000 == 0:
             evaluate(model, criterion, data_loader_test, device=device)
@@ -228,23 +230,26 @@ def main(args, dna):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex, data_loader_test)
+        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex,
+                        data_loader_test, args.reinfoce)
         lr_scheduler.step()
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
-        return acc1, acc5
-        # if args.output_dir:
-        #     checkpoint = {
-        #         'model': model_without_ddp.state_dict(),
-        #         'optimizer': optimizer.state_dict(),
-        #         'lr_scheduler': lr_scheduler.state_dict(),
-        #         'epoch': epoch,
-        #         'args': args}
-        #     utils.save_on_master(
-        #         checkpoint,
-        #         os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
-        #     utils.save_on_master(
-        #         checkpoint,
-        #         os.path.join(args.output_dir, 'checkpoint.pth'))
+
+        if args.reinfoce:
+            return acc1, acc5
+        if args.output_dir:
+            checkpoint = {
+                'model': model_without_ddp.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'lr_scheduler': lr_scheduler.state_dict(),
+                'epoch': epoch,
+                'args': args}
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+            utils.save_on_master(
+                checkpoint,
+                os.path.join(args.output_dir, 'checkpoint.pth'))
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
@@ -295,6 +300,14 @@ def parse_args():
         help="Only test the model",
         action="store_true",
     )
+
+    parser.add_argument(
+        "--rl",
+        dest="reinfoce",
+        help="execute reinforcement leraning",
+        action="store_true",
+    )
+
     parser.add_argument(
         "--pretrained",
         dest="pretrained",

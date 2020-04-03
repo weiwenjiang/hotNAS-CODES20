@@ -26,6 +26,8 @@ Pc=1   # level o tensor rol split
 Pm=1   # level of output channel splt 
 
 # data transfer parallelism e.g W_p=2, 2 single weight is transferd simultaneously
+# Unit is 16bits, W_p=2 => 32bits,
+# There are totally 4 HP ports with 128 bit-width = 512 on ZCU102
 W_p=2 # weight
 I_p=16 # input tensor
 O_p=2 # output tensor
