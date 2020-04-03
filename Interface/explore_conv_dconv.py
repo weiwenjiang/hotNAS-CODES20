@@ -134,7 +134,7 @@ if __name__== "__main__":
     args = parser.parse_args()
     model_name = args.model
 
-    if "Proxyless" in model_name:
+    if "proxyless" in model_name:
         model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
     else:
         model = globals()[model_name]()
