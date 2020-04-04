@@ -197,6 +197,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
     elif args.model == "mnasnet0_5":
         model = mnasnet0_5_space(model, args)
+    else:
+        print("Currently not support the given model {}".format("args.model"))
 
 
     model.to(device)
