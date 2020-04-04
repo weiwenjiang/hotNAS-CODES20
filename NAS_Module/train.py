@@ -368,17 +368,17 @@ def get_data_loader(args):
 if __name__ == "__main__":
     args = parse_args()
 
-    #
-    # data_loader,data_loader_test = get_data_loader(args)
-    #
-    #
-    # dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
-    #
-    # [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    # HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
-    #
-    # acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
-    # # main(args, [int(x) for x in dna.split(" ")], HW)
+
+    data_loader,data_loader_test = get_data_loader(args)
+
+
+    dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
+
+    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+
+    acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
+    main(args, [int(x) for x in dna.split(" ")], HW)
     #
 
 
