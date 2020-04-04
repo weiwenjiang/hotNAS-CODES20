@@ -237,7 +237,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
     total_lat = 0
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
-        return
+        return 0,0,0
 
 
 
@@ -275,7 +275,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-
+    return 0,0,0
 
 
 def parse_args():
