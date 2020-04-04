@@ -223,6 +223,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         args.start_epoch = checkpoint['epoch'] + 1
 
+    total_lat = 0
+
     if args.hw_test:
         if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
             total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
@@ -234,7 +236,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
         print("Hardware Test Pass {}/{}".format(total_lat,int(args.target_lat.split(" ")[1])))
-    total_lat = 0
+
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
         return 0,0,0
