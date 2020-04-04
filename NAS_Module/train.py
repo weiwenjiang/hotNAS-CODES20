@@ -18,7 +18,7 @@ from model_modify import *
 import utils
 import bottleneck_conv_only
 from search_space import *
-import rl_input
+from rl_input import *
 
 
 try:
@@ -351,8 +351,8 @@ def parse_args():
     print("-" * 58)
     print("-" * 10, "Search Space of Reinforcement Learning", "-" * 10)
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
-    for idx in range(len(rl_input.controller_params["sw_space"])):
-        print("\t{:<20} {:<15}".format(rl_input.controller_params["sw_space_name"][idx], rl_input.controller_params["sw_space"][idx]))
+    for idx in range(len(controller_params["sw_space"])):
+        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], controller_params["sw_space"][idx]))
     print("-" * 58)
 
     return args
