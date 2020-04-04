@@ -432,6 +432,8 @@ class Controller(object):
                 self.discounted_rewards: rewards
             }
 
+            print(feed_dict)
+
             with self.graph.as_default():
                 _, _, loss, lr, gs = self.sess.run(
                     [self.train_operation, self.update_global_step, self.total_loss, self.learning_rate,
