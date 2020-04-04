@@ -120,7 +120,7 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     Channel_Cut(model, channel_cut_layers)
     Kernel_Patter(model, layer_names, pattern, args)
     Kenel_Expand(model, layer_kernel_inc)
-    # Kenel_Quantization(model, quant_layers, quan_paras)
+    Kenel_Quantization(model, quant_layers, quan_paras)
 
     return model
 
