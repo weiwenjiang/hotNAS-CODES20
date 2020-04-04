@@ -221,6 +221,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         args.start_epoch = checkpoint['epoch'] + 1
 
+    total_lat = 0
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
         return
