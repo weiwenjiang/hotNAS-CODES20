@@ -352,8 +352,8 @@ def parse_args():
     print("-" * 10, "Search Space of Reinforcement Learning", "-" * 10)
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
     for idx in range(len(controller_params["sw_space"])):
-        print(controller_params["sw_space_name"][idx], controller_params["sw_space"][idx])
-        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], "1"))
+        sp = ' '.join([str(elem) for elem in controller_params["sw_space"][idx]])
+        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], sp))
     print("-" * 58)
 
     return args
