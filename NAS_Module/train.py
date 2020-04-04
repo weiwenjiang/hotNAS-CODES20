@@ -225,13 +225,14 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         evaluate(model, criterion, data_loader_test, device=device)
         return
 
-    if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
-        total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
-                                                         HW[4], HW[5], HW[6], HW[7], device)
-    else:
-        return 0, 0, -1
-    if total_lat>10:
-        return 0, 0, -1
+    if args.hw_test:
+        if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
+            total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
+                                                             HW[4], HW[5], HW[6], HW[7], device)
+        else:
+            return 0, 0, -1
+        if total_lat>args.target_lat[1]:
+            return 0, 0, -1
 
     print("Start training")
     start_time = time.time()
@@ -326,6 +327,7 @@ def parse_args():
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 9", help="target latency range, determining reward", )
     parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
+    parser.add_argument("-hwt", dest="--hw_test", help="whether test hardware", action="store_true", )
 
     args = parser.parse_args()
 
