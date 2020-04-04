@@ -368,21 +368,21 @@ class Controller(object):
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
 
-                        if acc5>self.target_acc[1]:
-                            acc_reward = 1
-                        elif acc5<self.target_acc[0]:
-                            acc_reward = -1
-                        else:
-                            acc_reward = (acc5-self.target_acc[0])/(self.target_acc[1]-self.target_acc[0])*2-1
-
-                        if lat==-1:
-                            lat_reward = -1
-                        elif lat>self.target_lat[1]:
-                            lat_reward = -1
-                        elif lat<self.target_lat[0]:
-                            lat_reward = 1
-                        else:
-                            lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
+                        # if acc5>self.target_acc[1]:
+                        #     acc_reward = 1
+                        # elif acc5<self.target_acc[0]:
+                        #     acc_reward = -1
+                        # else:
+                        #     acc_reward = (acc5-self.target_acc[0])/(self.target_acc[1]-self.target_acc[0])*2-1
+                        #
+                        # if lat==-1:
+                        #     lat_reward = -1
+                        # elif lat>self.target_lat[1]:
+                        #     lat_reward = -1
+                        # elif lat<self.target_lat[0]:
+                        #     lat_reward = 1
+                        # else:
+                        #     lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
 
                         # reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
                         reward = 0
