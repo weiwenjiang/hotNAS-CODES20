@@ -40,7 +40,11 @@ class Controller(object):
 
         self.data_loader,self.data_loader_test = train.get_data_loader(self.args)
 
-        [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+        self.alpha = self.args.alpha
+        self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
+        self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
+
+        [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in self.args.cconv.split(",")]
         self.HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
 
         self.graph = tf.Graph()
@@ -153,9 +157,12 @@ class Controller(object):
 
         with tf.name_scope('Optimizer'):
             self.global_step = tf.Variable(0, trainable=False)
-            self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
-            self.optimizer = tf.train.RMSPropOptimizer(learning_rate=self.learning_rate)
-        # self.optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
+            if self.args.rl_optimizer=="Adam":
+                self.optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
+            else:
+                self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
+                self.optimizer = tf.train.RMSPropOptimizer(learning_rate=self.learning_rate)
+
         with tf.name_scope('Loss'):
             # We seperately compute loss of each predict parameter since the dim of predicting parameters may not be same
             for para_idx in range(self.num_para):
@@ -338,23 +345,23 @@ class Controller(object):
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
 
-                        if acc5>93:
+                        if acc5>self.target_acc[1]:
                             acc_reward = 1
-                        elif acc5<80:
+                        elif acc5<self.target_acc[0]:
                             acc_reward = -1
                         else:
-                            acc_reward = (acc5-80)/(93-80)*2-1
+                            acc_reward = (acc5-self.target_acc[0])/(self.target_acc[1]-self.target_acc[0])*2-1
 
                         if lat==-1:
                             lat_reward = -1
-                        elif lat>10:
+                        elif lat>self.target_lat[1]:
                             lat_reward = -1
-                        elif lat<8:
+                        elif lat<self.target_lat[0]:
                             lat_reward = 1
                         else:
-                            lat_reward = (10-lat)/(10-8)*2-1
+                            lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
 
-                        reward = acc_reward * 0.7 + lat_reward*0.3
+                        reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
 
 
                         #

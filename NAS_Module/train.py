@@ -25,7 +25,8 @@ except ImportError:
     amp = None
 
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False, data_loader_test=0,isreinfoce=False):
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False,
+                    data_loader_test=0,isreinfoce=False, stop_batch=6000):
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
@@ -56,7 +57,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         metric_logger.meters['img/s'].update(batch_size / (time.time() - start_time))
 
         batch_idx += 1
-        if batch_idx == 30:
+        if batch_idx == stop_batch:
             # evaluate(model, criterion, data_loader_test, device=device)
             if isreinfoce:
                 return
@@ -65,7 +66,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             evaluate(model, criterion, data_loader_test, device=device)
 
 
-def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=False):
+def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=False, stop_batch=200):
     model.eval()
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
@@ -87,7 +88,7 @@ def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=Fa
             metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
 
             batch_idx += 1
-            if batch_idx == 30:
+            if batch_idx == stop_batch:
                 # evaluate(model, criterion, data_loader_test, device=device)
                 if isreinfoce:
                     return metric_logger.acc1.global_avg, metric_logger.acc5.global_avg
@@ -238,9 +239,10 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex,
-                        data_loader_test, args.reinfoce)
+                        data_loader_test, args.reinfoce, stop_batch=args.traing_stop_batch)
         lr_scheduler.step()
-        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device, isreinfoce=args.reinfoce)
+        acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device,
+                              isreinfoce=args.reinfoce, stop_batch=args.test_stop_btach)
 
         if args.reinfoce:
             total_time = time.time() - start_time
@@ -273,14 +275,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
 
     parser.add_argument('--data-path', default='/mnt/weiwen/ImageNet', help='dataset')
-    parser.add_argument('--model', default='resnet18', help='model')
     parser.add_argument('--device', default='cuda', help='device')
     parser.add_argument('-b', '--batch-size', default=32, type=int)
-    parser.add_argument('--epochs', default=90, type=int, metavar='N',
-                        help='number of total epochs to run')
+
     parser.add_argument('-j', '--workers', default=16, type=int, metavar='N',
                         help='number of data loading workers (default: 16)')
-    parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
+
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
@@ -295,8 +295,6 @@ def parse_args():
     parser.add_argument("--cache-dataset",dest="cache_dataset",help="Cache the datasets for quicker initialization. It also serializes the transforms",
                         action="store_true",)
     parser.add_argument("--sync-bn",dest="sync_bn",help="Use sync batch norm",action="store_true",)
-    parser.add_argument("--pretrained",dest="pretrained",help="Use pre-trained models from the modelzoo",
-                        action="store_true",)
 
     # Mixed precision training parameters
     parser.add_argument('--apex', action='store_true',help='Use apex for mixed precision training')
@@ -305,23 +303,41 @@ def parse_args():
                              'O0 for FP32 training, O1 for mixed precision training.'
                              'For further detail, see https://github.com/NVIDIA/apex/tree/master/examples/imagenet'
                         )
+    parser.add_argument('--resume', default='', help='resume from checkpoint')
 
     # distributed training parameters
     parser.add_argument('--world-size', default=1, type=int,help='number of distributed processes')
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
     # NAS related options
+    parser.add_argument('--model', default='resnet18', help='model')
+    parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
+                        action="store_true", )
+    parser.add_argument('--epochs', default=90, type=int, metavar='N',
+                        help='number of total epochs to run')
+    parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
     parser.add_argument("--test-only", dest="test_only", help="Only test the model", action="store_true", )
-    parser.add_argument('--resume', default='', help='resume from checkpoint')
-
     parser.add_argument("--rl", dest="reinfoce", help="execute reinforcement leraning", action="store_true", )
+    parser.add_argument('--train_stop_batch', default=100, type=int, metavar='N',help='number of batch to terminate in training')
+    parser.add_argument('--test_stop_batch', default=200, type=int, metavar='N',help='number of batch to terminate in testing')
     parser.add_argument('-c', '--cconv',default="70, 36, 64, 64, 7, 18, 6, 6",help="hardware desgin of cconv",)
     parser.add_argument('-f', '--finetue_dna', default="48 14 9 7 0 128 240 224 464 496 16 16 16 16 8 8 12 8 2 -1 1", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
-
-    # parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
+    parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
+    parser.add_argument('-lat', '--target_lat', default="8 10", help="target latency range, determining reward", )
+    parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
 
     args = parser.parse_args()
+
+    print("=" * 58)
+    print("="*10,"Welcome to use automatic reverse NAS","="*10)
+    print("="*11,"Your setting is listed as follows","="*12)
+    print ("\t{:<20} {:<15}".format('Attribute', 'Input'))
+    for k,v in vars(args).items():
+        print("\t{:<20} {:<15}".format(k, v))
+    print("="*12,"Exploration will start, have fun","=" * 12)
+    print("=" * 58)
+
 
     return args
 
@@ -331,7 +347,7 @@ def get_data_loader(args):
         utils.mkdir(args.output_dir)
 
     utils.init_distributed_mode(args)
-    print(args)
+
 
     torch.backends.cudnn.benchmark = True
 
@@ -352,15 +368,15 @@ def get_data_loader(args):
 if __name__ == "__main__":
     args = parse_args()
 
-
-    data_loader,data_loader_test = get_data_loader(args)
-
-
-    dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
-
-    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
-
-    acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
-    # main(args, [int(x) for x in dna.split(" ")], HW)
-
+    #
+    # data_loader,data_loader_test = get_data_loader(args)
+    #
+    #
+    # dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
+    #
+    # [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    # HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+    #
+    # acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
+    # # main(args, [int(x) for x in dna.split(" ")], HW)
+    #
