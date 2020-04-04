@@ -199,6 +199,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         model = mnasnet0_5_space(model, args)
     else:
         print("Currently not support the given model {}".format("args.model"))
+        sys.exit(0)
 
 
     model.to(device)
