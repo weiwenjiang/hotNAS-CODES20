@@ -239,10 +239,10 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex,
-                        data_loader_test, args.reinfoce, stop_batch=args.traing_stop_batch)
+                        data_loader_test, args.reinfoce, stop_batch=args.train_stop_batch)
         lr_scheduler.step()
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device,
-                              isreinfoce=args.reinfoce, stop_batch=args.test_stop_btach)
+                              isreinfoce=args.reinfoce, stop_batch=args.test_stop_batch)
 
         if args.reinfoce:
             total_time = time.time() - start_time
