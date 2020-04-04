@@ -70,6 +70,22 @@ def Channel_Cut(model,layers):
         ztNAS_cut_channel(model, conv_modify, bn_modifiy)
 
 
+# [1,22,49,54], 3, [100,210,210,470,470]
+def mobilenet_space(model, args):
+
+    parttern_55_space = pattern_sets_generate_3((5, 5))
+    parttern_55 = {}
+    for i in parttern_55_space.keys():
+        parttern_55[i] = parttern_55_space[i].reshape((5, 5))
+    layer_names_55 = ["layers.9.1.layers.3","layers.9.2.layers.3","layers.10.1.layers.3",
+                      "layers.10.2.layers.3","layers.12.1.layers.3","layers.12.2.layers.3",
+                      "layers.12.3.layers.3"]
+
+
+
+    Kernel_Patter(model, layer_names_55, parttern_55, args)
+
+    return model
 
 # [1,22,49,54], 3, [100,210,210,470,470]
 def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):

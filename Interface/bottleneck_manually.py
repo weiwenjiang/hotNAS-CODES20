@@ -40,6 +40,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                 1, layer.out_channels, layer.in_channels, input.shape[2], input.shape[3], is_same(layer.kernel_size),
                 is_same(layer.stride), tell_conv_type(layer.in_channels, layer.groups), is_same(layer.padding))
 
+            # print(layer_name, B, M, N, R, C, K, S, T, P)
             if T == "cconv":
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
                                                                    HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
@@ -58,7 +59,8 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
+                    if perf[1] == "computing":
+                        print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -75,17 +77,23 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='resnet18'
+        default='densenet161'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 36, 64, 64, 7, 18, 6, 6",
+        default="100, 25, 64, 64, 7, 10, 14, 6",
         help="hardware desgin of cconv",
     )
 
     args = parser.parse_args()
     model_name = args.model
-    model = globals()[model_name]()
+
+    if "proxyless" in model_name:
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
+    elif "FBNET" in model_name:
+        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+    else:
+        model = globals()[model_name]()
 
 
 
