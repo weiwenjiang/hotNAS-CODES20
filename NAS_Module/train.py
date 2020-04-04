@@ -193,7 +193,11 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
     print("Creating model")
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+    if args.model == "resnet18":
+        model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+    elif args.model == "mnasnet0_5":
+        model = mnasnet0_5_space(model, args)
+
 
     model.to(device)
     if args.distributed and args.sync_bn:

@@ -71,7 +71,7 @@ def Channel_Cut(model,layers):
 
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mobilenet_space(model, args):
+def mnasnet0_5_space(model, args):
 
     parttern_55_space = pattern_sets_generate_3((5, 5))
     parttern_55 = {}
