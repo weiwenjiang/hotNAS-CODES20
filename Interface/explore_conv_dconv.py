@@ -14,7 +14,7 @@ from CONV_PM_IF import *
 import argparse
 import copy
 import time
-
+import NASNetA
 
 def get_max_k_d(model):
     max_k,d_max_k = 0,0
@@ -129,13 +129,15 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mnasnet0_5'
+        default='FBNET'
     )
     args = parser.parse_args()
     model_name = args.model
 
     if "proxyless" in model_name:
         model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
+    elif "FBNET" in model_name:
+        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
     else:
         model = globals()[model_name]()
 
