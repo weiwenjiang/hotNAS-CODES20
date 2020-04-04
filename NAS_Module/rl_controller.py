@@ -157,11 +157,10 @@ class Controller(object):
 
         with tf.name_scope('Optimizer'):
             self.global_step = tf.Variable(0, trainable=False)
+            self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
             if self.args.rl_optimizer=="Adam":
-                self.learning_rate = torch.Tensor(0.1)
-                self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+                self.optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
             else:
-                self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
                 self.optimizer = tf.train.RMSPropOptimizer(learning_rate=self.learning_rate)
 
         with tf.name_scope('Loss'):
@@ -326,17 +325,11 @@ class Controller(object):
                             (acc1,acc5,lat) = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
-                            # acc1 = random.uniform(0, 1)
-                            # acc5 = random.uniform(0, 1)
+                            acc1 = random.uniform(0, 1)
+                            acc5 = random.uniform(0, 1)
+                            acc5 = random.uniform(7, 10)
 
-                            # given_para = {}
-                            # idx = 0
-                            # for p in Para_NN1[:-1]:
-                            #     given_para[idx] = self.pattern_space[p]
-                            #     idx+=1
-                            # k_expand = Para_NN1[-1]
-
-                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
+                            # acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
 
                             # Keep history trained data
 
