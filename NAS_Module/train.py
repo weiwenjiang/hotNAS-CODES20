@@ -327,7 +327,8 @@ def parse_args():
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 9", help="target latency range, determining reward", )
     parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
-    parser.add_argument("-hwt", dest="--hw_test", help="whether test hardware", action="store_true", )
+    parser.add_argument("-hwt", dest="hw_test", help="whether test hardware", action="store_true", )
+
 
     args = parser.parse_args()
 
