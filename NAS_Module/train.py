@@ -232,7 +232,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
                                                              HW[4], HW[5], HW[6], HW[7], device)
         else:
             return 0, 0, -1
-        if total_lat>args.target_lat[1]:
+        if total_lat>int(args.target_lat[1]):
             return 0, 0, -1
 
     print("Start training")
