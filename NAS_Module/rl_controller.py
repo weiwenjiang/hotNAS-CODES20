@@ -38,32 +38,11 @@ class Controller(object):
     def __init__(self):
         self.args = train.parse_args()
 
-        args = self.args
-        if args.output_dir:
-            utils.mkdir(args.output_dir)
+        self.data_loader,self.data_loader_test = train.get_data_loader(self.args)
 
-        utils.init_distributed_mode(args)
-        print(args)
-
-        torch.backends.cudnn.benchmark = True
-
-        train_dir = os.path.join(args.data_path, 'train')
-        val_dir = os.path.join(args.data_path, 'val')
-        dataset, dataset_test, train_sampler, test_sampler = train.load_data(train_dir, val_dir,
-                                                                             args.cache_dataset, args.distributed)
-        self.data_loader = torch.utils.data.DataLoader(
-            dataset, batch_size=args.batch_size,
-            sampler=train_sampler, num_workers=args.workers, pin_memory=True)
-
-        self.data_loader_test = torch.utils.data.DataLoader(
-            dataset_test, batch_size=args.batch_size,
-            sampler=test_sampler, num_workers=args.workers, pin_memory=True)
-
-        # self.data_loader,self.data_loader_test = train.get_data_loader(self.args)
-
-        # self.alpha = float(self.args.alpha)
-        # self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
-        # self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
+        self.alpha = float(self.args.alpha)
+        self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
+        self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
 
         [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in self.args.cconv.split(",")]
         self.HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
@@ -179,7 +158,7 @@ class Controller(object):
         with tf.name_scope('Optimizer'):
             self.global_step = tf.Variable(0, trainable=False)
             if self.args.rl_optimizer=="Adam":
-                self.learning_rate = 0.1
+                self.learning_rate = torch.Tensor(0.1)
                 self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
             else:
                 self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
@@ -347,9 +326,8 @@ class Controller(object):
                             (acc1,acc5,lat) = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
-                            acc1 = random.uniform(0, 1)
-                            acc5 = random.uniform(0, 1)
-                            lat = random.uniform(7, 10)
+                            # acc1 = random.uniform(0, 1)
+                            # acc5 = random.uniform(0, 1)
 
                             # given_para = {}
                             # idx = 0
@@ -358,34 +336,33 @@ class Controller(object):
                             #     idx+=1
                             # k_expand = Para_NN1[-1]
 
-                            # acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
-                            #
-                            # # Keep history trained data
-                            #
-                            # self.trained_network[str_NNs] = (acc1,acc5,lat)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
+
+                            # Keep history trained data
+
+                            self.trained_network[str_NNs] = (acc1,acc5,lat)
 
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
 
-                        # if acc5>self.target_acc[1]:
-                        #     acc_reward = 1
-                        # elif acc5<self.target_acc[0]:
-                        #     acc_reward = -1
-                        # else:
-                        #     acc_reward = (acc5-self.target_acc[0])/(self.target_acc[1]-self.target_acc[0])*2-1
-                        #
-                        # if lat==-1:
-                        #     lat_reward = -1
-                        # elif lat>self.target_lat[1]:
-                        #     lat_reward = -1
-                        # elif lat<self.target_lat[0]:
-                        #     lat_reward = 1
-                        # else:
-                        #     lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
+                        if acc5>self.target_acc[1]:
+                            acc_reward = 1
+                        elif acc5<self.target_acc[0]:
+                            acc_reward = -1
+                        else:
+                            acc_reward = (acc5-self.target_acc[0])/(self.target_acc[1]-self.target_acc[0])*2-1
 
-                        # reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
-                        reward = 0
+                        if lat==-1:
+                            lat_reward = -1
+                        elif lat>self.target_lat[1]:
+                            lat_reward = -1
+                        elif lat<self.target_lat[0]:
+                            lat_reward = 1
+                        else:
+                            lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
+
+                        reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
 
 
                         #
@@ -412,8 +389,8 @@ class Controller(object):
                 logger.info("--------->Top-5: {}%".format(acc5))
                 logger.info("--------->Lat: {}ms".format(lat))
                 logger.info("--------->Reward: {}".format(reward))
-                # logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,0.7))
-                # logger.info("--------->Reward-Lat: {}*{}".format(lat_reward,0.3))
+                logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,0.7))
+                logger.info("--------->Reward-Lat: {}*{}".format(lat_reward,0.3))
                 logger.info("")
                 for p in pat_point:
                     logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
