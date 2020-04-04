@@ -233,7 +233,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         if total_lat>int(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
-
+        print("Hardware Test Pass {}/{}".format(total_lat,int(args.target_lat.split(" ")[1])))
     total_lat = 0
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
@@ -332,7 +332,7 @@ def parse_args():
     parser.add_argument('-f', '--finetue_dna', default="15 24 10 46 3 128 240 240 480 496 16 16 16 16 8 12 16 8 2 0 0", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
-    parser.add_argument('-lat', '--target_lat', default="7 9", help="target latency range, determining reward", )
+    parser.add_argument('-lat', '--target_lat', default="7 10", help="target latency range, determining reward", )
     parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
     parser.add_argument("--hwt", dest="hw_test", help="whether test hardware", action="store_true", )
 
