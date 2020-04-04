@@ -40,7 +40,7 @@ class Controller(object):
 
         self.data_loader,self.data_loader_test = train.get_data_loader(self.args)
 
-        self.alpha = self.args.alpha
+        self.alpha = float(self.args.alpha)
         self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
         self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
 
