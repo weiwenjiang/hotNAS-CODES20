@@ -353,7 +353,7 @@ def parse_args():
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
     for idx in range(len(controller_params["sw_space"])):
         print(controller_params["sw_space_name"][idx], controller_params["sw_space"][idx])
-        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], controller_params["sw_space"][idx]))
+        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], "1"))
     print("-" * 58)
 
     return args
