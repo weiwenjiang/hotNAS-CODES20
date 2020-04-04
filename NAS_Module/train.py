@@ -226,8 +226,10 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
             total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
                                                              HW[4], HW[5], HW[6], HW[7], device)
         else:
+            print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
             return 0, 0, -1
         if total_lat>int(args.target_lat.split(" ")[1]):
+            print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
 
     total_lat = 0
@@ -384,7 +386,7 @@ if __name__ == "__main__":
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
 
     acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
-    main(args, [int(x) for x in dna.split(" ")], HW)
+    # main(args, [int(x) for x in dna.split(" ")], HW)
     #
 
 
