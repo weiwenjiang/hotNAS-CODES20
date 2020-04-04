@@ -24,30 +24,41 @@ def pattern_sets_generate_3(kernal_shape):
                     pattern_idx+=1
 
     elif kernal_shape[0] == 5 and kernal_shape[1] == 5:
-        pattern_space[0] = torch.tensor([[0., 0., 1., 0., 0.],
-                                         [0., 1., 1., 1., 0.],
-                                         [1., 1., 1., 1., 1.],
-                                         [0., 1., 1., 1., 0.],
-                                         [0., 0., 1., 0., 0.]]).reshape(5 * 5)
 
-        pattern_space[1] = torch.tensor([[1., 0., 1., 0., 1.],
-                                         [0., 0., 1., 0., 0.],
-                                         [1., 1., 1., 1., 1.],
-                                         [0., 0., 1., 0., 0.],
-                                         [1., 0., 1., 0., 1.]]).reshape(5 * 5)
 
-        pattern_space[2] = torch.tensor([[0., 0., 1., 1., 0.],
-                                         [0., 1., 1., 1., 0.],
-                                         [0., 1., 1., 1., 0.],
-                                         [0., 1., 1., 1., 0.],
-                                         [0., 1., 1., 0., 0.]]).reshape(5 * 5)
+        for i in range(4):
+            tmp_tensor = base_tensor.clone()
+            tozero_idx = random.sample(range(25), 5)
+            for idx in tozero_idx:
+                tmp_tensor[idx] = 0
+            pattern_space[i] = tmp_tensor
 
-        pattern_space[3] = torch.tensor([[0., 0., 0., 0., 0.],
-                                         [0., 1., 1., 1., 1.],
-                                         [1., 1., 1., 1., 1.],
-                                         [1., 1., 1., 1., 0.],
-                                         [0., 0., 0., 0., 0.]]).reshape(5 * 5)
 
+
+        # pattern_space[0] = torch.tensor([[0., 0., 1., 0., 0.],
+        #                                  [0., 1., 1., 1., 0.],
+        #                                  [1., 1., 1., 1., 1.],
+        #                                  [0., 1., 1., 1., 0.],
+        #                                  [0., 0., 1., 0., 0.]]).reshape(5 * 5)
+        #
+        # pattern_space[1] = torch.tensor([[1., 0., 1., 0., 1.],
+        #                                  [0., 0., 1., 0., 0.],
+        #                                  [1., 1., 1., 1., 1.],
+        #                                  [0., 0., 1., 0., 0.],
+        #                                  [1., 0., 1., 0., 1.]]).reshape(5 * 5)
+        #
+        # pattern_space[2] = torch.tensor([[0., 0., 1., 1., 0.],
+        #                                  [0., 1., 1., 1., 0.],
+        #                                  [0., 1., 1., 1., 0.],
+        #                                  [0., 1., 1., 1., 0.],
+        #                                  [0., 1., 1., 0., 0.]]).reshape(5 * 5)
+        #
+        # pattern_space[3] = torch.tensor([[1., 0., 1., 0., 1.],
+        #                                  [0., 1., 0., 1., 0.],
+        #                                  [1., 1., 1., 1., 1.],
+        #                                  [1., 0., 1., 0., 1.],
+        #                                  [0., 1., 0., 1., 0.]]).reshape(5 * 5)
+        #
 
     elif kernal_shape[0]==7 and kernal_shape[1]==7:
 
@@ -89,8 +100,17 @@ def pattern_sets_generate_3(kernal_shape):
     return pattern_space
 
 
+
+import random
+import sys
+
 if __name__ == "__main__":
-    pattern_space = pattern_sets_generate_3((7,7))
+
+
+
+
+
+    pattern_space = pattern_sets_generate_3((5,5))
 
     for k,v in pattern_space.items():
-        print(k,v.reshape((7,7)))
+        print(k,v.reshape((5,5)))
