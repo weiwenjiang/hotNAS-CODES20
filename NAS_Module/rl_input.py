@@ -1,4 +1,5 @@
 controller_params = {
+    "sw_space_name": ("KP","KP","KP","KP","KE","CC","CC","CC","CC","CC","Qu","Qu","Qu","Qu","Qu","Qu","Qu","Qu","HW","HW","HW")
     "sw_space": (list(range(56)),list(range(56)),list(range(56)),list(range(56)),list(range(4)),[128],[256,240,224]
                  ,[256,240,224],[512,496,480,464],[512,496,480,464],
                  [16],[16],[16],[16],[16],[16],[16],[16],
