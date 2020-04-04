@@ -412,8 +412,8 @@ class Controller(object):
                 logger.info("--------->Top-5: {}%".format(acc5))
                 logger.info("--------->Lat: {}ms".format(lat))
                 logger.info("--------->Reward: {}".format(reward))
-                logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,0.7))
-                logger.info("--------->Reward-Lat: {}*{}".format(lat_reward,0.3))
+                # logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,0.7))
+                # logger.info("--------->Reward-Lat: {}*{}".format(lat_reward,0.3))
                 logger.info("")
                 for p in pat_point:
                     logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
