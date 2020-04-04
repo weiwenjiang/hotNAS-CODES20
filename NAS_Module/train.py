@@ -329,7 +329,7 @@ def parse_args():
     parser.add_argument('--train_stop_batch', default=100, type=int, metavar='N',help='number of batch to terminate in training')
     parser.add_argument('--test_stop_batch', default=200, type=int, metavar='N',help='number of batch to terminate in testing')
     parser.add_argument('-c', '--cconv',default="70, 36, 64, 64, 7, 18, 6, 6",help="hardware desgin of cconv",)
-    parser.add_argument('-f', '--finetue_dna', default="15 24 10 46 3 128 240 240 480 496 16 16 16 16 8 12 16 8 2 0 0", help="hardware desgin of cconv", )
+    parser.add_argument('-f', '--finetue_dna', default="35 41 21 15 1 128 256 256 496 512 16 12 12 12 8 8 8 8 2 0 0", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 10", help="target latency range, determining reward", )

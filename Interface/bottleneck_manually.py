@@ -72,7 +72,6 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
 
 
 if __name__== "__main__":
-
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
@@ -95,8 +94,8 @@ if __name__== "__main__":
 
     print(model)
 
-    for name, para in model.named_parameters():
-        print(name)
+    # for name, para in model.named_parameters():
+    #     print(name)
 
     # print("="*100)
     #

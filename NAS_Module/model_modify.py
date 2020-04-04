@@ -74,6 +74,12 @@ def Channel_Cut(model,layers):
 # [1,22,49,54], 3, [100,210,210,470,470]
 def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
 
+    parttern_77_space = pattern_sets_generate_3((7, 7))
+    parttern_77 = {}
+    for i in parttern_77_space.keys():
+        parttern_77[i] = parttern_77_space[i].reshape((7, 7))
+    layer_names_77 = ["conv1"]
+
     pattern_space = pattern_sets_generate_3((3, 3))
     pattern = {}
     i = 0
@@ -122,6 +128,8 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     Kenel_Expand(model, layer_kernel_inc)
     Kenel_Quantization(model, quant_layers, quan_paras)
 
+    Kernel_Patter(model, layer_names_77, parttern_77, args)
+
     return model
 
 
@@ -141,8 +149,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '-d', '--dna',
-        # default="35 41 21 15 1 128 224 224 464 464 4 4 4 4 4 4 4 4 0 0 0",
-        default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
+        default="35 41 21 15 1 128 256 256 496 512 16 12 12 12 8 8 8 8 2 0 0",
+        # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",
     )
     parser.add_argument('--device', default='cpu', help='device')
