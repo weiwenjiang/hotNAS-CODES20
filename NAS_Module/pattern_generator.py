@@ -28,7 +28,7 @@ def pattern_sets_generate_3(kernal_shape):
 
         for i in range(4):
             tmp_tensor = base_tensor.clone()
-            tozero_idx = random.sample(range(25), 10)
+            tozero_idx = random.sample(range(25), 6)
             for idx in tozero_idx:
                 tmp_tensor[idx] = 0
             pattern_space[i] = tmp_tensor
