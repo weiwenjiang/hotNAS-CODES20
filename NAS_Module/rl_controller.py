@@ -159,7 +159,7 @@ class Controller(object):
             self.global_step = tf.Variable(0, trainable=False)
             self.learning_rate = tf.train.exponential_decay(0.99, self.global_step, 50, 0.5, staircase=True)
             if self.args.rl_optimizer=="Adam":
-                self.optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
+                self.optimizer = tf.train.AdamOptimizer(learning_rate=0.01)
             else:
                 self.optimizer = tf.train.RMSPropOptimizer(learning_rate=self.learning_rate)
 
