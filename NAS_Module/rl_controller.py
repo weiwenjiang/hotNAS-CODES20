@@ -325,11 +325,11 @@ class Controller(object):
                             (acc1,acc5,lat) = self.trained_network[str_NNs]
                         else:
                             # comment: train network and obtain accuracy for updating controller
-                            acc1 = random.uniform(0, 1)
-                            acc5 = random.uniform(0, 1)
-                            lat = random.uniform(7, 10)
+                            # acc1 = random.uniform(0, 1)
+                            # acc5 = random.uniform(0, 1)
+                            # lat = random.uniform(7, 10)
 
-                            # acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
 
                             # Keep history trained data
 
