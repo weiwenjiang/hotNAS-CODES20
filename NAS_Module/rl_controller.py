@@ -363,7 +363,8 @@ class Controller(object):
                         else:
                             lat_reward = (self.target_lat[1]-lat)/(self.target_lat[1]-self.target_lat[0])*2-1
 
-                        reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
+                        # reward = acc_reward * self.alpha + lat_reward*(1-self.alpha)
+                        reward = acc_reward * 0.7 + lat_reward * (1 - 0.7)
 
 
                         #
