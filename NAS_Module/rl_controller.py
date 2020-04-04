@@ -61,9 +61,9 @@ class Controller(object):
 
         # self.data_loader,self.data_loader_test = train.get_data_loader(self.args)
 
-        self.alpha = float(self.args.alpha)
-        self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
-        self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
+        # self.alpha = float(self.args.alpha)
+        # self.target_acc = [float(x) for x in self.args.target_acc.split(" ")]
+        # self.target_lat = [float(x) for x in self.args.target_lat.split(" ")]
 
         [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in self.args.cconv.split(",")]
         self.HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
