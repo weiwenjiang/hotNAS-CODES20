@@ -201,23 +201,83 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     return model
 
 
+def mobilenet_v2_space(model, args):
 
+    quan_paras = {}
+
+    quan_paras["features.0.0"] = [0, 16, True]
+    quan_paras["features.1.conv.0.0"] = [0, 16, True]
+    quan_paras["features.1.conv.1"] = [0, 16, True]
+    quan_paras["features.2.conv.0.0"] = [0, 16, True]
+    quan_paras["features.2.conv.1.0"] = [0, 16, True]
+    quan_paras["features.2.conv.2"] = [0, 16, True]
+    quan_paras["features.3.conv.0.0"] = [0, 16, True]
+    quan_paras["features.3.conv.1.0"] = [0, 16, True]
+    quan_paras["features.3.conv.2"] = [0, 16, True]
+    quan_paras["features.4.conv.0.0"] = [0, 16, True]
+    quan_paras["features.4.conv.1.0"] = [0, 16, True]
+    quan_paras["features.4.conv.2"] = [0, 16, True]
+    quan_paras["features.5.conv.0.0"] = [0, 16, True]
+    quan_paras["features.5.conv.1.0"] = [0, 16, True]
+    quan_paras["features.5.conv.2"] = [0, 16, True]
+    quan_paras["features.6.conv.0.0"] = [0, 16, True]
+    quan_paras["features.6.conv.1.0"] = [0, 16, True]
+    quan_paras["features.6.conv.2"] = [0, 16, True]
+    quan_paras["features.7.conv.0.0"] = [0, 16, True]
+    quan_paras["features.7.conv.1.0"] = [0, 16, True]
+    quan_paras["features.7.conv.2"] = [0, 16, True]
+    quan_paras["features.8.conv.0.0"] = [0, 16, True]
+    quan_paras["features.8.conv.1.0"] = [0, 16, True]
+    quan_paras["features.8.conv.2"] = [0, 16, True]
+    quan_paras["features.9.conv.0.0"] = [0, 16, True]
+    quan_paras["features.9.conv.1.0"] = [0, 16, True]
+    quan_paras["features.9.conv.2"] = [0, 16, True]
+    quan_paras["features.10.conv.0.0"] = [0, 16, True]
+    quan_paras["features.10.conv.1.0"] = [0, 16, True]
+    quan_paras["features.10.conv.2"] = [0, 16, True]
+    quan_paras["features.11.conv.0.0"] = [0, 16, True]
+    quan_paras["features.11.conv.1.0"] = [0, 16, True]
+    quan_paras["features.11.conv.2"] = [0, 16, True]
+    quan_paras["features.12.conv.0.0"] = [0, 16, True]
+    quan_paras["features.12.conv.1.0"] = [0, 16, True]
+    quan_paras["features.12.conv.2"] = [0, 16, True]
+    quan_paras["features.13.conv.0.0"] = [0, 16, True]
+    quan_paras["features.13.conv.1.0"] = [0, 16, True]
+    quan_paras["features.13.conv.2"] = [0, 16, True]
+    quan_paras["features.14.conv.0.0"] = [0, 16, True]
+    quan_paras["features.14.conv.1.0"] = [0, 16, True]
+    quan_paras["features.14.conv.2"] = [0, 16, True]
+    quan_paras["features.15.conv.0.0"] = [0, 16, True]
+    quan_paras["features.15.conv.1.0"] = [0, 16, True]
+    quan_paras["features.15.conv.2"] = [0, 16, True]
+    quan_paras["features.16.conv.0.0"] = [0, 16, True]
+    quan_paras["features.16.conv.1.0"] = [0, 16, True]
+    quan_paras["features.16.conv.2"] = [0, 16, True]
+    quan_paras["features.17.conv.0.0"] = [0, 16, True]
+    quan_paras["features.17.conv.1.0"] = [0, 16, True]
+    quan_paras["features.17.conv.2"] = [0, 16, True]
+    quan_paras["features.18.0"] = [0, 16, True]
+
+    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+
+    print(model)
+    return model
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mnasnet0_5'
+        default='mobilenet_v2'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="100, 16, 32, 32, 3, 6, 10, 16",
+        default="160, 12, 32, 32, 3, 10, 10, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="832, 1, 32, 32, 5, 6, 10, 16",
+        default="576, 1, 32, 32, 3, 10, 10, 10",
         help="hardware desgin of cconv",
     )
 
@@ -265,6 +325,14 @@ if __name__ == "__main__":
         total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
 
         print(total_lat/2)
+
+    elif args.model == "mobilenet_v2":
+        HW1 = [int(x.strip()) for x in args.dconv.split(",")]
+        HW2 = [int(x.strip()) for x in args.cconv.split(",")]
+
+        model = mobilenet_v2_space(model, args)
+        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
+        print(total_lat / 2)
 
     print("Success")
 

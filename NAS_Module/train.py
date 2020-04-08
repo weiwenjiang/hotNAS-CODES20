@@ -199,6 +199,9 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         pattern_5_5_idx = dna[4:8]
         q_list = dna[8:23]
         model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
+    elif args.model == "mobilenet_v2":
+        model = mobilenet_v2_space(model, args)
+
     else:
         print("Currently not support the given model {}".format("args.model"))
         sys.exit(0)
