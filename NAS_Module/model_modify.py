@@ -106,17 +106,17 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     quan_paras["layers.10.0.layers.3"] = [0, q_list[1], True]
     quan_paras["layers.12.0.layers.3"] = [0, q_list[2], True]
     quan_paras["layers.12.0.layers.6"] = [0, q_list[3], True]
-    quan_paras["layers.12.1.layers.0"] = [0, q_list[4], True]
-    quan_paras["layers.12.1.layers.3"] = [0, q_list[5], True]
-    quan_paras["layers.12.1.layers.6"] = [0, q_list[6], True]
-    quan_paras["layers.12.2.layers.0"] = [0, q_list[7], True]
-    quan_paras["layers.12.2.layers.3"] = [0, q_list[8], True]
-    quan_paras["layers.12.2.layers.6"] = [0, q_list[9], True]
-    quan_paras["layers.12.3.layers.0"] = [0, q_list[10], True]
-    quan_paras["layers.12.3.layers.6"] = [0, q_list[11], True]
-    quan_paras["layers.13.0.layers.0"] = [0, q_list[12], True]
-    quan_paras["layers.13.0.layers.6"] = [0, q_list[13], True]
-    quan_paras["layers.14"] = [0, q_list[14], True]
+    # quan_paras["layers.12.1.layers.0"] = [0, q_list[4], True]
+    # quan_paras["layers.12.1.layers.3"] = [0, q_list[5], True]
+    # quan_paras["layers.12.1.layers.6"] = [0, q_list[6], True]
+    # quan_paras["layers.12.2.layers.0"] = [0, q_list[7], True]
+    # quan_paras["layers.12.2.layers.3"] = [0, q_list[8], True]
+    # quan_paras["layers.12.2.layers.6"] = [0, q_list[9], True]
+    # quan_paras["layers.12.3.layers.0"] = [0, q_list[10], True]
+    # quan_paras["layers.12.3.layers.6"] = [0, q_list[11], True]
+    # quan_paras["layers.13.0.layers.0"] = [0, q_list[12], True]
+    # quan_paras["layers.13.0.layers.6"] = [0, q_list[13], True]
+    # quan_paras["layers.14"] = [0, q_list[14], True]
     #
     # channel_cut_layers = [["layers.0", "layers.3", "layers.1", (3, 5, 32)],
     #                       ["layers.3", "layers.6", "layers.4", (5, 5, 16), True],
@@ -133,7 +133,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     # Channel_Cut(model, channel_cut_layers)
 
-    # Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
     print(model)
     return model
