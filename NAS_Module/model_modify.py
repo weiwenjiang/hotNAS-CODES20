@@ -96,10 +96,10 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
         pattern_33[i] = pattern_33_space[idx].reshape((3, 3))
         i += 1
     # layer_33_names = ["layers.3", "layers.8.1.layers.3", "layers.8.2.layers.3"]
-    layer_33_names = ["layers.8.2.layers.3"]
+    layer_33_names = ["layers.8.1.layers.3", "layers.8.2.layers.3"]
 
     Kernel_Patter(model, layer_names_55, pattern_55, args)
-    Kernel_Patter(model, layer_33_names, pattern_33, args)
+    # Kernel_Patter(model, layer_33_names, pattern_33, args)
 
     quan_paras = {}
 
