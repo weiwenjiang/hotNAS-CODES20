@@ -38,8 +38,24 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
+def quantize(x, num_int_bits, num_frac_bits, signed=True):
+    precision = 1 / 2 ** num_frac_bits
+    x = torch.round(x / precision) * precision
+
+    if signed is True:
+        bound = 2 ** (num_int_bits - 1)
+        return torch.clamp(x, -bound, bound - precision)
+    else:
+        bound = 2 ** num_int_bits
+        return torch.clamp(x, 0, bound - precision)
+
 
 if __name__== "__main__":
+
+    # x = torch.tensor(2.634,dtype=torch.float32)
+    # print(quantize(x,3,32,True))
+    #
+    # sys.exit(0)
 
     # B, C, H, W = 10, 3, 4, 4
     # x = torch.randn(B, C, H, W)
