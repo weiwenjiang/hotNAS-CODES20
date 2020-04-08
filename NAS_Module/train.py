@@ -193,7 +193,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         HW[5] += comm_point[0]
         HW[6] += comm_point[1]
         HW[7] += comm_point[2]
-        model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+        # model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
     elif args.model == "mnasnet0_5":
         pattern_3_3_idx = dna[0:4]
         pattern_5_5_idx = dna[4:8]
