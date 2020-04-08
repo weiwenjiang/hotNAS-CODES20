@@ -24,7 +24,7 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, HW1, HW2):
+def get_performance(model, HW1, HW2,device=None):
     input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
     cTT = 0
     dTT = 0
@@ -33,6 +33,8 @@ def get_performance(model, HW1, HW2):
             input_shape = list(input.shape)
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
+            if device is not None:
+                input = input.to(device)
             input = layer(input)
 
 
