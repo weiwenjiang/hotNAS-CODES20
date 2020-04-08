@@ -198,7 +198,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         pattern_3_3_idx = dna[0:4]
         pattern_5_5_idx = dna[4:8]
         q_list = dna[8:23]
-        model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
+        # model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
     else:
         print("Currently not support the given model {}".format("args.model"))
         sys.exit(0)
