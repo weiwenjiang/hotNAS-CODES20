@@ -112,8 +112,8 @@ def mnasnet0_5_space(model, q_list, args):
                           # ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
 
     # Channel_Cut(model, channel_cut_layers)
-    # Kernel_Patter(model, layer_names_55, parttern_55, args)
-    # Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    Kernel_Patter(model, layer_names_55, parttern_55, args)
+    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
     print(model)
     return model

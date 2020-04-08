@@ -50,7 +50,7 @@ def get_performance(model, HW1, HW2):
                 HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                 HW_constraints["BITWIDTH"])
 
-                print("\t",layer_name,M, N, R, C, K, S, T)
+                # print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
@@ -63,14 +63,13 @@ def get_performance(model, HW1, HW2):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    if perf[1] == "loading IFM":
+                    # if perf[1] == "loading IFM":
                     # if perf[1] == "loading Weight":
                     # if perf[1] == "computing":
-                        # print(layer_name)
-                        print("cconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                        # print("cconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
-                print("\t",layer_name,M, N, R, C, K, S, T)
+                # print("\t",layer_name,M, N, R, C, K, S, T)
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                                             HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
@@ -91,9 +90,8 @@ def get_performance(model, HW1, HW2):
 
                     dTT+=perf[0]
 
-                    # if perf[1] == "loading Weight":
-                    if perf[1] == "loading IFM":
-                    #     # print(layer_name)
+                    if perf[1] == "loading Weight":
+                    # if perf[1] == "loading IFM":
                         print("dconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
