@@ -17,7 +17,7 @@ from ztNAS_model_change import *
 from model_modify import *
 import utils
 import bottleneck_conv_only
-import bottleneck_conv_dconv
+import bottlenect_conv_dconv
 from search_space import *
 from rl_input import *
 
@@ -244,7 +244,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
         elif args.model == "mnasnet0_5":
-            total_lat = bottleneck_conv_dconv.get_performance(model, ori_HW, ori_HW2, device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW, ori_HW2, device)
 
         if total_lat>int(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
