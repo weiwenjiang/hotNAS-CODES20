@@ -61,7 +61,7 @@ if __name__== "__main__":
     i = 0
     for model_name in Model_Zoo_w_dconv:
         print(model_name)
-        model = globals()[model_name]()
+        model = globals()[model_name](pretrained=True)
         print(model)
 
         for name, param in model.named_parameters():
