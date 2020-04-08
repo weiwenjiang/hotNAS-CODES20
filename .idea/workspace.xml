@@ -204,14 +204,7 @@
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
       <workItem from="1585780216815" duration="92451000" />
-      <workItem from="1586354215643" duration="4275000" />
-    </task>
-    <task id="LOCAL-00124" summary="rl hw-sw co-explore">
-      <created>1585967594246</created>
-      <option name="number" value="00124" />
-      <option name="presentableId" value="LOCAL-00124" />
-      <option name="project" value="LOCAL" />
-      <updated>1585967594246</updated>
+      <workItem from="1586354215643" duration="4341000" />
     </task>
     <task id="LOCAL-00125" summary="rl hw-sw co-explore">
       <created>1585967651664</created>
@@ -549,7 +542,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586359149148</updated>
     </task>
-    <option name="localTasksCounter" value="173" />
+    <task id="LOCAL-00173" summary="run shell">
+      <created>1586359371142</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1586359371142</updated>
+    </task>
+    <option name="localTasksCounter" value="174" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -575,7 +575,8 @@
     <MESSAGE value="FBNet" />
     <MESSAGE value="search space" />
     <MESSAGE value="mobilenet 5*5 KP" />
-    <option name="LAST_COMMIT_MESSAGE" value="mobilenet 5*5 KP" />
+    <MESSAGE value="run shell" />
+    <option name="LAST_COMMIT_MESSAGE" value="run shell" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="110" width="800" height="677" key="#Notifications" timestamp="1585405034104">
@@ -586,11 +587,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
-    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586359148752">
+    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586359370925">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585948419037" />
-    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586359148752" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586359370925" />
     <state x="1997" y="1" width="748" height="740" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037059773" />
     <state x="490" y="159" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040837181" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585902779737">
@@ -648,11 +649,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1586359153461">
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1586359373917">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585948420842" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586359153461" />
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586359373917" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037062064" />
     <state x="445" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040842578" />
     <state x="1987" y="48" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1586013551984">
