@@ -244,7 +244,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
         elif args.model == "mnasnet0_5":
-            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW, ori_HW2, device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
         print("HW_Test Done")
         if total_lat>int(args.target_lat.split(" ")[1]):
@@ -303,7 +303,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
 
     parser.add_argument('--data-path', default='/mnt/weiwen/ImageNet', help='dataset')
-    parser.add_argument('--device', default='cuda', help='device')
+    # parser.add_argument('--device', default='cuda', help='device')
+    parser.add_argument('--device', default='cpu', help='device')
     parser.add_argument('-b', '--batch-size', default=32, type=int)
 
     parser.add_argument('-j', '--workers', default=16, type=int, metavar='N',
@@ -404,19 +405,26 @@ def get_data_loader(args):
 
 if __name__ == "__main__":
     args = parse_args()
-
-
     data_loader,data_loader_test = get_data_loader(args)
-
-
     dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
-
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
     HW2 = [int(x.strip()) for x in args.dconv.split(",")]
 
+    # print(dna,HW,HW2)
+    #
+    # model = torchvision.models.__dict__["mnasnet0_5"](pretrained=args.pretrained)
+    # pattern_3_3_idx = dna[0:4]
+    # pattern_5_5_idx = dna[4:8]
+    # q_list = dna[8:23]
+    # model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
+
     acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test, HW2)
     # main(args, [int(x) for x in dna.split(" ")], HW)
     #
-
-
+    #
+    # print(model)
+    #
+    # total_lat = bottlenect_conv_dconv.get_performance(model, HW2, HW)
+    #
+    # print("HW_Test Done")

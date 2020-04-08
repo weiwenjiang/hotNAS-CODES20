@@ -123,8 +123,8 @@ class FPGA_Templates:
         [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         if K > Tk:
-            #print("[Error] <From class Conv2D_FPGA_Template> Kernel Size {} of input conv is larger than the template supported {}".format(
-            #        K, Tk))
+            print("[Error] <From class Conv2D_FPGA_Template> Kernel Size {} of input conv is larger than the template supported {}".format(
+                   K, Tk))
             return False
         elif K < Tk:
             # print("[Warning] <From class Conv2D_FPGA_Template> {} HW kernel {} is underutilized for conv kernel {}".format(T, Tk,
@@ -132,7 +132,7 @@ class FPGA_Templates:
             pass;
 
         if self.T != T:
-            #print("[Error] <From class Conv2D_FPGA_Template> cannot using {} template for {}".format(self.T, T))
+            print("[Error] <From class Conv2D_FPGA_Template> cannot using {} template for {}".format(self.T, T))
             return False
         return True
 
