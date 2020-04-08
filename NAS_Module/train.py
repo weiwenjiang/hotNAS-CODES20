@@ -246,6 +246,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         elif args.model == "mnasnet0_5":
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW, ori_HW2, device)
 
+        print("HW_Test Done")
         if total_lat>int(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
