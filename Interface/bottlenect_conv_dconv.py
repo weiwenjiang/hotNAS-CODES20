@@ -112,7 +112,7 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mnasnet0_5'
+        default='mobilenet_v2'
     )
     parser.add_argument(
         '-c', '--cconv',
