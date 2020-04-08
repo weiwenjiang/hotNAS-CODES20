@@ -24,14 +24,33 @@ def pattern_sets_generate_3(kernal_shape):
                     pattern_idx+=1
 
     elif kernal_shape[0] == 5 and kernal_shape[1] == 5:
+        fix_one_set = [2,10,14,22,6,7,8,11,12,13,16,17,18]
+        pattern_idx = 0
+        for i in range(num_one - 5):
+            for j in range(i + 1, num_one - 4):
+                for k in range(j + 1, num_one - 3):
+                    for l in range(k + 1, num_one - 2):
+                        for m in range(l + 1, num_one - 1):
+                            for n in range(m + 1, num_one - 0):
+                                if i in fix_one_set or j in fix_one_set or k in fix_one_set or l in fix_one_set\
+                                        or m in fix_one_set or n in fix_one_set:
+                                    continue
+                                tmp_tensor = base_tensor.clone()
+                                tmp_tensor[i] = 0
+                                tmp_tensor[j] = 0
+                                tmp_tensor[k] = 0
+                                tmp_tensor[l] = 0
+                                tmp_tensor[m] = 0
+                                tmp_tensor[n] = 0
+                                pattern_space[pattern_idx] = tmp_tensor
+                                pattern_idx += 1
 
-
-        for i in range(4):
-            tmp_tensor = base_tensor.clone()
-            tozero_idx = random.sample(range(25), 6)
-            for idx in tozero_idx:
-                tmp_tensor[idx] = 0
-            pattern_space[i] = tmp_tensor
+        # for i in range(4):
+        #     tmp_tensor = base_tensor.clone()
+        #     tozero_idx = random.sample(range(25), 6)
+        #     for idx in tozero_idx:
+        #         tmp_tensor[idx] = 0
+        #     pattern_space[i] = tmp_tensor
 
 
 
@@ -112,5 +131,7 @@ if __name__ == "__main__":
 
     pattern_space = pattern_sets_generate_3((5,5))
 
-    for k,v in pattern_space.items():
-        print(k,v.reshape((5,5)))
+    # for k,v in pattern_space.items():
+    #     print(k,v.reshape((5,5)))
+    #     break
+    print(len(pattern_space.keys()))

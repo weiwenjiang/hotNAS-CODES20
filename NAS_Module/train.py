@@ -17,6 +17,7 @@ from ztNAS_model_change import *
 from model_modify import *
 import utils
 import bottleneck_conv_only
+import bottleneck_conv_dconv
 from search_space import *
 from rl_input import *
 
@@ -169,14 +170,7 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args, dna, ori_HW, data_loader, data_loader_test):
-    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
-
-    HW = copy.deepcopy(ori_HW)
-
-    HW[5] += comm_point[0]
-    HW[6] += comm_point[1]
-    HW[7] += comm_point[2]
+def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
 
     # print("==============Train==========")
     # print(pat_point, exp_point, ch_point)
@@ -194,9 +188,17 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
     model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
     if args.model == "resnet18":
+        pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+        HW = copy.deepcopy(ori_HW)
+        HW[5] += comm_point[0]
+        HW[6] += comm_point[1]
+        HW[7] += comm_point[2]
         model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
     elif args.model == "mnasnet0_5":
-        model = mnasnet0_5_space(model, args)
+        pattern_3_3_idx = dna[0:4]
+        pattern_5_5_idx = dna[4:8]
+        q_list = dna[8:23]
+        model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
     else:
         print("Currently not support the given model {}".format("args.model"))
         sys.exit(0)
@@ -233,12 +235,17 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
     total_lat = 0
 
     if args.hw_test:
-        if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
-            total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
-                                                             HW[4], HW[5], HW[6], HW[7], device)
-        else:
-            print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
-            return 0, 0, -1
+
+        if args.model == "resnet18":
+            if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
+                total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
+                                                                 HW[4], HW[5], HW[6], HW[7], device)
+            else:
+                print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
+                return 0, 0, -1
+        elif args.model == "mnasnet0_5":
+            total_lat = bottleneck_conv_dconv.get_performance(model, ori_HW, ori_HW2, device)
+
         if total_lat>int(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
@@ -339,14 +346,14 @@ def parse_args():
     parser.add_argument("--rl", dest="reinfoce", help="execute reinforcement leraning", action="store_true", )
     parser.add_argument('--train_stop_batch', default=100, type=int, metavar='N',help='number of batch to terminate in training')
     parser.add_argument('--test_stop_batch', default=200, type=int, metavar='N',help='number of batch to terminate in testing')
-    parser.add_argument('-c', '--cconv',default="70, 36, 64, 64, 7, 18, 6, 6",help="hardware desgin of cconv",)
-    parser.add_argument('-f', '--finetue_dna', default="35 41 21 15 1 128 256 256 496 512 16 12 12 12 8 8 8 8 2 0 0", help="hardware desgin of cconv", )
+    parser.add_argument('-f', '--finetue_dna', default="30 39 41 50 130 439 541 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 10", help="target latency range, determining reward", )
     parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
     parser.add_argument("--hwt", dest="hw_test", help="whether test hardware", action="store_true", )
-
+    parser.add_argument('-dc', '--dconv',default="832, 1, 32, 32, 5, 6, 10, 16",help="hardware desgin of dconv", )
+    parser.add_argument('-c', '--cconv',default="100, 16, 32, 32, 3, 6, 10, 16",help="hardware desgin of cconv",)
 
     args = parser.parse_args()
 
@@ -404,8 +411,9 @@ if __name__ == "__main__":
 
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+    HW2 = [int(x.strip()) for x in args.dconv.split(",")]
 
-    acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test)
+    acc1, acc5, lat = main(args, dna, HW, data_loader, data_loader_test, HW2)
     # main(args, [int(x) for x in dna.split(" ")], HW)
     #
 

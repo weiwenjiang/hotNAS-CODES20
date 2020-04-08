@@ -63,10 +63,10 @@ def get_performance(model, HW1, HW2):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    # if perf[1] == "loading IFM":
+                    # # if perf[1] == "loading IFM":
                     # if perf[1] == "loading Weight":
-                    # if perf[1] == "computing":
-                        # print("cconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    # # if perf[1] == "computing":
+                    #     print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
                 # print("\t",layer_name,M, N, R, C, K, S, T)
@@ -90,9 +90,10 @@ def get_performance(model, HW1, HW2):
 
                     dTT+=perf[0]
 
-                    if perf[1] == "loading Weight":
-                    # if perf[1] == "loading IFM":
-                        print("dconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    # if perf[1] == "loading Weight":
+                    # # if perf[1] == "loading IFM":
+                    # # if perf[1] == "computing":
+                    #     print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -112,12 +113,12 @@ if __name__== "__main__":
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 33, 32, 32, 3, 6, 10, 14",
+        default="100, 16, 32, 32, 3, 6, 10, 14",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="192, 1, 32, 32, 5, 6, 10, 14",
+        default="832, 1, 32, 32, 5, 6, 10, 14",
         help="hardware desgin of cconv",
     )
 
@@ -141,4 +142,4 @@ if __name__== "__main__":
 
     print("="*10,model_name,"performance analysis:")
     total_lat = get_performance(model, HW1, HW2)
-    print(total_lat)
+    print(total_lat/2)

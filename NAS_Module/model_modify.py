@@ -75,44 +75,64 @@ def Channel_Cut(model,layers):
 
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mnasnet0_5_space(model, q_list, args):
+def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
-    parttern_55_space = pattern_sets_generate_3((5, 5))
-    parttern_55 = {}
-    for i in parttern_55_space.keys():
-        parttern_55[i] = parttern_55_space[i].reshape((5, 5))
-    layer_names_55 = ["layers.9.1.layers.3","layers.9.2.layers.3","layers.10.1.layers.3",
-                      "layers.10.2.layers.3","layers.12.1.layers.3","layers.12.2.layers.3",
-                      "layers.12.3.layers.3"]
+    # pattern_idx = [0, 1, 2, 3]
+
+    pattern_55_space = pattern_sets_generate_3((5, 5))
+    pattern_55 = {}
+    i = 0
+    for idx in pattern_5_5_idx:
+        pattern_55[i] = pattern_55_space[idx].reshape((5, 5))
+        i+=1
+    layer_names_55 = ["layers.9.0.layers.3","layers.9.1.layers.3","layers.9.2.layers.3",
+                      "layers.10.1.layers.3","layers.10.2.layers.3"]
+
+
+    pattern_33_space = pattern_sets_generate_3((3, 3))
+    pattern_33 = {}
+    i = 0
+    for idx in pattern_3_3_idx:
+        pattern_33[i] = pattern_33_space[idx].reshape((3, 3))
+        i += 1
+    layer_33_names = ["layers.3", "layers.8.1.layers.3", "layers.8.2.layers.3"]
+
+    Kernel_Patter(model, layer_names_55, pattern_55, args)
+    Kernel_Patter(model, layer_33_names, pattern_33, args)
+
     quan_paras = {}
 
     quan_paras["layers.0"] = [0, q_list[0], True]
-    quan_paras["layers.12.0.layers.6"] = [0, q_list[1], True]
-    quan_paras["layers.12.1.layers.0"] = [0, q_list[2], True]
-    quan_paras["layers.12.1.layers.6"] = [0, q_list[3], True]
-    quan_paras["layers.12.2.layers.0"] = [0, q_list[4], True]
-    quan_paras["layers.12.2.layers.6"] = [0, q_list[5], True]
-    quan_paras["layers.12.3.layers.0"] = [0, q_list[6], True]
-    quan_paras["layers.12.3.layers.6"] = [0, q_list[7], True]
-    quan_paras["layers.13.0.layers.0"] = [0, q_list[8], True]
-    quan_paras["layers.13.0.layers.6"] = [0, q_list[9], True]
-    quan_paras["layers.14"] = [0, q_list[10], True]
-
-    channel_cut_layers = [["layers.0", "layers.3", "layers.1", (3, 5, 32)],
-                          ["layers.3", "layers.6", "layers.4", (5, 5, 16), True],
-                          # ["layers.0", "layers.3", "layers.1", (3, 16, 32)],
-                          #
-                          ]
-                          # ["layer1.1.conv1", "layer1.1.conv2", "layer1.1.bn1", (64, 64, 64)],
-                          # ["layer2.0.conv1", "layer2.0.conv2", "layer2.0.bn1", (64, 128, 128)],
-                          # ["layer2.1.conv1", "layer2.1.conv2", "layer2.1.bn1", (128, ch_list[0], 128)],
-                          # ["layer3.0.conv1", "layer3.0.conv2", "layer3.0.bn1", (128, ch_list[1], 256)],
-                          # ["layer3.1.conv1", "layer3.1.conv2", "layer3.1.bn1", (256, ch_list[2], 256)],
-                          # ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, ch_list[3], 512)],
-                          # ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
+    quan_paras["layers.10.0.layers.3"] = [0, q_list[1], True]
+    quan_paras["layers.12.0.layers.3"] = [0, q_list[2], True]
+    quan_paras["layers.12.0.layers.6"] = [0, q_list[3], True]
+    quan_paras["layers.12.1.layers.0"] = [0, q_list[4], True]
+    quan_paras["layers.12.1.layers.3"] = [0, q_list[5], True]
+    quan_paras["layers.12.1.layers.6"] = [0, q_list[6], True]
+    quan_paras["layers.12.2.layers.0"] = [0, q_list[7], True]
+    quan_paras["layers.12.2.layers.3"] = [0, q_list[8], True]
+    quan_paras["layers.12.2.layers.6"] = [0, q_list[9], True]
+    quan_paras["layers.12.3.layers.0"] = [0, q_list[10], True]
+    quan_paras["layers.12.3.layers.6"] = [0, q_list[11], True]
+    quan_paras["layers.13.0.layers.0"] = [0, q_list[12], True]
+    quan_paras["layers.13.0.layers.6"] = [0, q_list[13], True]
+    quan_paras["layers.14"] = [0, q_list[14], True]
+    #
+    # channel_cut_layers = [["layers.0", "layers.3", "layers.1", (3, 5, 32)],
+    #                       ["layers.3", "layers.6", "layers.4", (5, 5, 16), True],
+    #                       # ["layers.0", "layers.3", "layers.1", (3, 16, 32)],
+    #                       #
+    #                       ]
+    #                       # ["layer1.1.conv1", "layer1.1.conv2", "layer1.1.bn1", (64, 64, 64)],
+    #                       # ["layer2.0.conv1", "layer2.0.conv2", "layer2.0.bn1", (64, 128, 128)],
+    #                       # ["layer2.1.conv1", "layer2.1.conv2", "layer2.1.bn1", (128, ch_list[0], 128)],
+    #                       # ["layer3.0.conv1", "layer3.0.conv2", "layer3.0.bn1", (128, ch_list[1], 256)],
+    #                       # ["layer3.1.conv1", "layer3.1.conv2", "layer3.1.bn1", (256, ch_list[2], 256)],
+    #                       # ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, ch_list[3], 512)],
+    #                       # ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
 
     # Channel_Cut(model, channel_cut_layers)
-    Kernel_Patter(model, layer_names_55, parttern_55, args)
+
     Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
     print(model)
@@ -191,18 +211,19 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 33, 32, 32, 3, 6, 10, 14",
+        default="100, 16, 32, 32, 3, 6, 10, 16",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="192, 1, 32, 32, 5, 6, 10, 14",
+        default="832, 1, 32, 32, 5, 6, 10, 16",
         help="hardware desgin of cconv",
     )
 
     parser.add_argument(
         '-d', '--dna',
-        default="8 8 8 8 8 8 8 8 8 8 8",
+        # default="8 8 8 8 8 8 8 8 8 8 8 8 8 8 8",
+        default="30 39 41 50 130 439 541 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
 
         # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",
@@ -230,8 +251,11 @@ if __name__ == "__main__":
 
     elif args.model == "mnasnet0_5":
         dna = [int(x) for x in args.dna.split(" ")]
-        q_list = dna[0:12]
-        model = mnasnet0_5_space(model, q_list, args)
+
+        pattern_3_3_idx = dna[0:4]
+        pattern_5_5_idx = dna[4:8]
+        q_list = dna[8:23]
+        model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
         HW1 = [int(x.strip()) for x in args.dconv.split(",")]
         HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
@@ -239,7 +263,7 @@ if __name__ == "__main__":
         print("=" * 10, model_name, "performance analysis:")
         total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
 
-        print(total_lat)
+        print(total_lat/2)
 
     print("Success")
 
