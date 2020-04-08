@@ -133,7 +133,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     # Channel_Cut(model, channel_cut_layers)
 
-    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    # Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
     print(model)
     return model
