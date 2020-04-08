@@ -52,7 +52,7 @@ def get_performance(model, HW1, HW2,device=None):
                 HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                 HW_constraints["BITWIDTH"])
 
-                # print("\t",layer_name,M, N, R, C, K, S, T)
+                print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
@@ -71,7 +71,7 @@ def get_performance(model, HW1, HW2,device=None):
                     #     print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
-                # print("\t",layer_name,M, N, R, C, K, S, T)
+                print("\t",layer_name,M, N, R, C, K, S, T)
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                                             HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
