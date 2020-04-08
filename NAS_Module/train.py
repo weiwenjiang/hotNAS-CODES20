@@ -235,7 +235,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
     total_lat = 0
 
     if args.hw_test:
-
+        print("HW_Test")
         if args.model == "resnet18":
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
                 total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
