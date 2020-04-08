@@ -114,7 +114,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     # quan_paras["layers.12.2.layers.6"] = [0, q_list[9], True]
     # quan_paras["layers.12.3.layers.0"] = [0, q_list[10], True]
     # quan_paras["layers.12.3.layers.6"] = [0, q_list[11], True]
-    quan_paras["layers.13.0.layers.0"] = [0, q_list[12], True]
+    # quan_paras["layers.13.0.layers.0"] = [0, q_list[12], True]
     # quan_paras["layers.13.0.layers.6"] = [0, q_list[13], True]
     # quan_paras["layers.14"] = [0, q_list[14], True]
     #
