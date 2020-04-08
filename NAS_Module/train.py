@@ -242,6 +242,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test):
         if total_lat>int(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
             return 0, 0, -1
+        elif total_lat==-1 or total_lat==0:
+            return 0, 0, -1
         print("Hardware Test Pass {}/{}".format(total_lat,int(args.target_lat.split(" ")[1])))
 
     if args.test_only:
