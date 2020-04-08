@@ -65,7 +65,8 @@ if __name__== "__main__":
         print(model)
 
         for name, param in model.named_parameters():
-            print (name,param.requires_grad,param.data.shape,float(param.min()),float(param.max()))
+            if max(abs(float(param.min())),abs(float(param.max()))) > 1:
+                print (name,param.requires_grad,param.data.shape,float(param.min()),float(param.max()))
 
         sys.exit(0)
         continue
