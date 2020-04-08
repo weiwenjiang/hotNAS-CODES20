@@ -206,11 +206,16 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
     INDEX = {}
 
     for k,v in conv_modify.items():
+        force = False
         layer_name = k
         layer = v[0]
         [M, N, K, S, G, P, b] = (
             int(v[2]), int(v[1]), is_same(layer.kernel_size),
             is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
+        if len(v)==5:
+            # print(layer_name,v)
+            force = v[4]
+        ori_N = layer.in_channels
 
         ## Weiwen: 03-29
         ## Step 1: Translate layer name to locate layer module
@@ -221,15 +226,17 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         ## Weiwen: 03-29
         ## Step 2: Backup weights and bias if exist
         ##
-
+        # print(layer_name)
         if M!= layer.out_channels and N != layer.in_channels:
+            print(layer_name)
             print([M, N, K, S, G, P])
             print(layer)
             print("Not support cut channels for both IFM and OFM at once, do it sequentially")
             sys.exit(0)
 
-        if M != layer.out_channels:
+        if M != layer.out_channels or force:
             # OFM Filtering
+            # print(layer_name,force)
             W = model.state_dict()[layer_name + ".weight"][:]
             Idx = W.norm(dim=(2, 3)).sum(dim=1).topk(M)[1]
 
@@ -259,7 +266,14 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
             if type(b) == nn.Parameter:
                 ori_para_b = model.state_dict()[layer_name + ".bias"][:]
                 is_b = True
-            ori_para_w = model.state_dict()[layer_name + ".weight"].transpose(0, 1)[Idx].transpose(0, 1)
+
+            if G==ori_N:# dconv
+                ori_para_w = model.state_dict()[layer_name + ".weight"][Idx]
+                G = N
+                M = N
+            # print(layer_name + ".weight", model.state_dict()[layer_name + ".weight"].shape,Idx)
+            else:
+                ori_para_w = model.state_dict()[layer_name + ".weight"].transpose(0, 1)[Idx].transpose(0, 1)
 
         else:
             is_b = False
@@ -295,6 +309,8 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
         ## Weiwen: 03-29
         ## Step 4: Setup new parameters from backup
         ##
+        # print(N,M,ori_para_w.shape)
+        # print(model.state_dict()[layer_name + ".weight"].shape)
         if type(b)==nn.Parameter:
             model.state_dict()[layer_name + ".bias"][:] = ori_para_b
         model.state_dict()[layer_name + ".weight"][:] = ori_para_w

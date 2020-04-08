@@ -10,6 +10,7 @@ import argparse
 from ztNAS_model_change import *
 import utils
 import bottleneck_conv_only
+import bottlenect_conv_dconv
 from pattern_generator import *
 from search_space import *
 
@@ -60,10 +61,13 @@ def Channel_Cut(model,layers):
         ifm_cut_layer = layer_pair[1]
         bn_cut_layer = layer_pair[2]
         CH0,CH1,CH2 = layer_pair[3]
+        force = False
+        if len(layer_pair)==5:
+            force = layer_pair[4]
 
         conv_modify = {}
         conv_modify[ofm_cut_layer] = (
-            dict(model.named_modules())[ofm_cut_layer], CH0, CH1, [bn_cut_layer, ifm_cut_layer])
+            dict(model.named_modules())[ofm_cut_layer], CH0, CH1, [bn_cut_layer, ifm_cut_layer], force)
         conv_modify[ifm_cut_layer] = (dict(model.named_modules())[ifm_cut_layer], CH1, CH2, [])
         bn_modifiy = {}
         bn_modifiy[bn_cut_layer] = (dict(model.named_modules())[bn_cut_layer], CH1)
@@ -71,7 +75,7 @@ def Channel_Cut(model,layers):
 
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mnasnet0_5_space(model, args):
+def mnasnet0_5_space(model, q_list, args):
 
     parttern_55_space = pattern_sets_generate_3((5, 5))
     parttern_55 = {}
@@ -80,11 +84,38 @@ def mnasnet0_5_space(model, args):
     layer_names_55 = ["layers.9.1.layers.3","layers.9.2.layers.3","layers.10.1.layers.3",
                       "layers.10.2.layers.3","layers.12.1.layers.3","layers.12.2.layers.3",
                       "layers.12.3.layers.3"]
+    quan_paras = {}
 
+    quan_paras["layers.0"] = [0, q_list[0], True]
+    quan_paras["layers.12.0.layers.6"] = [0, q_list[1], True]
+    quan_paras["layers.12.1.layers.0"] = [0, q_list[2], True]
+    quan_paras["layers.12.1.layers.6"] = [0, q_list[3], True]
+    quan_paras["layers.12.2.layers.0"] = [0, q_list[4], True]
+    quan_paras["layers.12.2.layers.6"] = [0, q_list[5], True]
+    quan_paras["layers.12.3.layers.0"] = [0, q_list[6], True]
+    quan_paras["layers.12.3.layers.6"] = [0, q_list[7], True]
+    quan_paras["layers.13.0.layers.0"] = [0, q_list[8], True]
+    quan_paras["layers.13.0.layers.6"] = [0, q_list[9], True]
+    quan_paras["layers.14"] = [0, q_list[10], True]
 
+    channel_cut_layers = [["layers.0", "layers.3", "layers.1", (3, 5, 32)],
+                          ["layers.3", "layers.6", "layers.4", (5, 5, 16), True],
+                          # ["layers.0", "layers.3", "layers.1", (3, 16, 32)],
+                          #
+                          ]
+                          # ["layer1.1.conv1", "layer1.1.conv2", "layer1.1.bn1", (64, 64, 64)],
+                          # ["layer2.0.conv1", "layer2.0.conv2", "layer2.0.bn1", (64, 128, 128)],
+                          # ["layer2.1.conv1", "layer2.1.conv2", "layer2.1.bn1", (128, ch_list[0], 128)],
+                          # ["layer3.0.conv1", "layer3.0.conv2", "layer3.0.bn1", (128, ch_list[1], 256)],
+                          # ["layer3.1.conv1", "layer3.1.conv2", "layer3.1.bn1", (256, ch_list[2], 256)],
+                          # ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, ch_list[3], 512)],
+                          # ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, ch_list[4], 512)]]
 
-    Kernel_Patter(model, layer_names_55, parttern_55, args)
+    # Channel_Cut(model, channel_cut_layers)
+    # Kernel_Patter(model, layer_names_55, parttern_55, args)
+    # Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
+    print(model)
     return model
 
 # [1,22,49,54], 3, [100,210,210,470,470]
@@ -156,16 +187,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='resnet18'
+        default='mnasnet0_5'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 36, 64, 64, 7, 18, 6, 6",
+        default="70, 33, 32, 32, 3, 6, 10, 14",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
+        '-dc', '--dconv',
+        default="192, 1, 32, 32, 5, 6, 10, 14",
+        help="hardware desgin of cconv",
+    )
+
+    parser.add_argument(
         '-d', '--dna',
-        default="35 41 21 15 1 128 256 256 496 512 16 12 12 12 8 8 8 8 2 0 0",
+        default="8 8 8 8 8 8 8 8 8 8 8",
+
         # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",
     )
@@ -175,137 +213,145 @@ if __name__ == "__main__":
     model_name = args.model
     model = globals()[model_name]()
 
-    dna = [int(x) for x in args.dna.split(" ")]
+    if args.model == "resnet18":
+        dna = [int(x) for x in args.dna.split(" ")]
+        pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+        model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
-    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+        [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+        print("=" * 10, model_name, "performance analysis:")
+        if W_p + comm_point[0] + I_p + comm_point[1] + O_p + comm_point[2] <= int(
+                HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
+            total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p + comm_point[0],
+                                                             I_p + comm_point[1], O_p + comm_point[2])
+            print(total_lat)
+        else:
+            print("-1")
 
-    model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+    elif args.model == "mnasnet0_5":
+        dna = [int(x) for x in args.dna.split(" ")]
+        q_list = dna[0:12]
+        model = mnasnet0_5_space(model, q_list, args)
+        HW1 = [int(x.strip()) for x in args.dconv.split(",")]
+        HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
 
+        print("=" * 10, model_name, "performance analysis:")
+        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
 
-    print(model)
-
-    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    print("=" * 10, model_name, "performance analysis:")
-    if W_p+comm_point[0] + I_p+comm_point[1] + O_p+comm_point[2] <= int(HW_constraints["r_Ports_BW"]/HW_constraints["BITWIDTH"]):
-        total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p+comm_point[0], I_p+comm_point[1], O_p+comm_point[2])
         print(total_lat)
-    else:
-        print("-1")
 
-
-    print()
     print("Success")
 
 
-
-
-    sys.exit(0)
-
+    #
+    #
+    # sys.exit(0)
+    #
+    # # print(model)
+    #
+    # pattern_num = 4
+    #
+    # device = torch.device(args.device)
+    #
+    # pattern = {}
+    # pattern[0] = torch.tensor([1., 1., 1., 1., 0., 1., 1., 0., 0.])
+    # pattern[1] = torch.tensor([0., 0., 1., 1., 1., 1., 1., 0., 1.])
+    # pattern[2] = torch.tensor([1., 1., 0., 1., 1., 0., 1., 1., 0.])
+    # pattern[3] = torch.tensor([1., 0., 0., 1., 1., 1., 0., 1., 1.])
+    #
+    # for i in range(pattern_num):
+    #     pattern[i] = pattern[i].reshape((3, 3))
+    #
+    # layer_pattern_train_para = [
+    #     "layer1.0.conv1.weight",
+    #     "layer1.0.bn1.weight",
+    #     "layer1.0.bn1.bias",
+    #     "layer1.0.conv2.weight",
+    #     "layer1.0.bn2.weight",
+    #     "layer1.0.bn2.bias",
+    #     "layer1.1.conv1.weight",
+    #     "layer1.1.bn1.weight",
+    #     "layer1.1.bn1.bias",
+    #     "layer1.1.conv2.weight",
+    #     "layer1.1.bn2.weight",
+    #     "layer1.1.bn2.bias",
+    #     "layer2.0.conv2.weight",
+    #     "layer2.0.bn2.weight",
+    #     "layer2.0.bn2.bias",
+    #     "layer2.1.conv1.weight",
+    #     "layer2.1.bn1.weight",
+    #     "layer2.1.bn1.bias",
+    #     "layer2.1.conv2.weight",
+    #     "layer2.1.bn2.weight",
+    #     "layer2.1.bn2.bias"]
+    #
+    # layer_names = [
+    #     "layer1.0.conv1",
+    #     "layer1.0.conv2",
+    #     "layer1.1.conv1",
+    #     "layer1.1.conv2",
+    #     "layer2.0.conv2",
+    #     "layer2.1.conv1",
+    #     "layer2.1.conv2"
+    # ]
+    #
+    #
+    #
+    #
+    # k_expand = 3
+    #
+    # if k_expand == 0:
+    #     layer_k_expand_train_para = []
+    #     layer_kernel_inc = []
+    # elif k_expand == 1:
+    #     layer_k_expand_train_para = ["layer2.0.conv1.weight", "layer2.0.bn1.weight", "layer2.0.bn1.bias"]
+    #     layer_kernel_inc = ["layer2.0.conv1"]
+    # elif k_expand == 2:
+    #     layer_k_expand_train_para = ["layer2.0.downsample.0.weight", "layer2.0.downsample.1.weight",
+    #                                  "layer2.0.downsample.1.bias"]
+    #     layer_kernel_inc = ["layer2.0.downsample.0"]
+    # else:
+    #     layer_k_expand_train_para = [
+    #         "layer2.0.conv1.weight",
+    #         "layer2.0.bn1.weight",
+    #         "layer2.0.bn1.bias",
+    #         "layer2.0.downsample.0.weight",
+    #         "layer2.0.downsample.1.weight",
+    #         "layer2.0.downsample.1.bias"]
+    #     layer_kernel_inc = [
+    #         "layer2.0.conv1",
+    #         "layer2.0.downsample.0"
+    #     ]
+    #
+    # layer_train_para = layer_pattern_train_para + layer_k_expand_train_para
+    #
+    # channel_cut_layers = [["layer1.0.conv1", "layer1.0.conv2", "layer1.0.bn1", (64, 64, 64)],
+    #                       ["layer1.1.conv1", "layer1.1.conv2", "layer1.1.bn1", (64, 64, 64)],
+    #                       ["layer2.0.conv1", "layer2.0.conv2", "layer2.0.bn1", (64, 128, 128)],
+    #                       ["layer2.1.conv1", "layer2.1.conv2", "layer2.1.bn1", (128, 100, 128)],
+    #                       ["layer3.0.conv1", "layer3.0.conv2", "layer3.0.bn1", (128, 210, 256)],
+    #                       ["layer3.1.conv1", "layer3.1.conv2", "layer3.1.bn1", (256, 210, 256)],
+    #                       ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, 470, 512)],
+    #                       ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, 470, 512)]]
+    #
+    # Channel_Cut(model, channel_cut_layers)
+    # Kernel_Patter(model, layer_names, pattern, args)
+    # Kenel_Expand(model,layer_kernel_inc)
+    #
+    # # print("=" * 100)
     # print(model)
-
-    pattern_num = 4
-
-    device = torch.device(args.device)
-
-    pattern = {}
-    pattern[0] = torch.tensor([1., 1., 1., 1., 0., 1., 1., 0., 0.])
-    pattern[1] = torch.tensor([0., 0., 1., 1., 1., 1., 1., 0., 1.])
-    pattern[2] = torch.tensor([1., 1., 0., 1., 1., 0., 1., 1., 0.])
-    pattern[3] = torch.tensor([1., 0., 0., 1., 1., 1., 0., 1., 1.])
-
-    for i in range(pattern_num):
-        pattern[i] = pattern[i].reshape((3, 3))
-
-    layer_pattern_train_para = [
-        "layer1.0.conv1.weight",
-        "layer1.0.bn1.weight",
-        "layer1.0.bn1.bias",
-        "layer1.0.conv2.weight",
-        "layer1.0.bn2.weight",
-        "layer1.0.bn2.bias",
-        "layer1.1.conv1.weight",
-        "layer1.1.bn1.weight",
-        "layer1.1.bn1.bias",
-        "layer1.1.conv2.weight",
-        "layer1.1.bn2.weight",
-        "layer1.1.bn2.bias",
-        "layer2.0.conv2.weight",
-        "layer2.0.bn2.weight",
-        "layer2.0.bn2.bias",
-        "layer2.1.conv1.weight",
-        "layer2.1.bn1.weight",
-        "layer2.1.bn1.bias",
-        "layer2.1.conv2.weight",
-        "layer2.1.bn2.weight",
-        "layer2.1.bn2.bias"]
-
-    layer_names = [
-        "layer1.0.conv1",
-        "layer1.0.conv2",
-        "layer1.1.conv1",
-        "layer1.1.conv2",
-        "layer2.0.conv2",
-        "layer2.1.conv1",
-        "layer2.1.conv2"
-    ]
-
-
-
-
-    k_expand = 3
-
-    if k_expand == 0:
-        layer_k_expand_train_para = []
-        layer_kernel_inc = []
-    elif k_expand == 1:
-        layer_k_expand_train_para = ["layer2.0.conv1.weight", "layer2.0.bn1.weight", "layer2.0.bn1.bias"]
-        layer_kernel_inc = ["layer2.0.conv1"]
-    elif k_expand == 2:
-        layer_k_expand_train_para = ["layer2.0.downsample.0.weight", "layer2.0.downsample.1.weight",
-                                     "layer2.0.downsample.1.bias"]
-        layer_kernel_inc = ["layer2.0.downsample.0"]
-    else:
-        layer_k_expand_train_para = [
-            "layer2.0.conv1.weight",
-            "layer2.0.bn1.weight",
-            "layer2.0.bn1.bias",
-            "layer2.0.downsample.0.weight",
-            "layer2.0.downsample.1.weight",
-            "layer2.0.downsample.1.bias"]
-        layer_kernel_inc = [
-            "layer2.0.conv1",
-            "layer2.0.downsample.0"
-        ]
-
-    layer_train_para = layer_pattern_train_para + layer_k_expand_train_para
-
-    channel_cut_layers = [["layer1.0.conv1", "layer1.0.conv2", "layer1.0.bn1", (64, 64, 64)],
-                          ["layer1.1.conv1", "layer1.1.conv2", "layer1.1.bn1", (64, 64, 64)],
-                          ["layer2.0.conv1", "layer2.0.conv2", "layer2.0.bn1", (64, 128, 128)],
-                          ["layer2.1.conv1", "layer2.1.conv2", "layer2.1.bn1", (128, 100, 128)],
-                          ["layer3.0.conv1", "layer3.0.conv2", "layer3.0.bn1", (128, 210, 256)],
-                          ["layer3.1.conv1", "layer3.1.conv2", "layer3.1.bn1", (256, 210, 256)],
-                          ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, 470, 512)],
-                          ["layer4.1.conv1", "layer4.1.conv2", "layer4.1.bn1", (512, 470, 512)]]
-
-    Channel_Cut(model, channel_cut_layers)
-    Kernel_Patter(model, layer_names, pattern, args)
-    Kenel_Expand(model,layer_kernel_inc)
-
-    # print("=" * 100)
-    print(model)
-
-    print("="*40,"Validate function crectness","="*40)
-    input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
-    output = model(input)
-
-    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    print("=" * 10, model_name, "performance analysis:")
-    total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-    print(total_lat)
-
-    print()
-    print("Success")
-
-
+    #
+    # print("="*40,"Validate function crectness","="*40)
+    # input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+    # output = model(input)
+    #
+    # [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    # print("=" * 10, model_name, "performance analysis:")
+    # total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
+    # print(total_lat)
+    #
+    # print()
+    # print("Success")
+    #
+    #

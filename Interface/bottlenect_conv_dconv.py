@@ -29,7 +29,7 @@ def get_performance(model, HW1, HW2):
     cTT = 0
     dTT = 0
     for layer_name, layer in model.named_modules():
-        if isinstance(layer, nn.Conv2d):
+        if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
@@ -50,7 +50,7 @@ def get_performance(model, HW1, HW2):
                 HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                 HW_constraints["BITWIDTH"])
 
-                # print("\t",layer_name,M, N, R, C, K, S, T)
+                print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
@@ -63,10 +63,14 @@ def get_performance(model, HW1, HW2):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    # print("cconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    if perf[1] == "loading IFM":
+                    # if perf[1] == "loading Weight":
+                    # if perf[1] == "computing":
+                        # print(layer_name)
+                        print("cconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
-                # print("\t",layer_name,M, N, R, C, K, S, T)
+                print("\t",layer_name,M, N, R, C, K, S, T)
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                                             HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
@@ -79,13 +83,18 @@ def get_performance(model, HW1, HW2):
                 if acc_2.Success == False:
                     return -1
                 else:
+                    if isinstance(layer, copy_conv2d.Conv2d_Custom):
+                        perf = acc_2.get_layer_latency(Layer, layer.pattern_ones, layer.quan_paras)
+                    else:
+                        perf = acc_2.get_layer_latency(Layer)
 
-                    perf = acc_2.get_layer_latency(Layer)
 
                     dTT+=perf[0]
 
-                if perf[1] == "computing" and K==5:
-                    print("dconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    # if perf[1] == "loading Weight":
+                    if perf[1] == "loading IFM":
+                    #     # print(layer_name)
+                        print("dconv",layer_name, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -109,7 +118,7 @@ if __name__== "__main__":
         help="hardware desgin of cconv",
     )
     parser.add_argument(
-        '-d', '--dconv',
+        '-dc', '--dconv',
         default="192, 1, 32, 32, 5, 6, 10, 14",
         help="hardware desgin of cconv",
     )

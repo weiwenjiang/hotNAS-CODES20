@@ -146,8 +146,8 @@ class FPGA_Templates:
             lat_W_mem = Tm * Tn * K * K / floor(W_p*16/float(bits))
         else:
             lat_W_mem = Tm * Tn * K * K / W_p
-        lat_I_mem = Tn * min(Tr,R) * min(Tc,C) / I_p
-        lat_O_mem = Tm * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
+        lat_I_mem = min(Tn,N) * min(Tr,R) * min(Tc,C) / I_p
+        lat_O_mem = min(Tm,M) * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
         if pattern_ones!=-1:
             lat_Comp = pattern_ones * ceil(min(Tr, R+P*2) / S) * ceil(min(Tc, C+P*2) / S)
         else:
@@ -178,15 +178,24 @@ class FPGA_Templates:
 
         return Lat, bottle_neck, [I,O,W,C]
 
-    def get_dconv_latency(self, Layer):
+    def get_dconv_latency(self, Layer, pattern_ones=-1, quan_paras=[]):
         [B, M, N, R, C, K, S, T, P] = Layer.getPara()
         [Tm, Tn, Tr, Tc, Tk] = (self.Tm, self.Tn, self.Tr, self.Tc, self.Tk)
         [W_p, I_p, O_p] = (self.W_p, self.I_p, self.O_p)
 
-        lat_W_mem = Tm * 1 * K * K / W_p
-        lat_I_mem = Tn * min(Tr,R) * min(Tc,C) / I_p
-        lat_O_mem = Tm * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
-        lat_Comp = K * K * ceil(min(Tr,R+P*2) / S) * ceil(min(Tc,C+P*2) / S)
+        if len(quan_paras)!=0:
+            bits = quan_paras[0]+quan_paras[1]
+            lat_W_mem = Tm * 1 * K * K / floor(W_p*16/float(bits))
+        else:
+            lat_W_mem = Tm * 1 * K * K / W_p
+
+        lat_I_mem = min(Tn,N) * min(Tr,R) * min(Tc,C) / I_p
+        lat_O_mem = min(Tm,M) * ceil(min(Tr,R) / S) * ceil(min(Tc,C) / S) / O_p
+
+        if pattern_ones!=-1:
+            lat_Comp = pattern_ones * ceil(min(Tr,R+P*2) / S) * ceil(min(Tc,C+P*2) / S)
+        else:
+            lat_Comp = K * K * ceil(min(Tr,R+P*2) / S) * ceil(min(Tc,C+P*2) / S)
 
         Lat1 = max(lat_I_mem, lat_W_mem, lat_Comp)
         Lat2 = max(ceil(N / Tn) * Lat1, lat_O_mem)
@@ -215,7 +224,7 @@ class FPGA_Templates:
             if self.T == "cconv":
                 return self.get_cconv_latency(Layer, pattern_ones, quan_paras)
             else:
-                return self.get_dconv_latency(Layer)
+                return self.get_dconv_latency(Layer, pattern_ones, quan_paras)
         else:
             sys.exit(0)
 
