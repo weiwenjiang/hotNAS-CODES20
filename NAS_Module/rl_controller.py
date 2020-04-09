@@ -18,7 +18,7 @@ import train
 import utils
 
 from pattern_generator import pattern_sets_generate_3
-from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2
+from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,8 @@ class Controller(object):
             self.nn_model_helper = ss_mnasnet0_5
         elif self.args.model == "mobilenet_v2":
             self.nn_model_helper = ss_mobilenet_v2
+        elif self.args.model == "mobilenet_v2":
+            self.nn_model_helper = ss_proxyless_mobile
 
 
         space_name = self.nn_model_helper.get_space()[0]
