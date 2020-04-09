@@ -11,7 +11,7 @@ from torch._jit_internal import List
 def quantize(x, num_int_bits, num_frac_bits, signed=True):
 
     precision = 1 / 2 ** num_frac_bits
-    print(precision)
+    # print(precision)
     if signed:
         bound = 2 ** (num_int_bits - 1)
         lower_bound = -1*bound
