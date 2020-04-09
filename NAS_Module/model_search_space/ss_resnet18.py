@@ -5,8 +5,10 @@ sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
 from model_modify import *
 import model_modify
-
-
+import random
+import train
+import time
+import datetime
 #
 # layers format:
 # [ ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, 480, 512)],
@@ -95,27 +97,59 @@ def get_space():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser('Parser User Input Arguments')
-    parser.add_argument('--device', default='cpu', help='device')
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser('Parser User Input Arguments')
+    # parser.add_argument('--device', default='cpu', help='device')
+    # args = parser.parse_args()
+
+    args = train.parse_args()
+    data_loader,data_loader_test = train.get_data_loader(args)
+
 
     model_name = "resnet18"
-    model = globals()["resnet18"]()
 
-    dna_str = "30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2"
-    dna = [int(x) for x in dna_str.split(" ")]
-    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
-    model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
     hw_str = "70, 36, 64, 64, 7, 18, 6, 6"
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in hw_str.split(",")]
-    print("=" * 10, model_name, "performance analysis:")
-    if W_p + comm_point[0] + I_p + comm_point[1] + O_p + comm_point[2] <= int(
-            HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
-        total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p + comm_point[0],
-                                                         I_p + comm_point[1], O_p + comm_point[2])
-        print(total_lat/2)
-    else:
-        print("-1")
+    HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+    start_time = time.time()
+    count = 10
+    record = {}
+    for i in range(count):
+        model = globals()["resnet18"]()
 
-    print("Success")
+        _, space = get_space()
+        dna = []
+        for selection in space:
+            dna.append(random.choice(selection))
+        print(dna)
+
+        pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+        model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+
+
+        print("=" * 10, model_name, "performance analysis:")
+        if W_p + comm_point[0] + I_p + comm_point[1] + O_p + comm_point[2] <= int(
+                HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
+            total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p + comm_point[0],
+                                                             I_p + comm_point[1], O_p + comm_point[2])
+
+            latency.append(total_lat)
+            # print(total_lat)
+        else:
+            total_lat = -1
+            print("-1")
+
+        acc1,acc5,_ = main(args, dna, HW, data_loader, data_loader_test)
+        record[i] = (acc5,total_lat)
+        print("Random {}: acc-{}, lat-{}".format(i, acc5,total_lat))
+
+
+    print("="*100)
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+
+    print("Exploration End, using time {}".format(total_time_str))
+    for k,v in record.items():
+        print(k,v)
+    # print(min(latency), max(latency), sum(latency) / len(latency))
+

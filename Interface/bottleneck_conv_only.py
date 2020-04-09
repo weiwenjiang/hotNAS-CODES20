@@ -46,7 +46,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                 w = model.state_dict()[layer_name + ".weight"]
                 x = max(abs(float(w.min())), abs(float(w.max())))
                 int_num, frac_num = re_quantize(x, 16, True)
-                print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                # print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
                                                                    HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
@@ -71,7 +71,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                                                                                                       nn.AvgPool2d):
             input = layer(input)
     # print("\tTotal Time:", (cTT) / 10 ** 5)
-    return cTT / 10 ** 5
+    return cTT / 10 ** 5 / 2
 
 
 
