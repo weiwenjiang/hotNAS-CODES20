@@ -5,6 +5,8 @@ from torchvision.models import *
 sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
+
+from model_modify import *
 import model_modify
 
 import train
