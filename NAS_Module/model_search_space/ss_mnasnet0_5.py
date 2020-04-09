@@ -210,6 +210,7 @@ if __name__ == "__main__":
 
     model_name = "mnasnet0_5"
     model = globals()["mnasnet0_5"]()
+    model = model.to(args.device)
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
