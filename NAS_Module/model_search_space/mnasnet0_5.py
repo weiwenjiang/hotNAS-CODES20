@@ -10,7 +10,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     # pattern_idx = [0, 1, 2, 3]
 
-    pattern_55_space = pattern_sets_generate_3((5, 5),8)
+    pattern_55_space = pattern_sets_generate_3((5, 5),6)
     pattern_55 = {}
     i = 0
     for idx in pattern_5_5_idx:
