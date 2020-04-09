@@ -47,7 +47,7 @@ class Controller(object):
 
         [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in self.args.cconv.split(",")]
         self.HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
-
+        self.HW2 = [int(x.strip()) for x in self.args.dconv.split(",")]
         self.graph = tf.Graph()
 
         config = tf.ConfigProto()
@@ -342,7 +342,8 @@ class Controller(object):
                             # acc5 = random.uniform(0, 1)
                             # lat = random.uniform(7, 10)
 
-                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, self.data_loader_test)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, \
+                                                       self.data_loader_test,self.HW2)
 
                             # Keep history trained data
 

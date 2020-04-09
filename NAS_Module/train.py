@@ -440,6 +440,7 @@ if __name__ == "__main__":
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
     HW2 = [int(x.strip()) for x in args.dconv.split(",")]
+    print(HW,HW2)
 
     # print(dna,HW,HW2)
     #
