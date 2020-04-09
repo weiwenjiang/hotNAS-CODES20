@@ -26,7 +26,7 @@ from rl_input import *
 # from model_search_space.ss_resnet18 import resnet_18_space
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
-from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2
+from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
 
 try:
     from apex import amp
@@ -226,7 +226,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
     elif args.model == "mobilenet_v2":
         model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
-
+    elif args.model == "proxyless_mobile":
+        model = ss_proxyless_mobile.proxyless_mobile_space(model.dna,args)
     else:
         print("Currently not support the given model {}".format("args.model"))
         sys.exit(0)
@@ -415,15 +416,19 @@ def parse_args():
     print("-" * 10, "Search Space of Reinforcement Learning", "-" * 10)
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
 
+
     if args.model == "resnet18":
-        space_name = ss_resnet18.get_space()[0]
-        space = ss_resnet18.get_space()[1]
+        model_pointer = ss_resnet18
     elif args.model == "mnasnet0_5":
-        space_name = ss_mnasnet0_5.get_space()[0]
-        space = ss_mnasnet0_5.get_space()[1]
+        model_pointer = ss_mnasnet0_5
     elif args.model == "mobilenet_v2":
-        space_name = ss_mobilenet_v2.get_space()[0]
-        space = ss_mobilenet_v2.get_space()[1]
+        model_pointer = ss_mobilenet_v2
+    elif args.model == "proxyless_mobile":
+        model_pointer = ss_proxyless_mobile
+
+
+    space_name = model_pointer.get_space()[0]
+    space = model_pointer.get_space()[1]
 
 
     for idx in range(len(space)):

@@ -159,4 +159,4 @@ if __name__== "__main__":
 
     print("="*10,model_name,"performance analysis:")
     total_lat = get_performance(model, HW1, HW2)
-    print(total_lat/2)
+    print(total_lat)

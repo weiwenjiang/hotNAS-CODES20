@@ -15,6 +15,8 @@ import argparse
 from ztNAS_model_change import *
 import copy_conv2d
 
+from utility import *
+
 def get_max_k(model):
     max_k = 0
     for layer_name, layer in model.named_modules():
@@ -24,9 +26,10 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
+def get_performance(model, HW1, HW2,device=None):
     input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
     cTT = 0
+    dTT = 0
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
@@ -36,52 +39,114 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                 input = input.to(device)
             input = layer(input)
 
+
+
+
             [B, M, N, R, C, K, S, T, P] = (
                 1, layer.out_channels, layer.in_channels, input.shape[2], input.shape[3], is_same(layer.kernel_size),
                 is_same(layer.stride), tell_conv_type(layer.in_channels, layer.groups), is_same(layer.padding))
 
-            # print(layer_name, B, M, N, R, C, K, S, T, P)
             if T == "cconv":
-                [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                                                                   HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
-                                                                   HW_constraints["BITWIDTH"])
+
+                # w = model.state_dict()[layer_name + ".weight"]
+                # x = max(abs(float(w.min())), abs(float(w.max())))
+                # int_num, frac_num = re_quantize(x, 16, True)
+                # print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
+                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW2
+
+                [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
+                HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
+                HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                HW_constraints["BITWIDTH"])
 
                 # print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
                                                         BITWIDTH)
-                if acc_1.Success==False:
+                if acc_1.Success == False:
                     return -1
                 else:
-                    if isinstance(layer,copy_conv2d.Conv2d_Custom):
-                        perf = acc_1.get_layer_latency(Layer,layer.pattern_ones,layer.quan_paras)
+                    if isinstance(layer, copy_conv2d.Conv2d_Custom):
+                        perf = acc_1.get_layer_latency(Layer, layer.pattern_ones, layer.quan_paras)
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    if perf[1] == "computing":
-                        print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
+                    # # if perf[1] == "loading IFM":
+                    if perf[1] == "loading Weight":
+                        w = model.state_dict()[layer_name + ".weight"]
+                        x = max(abs(float(w.min())), abs(float(w.max())))
+                        int_num, frac_num = re_quantize(x, 16, True)
+                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                    # if perf[1] == "computing" and K==3:
+                    #     print(layer_name)
+                        # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+
+            elif T == "dconv":
+
+                # w = model.state_dict()[layer_name + ".weight"]
+                # x = max(abs(float(w.min())), abs(float(w.max())))
+                # int_num, frac_num = re_quantize(x, 16, True)
+                # print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
+                # print("\t",layer_name,M, N, R, C, K, S, T)
+                [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
+                [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
+                                            HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
+                                            HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                                            HW_constraints["BITWIDTH"])
+                Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "dconv", P)
+                acc_2 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
+                                                        Tk, W_p, I_p, O_p, "dconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
+                                                        BITWIDTH)
+                if acc_2.Success == False:
+                    return -1
+                else:
+                    if isinstance(layer, copy_conv2d.Conv2d_Custom):
+                        perf = acc_2.get_layer_latency(Layer, layer.pattern_ones, layer.quan_paras)
+                    else:
+                        perf = acc_2.get_layer_latency(Layer)
+
+
+                    dTT+=perf[0]
+
+                    if perf[1] == "loading Weight":
+                        w = model.state_dict()[layer_name + ".weight"]
+                        x = max(abs(float(w.min())), abs(float(w.max())))
+                        int_num, frac_num = re_quantize(x, 16, True)
+                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
+                    # # if perf[1] == "loading IFM":
+                    # if perf[1] == "computing" and K == 3:
+                    #     print(layer_name)
+                        # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
             input = layer(input)
-    # print("\tTotal Time:", (cTT) / 10 ** 5)
-    return cTT / 10 ** 5
 
-
+    # 2 is 200 MHz
+    return (cTT+dTT) / 10 ** 5 / 2
 
 
 
 
 if __name__== "__main__":
+
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='densenet161'
+        default='proxyless_mobile'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="100, 25, 64, 64, 7, 10, 14, 6",
+        default="100, 16, 32, 32, 3, 10, 10, 10",
+        help="hardware desgin of cconv",
+    )
+    parser.add_argument(
+        '-dc', '--dconv',
+        default="832, 1, 32, 32, 7, 10, 10, 10",
         help="hardware desgin of cconv",
     )
 
@@ -89,107 +154,20 @@ if __name__== "__main__":
     model_name = args.model
 
     if "proxyless" in model_name:
-        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
     elif "FBNET" in model_name:
         model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
     else:
-        model = globals()[model_name]()
-
-
-
-
-    # model = torch.hub.load('mit-han-lab/ProxylessNAS',"proxyless_mobile")
+        model = globals()[model_name](pretrained=True)
 
     print(model)
 
-    # for name, para in model.named_parameters():
-    #     print(name)
+    for name, para in model.named_parameters():
+        print(name)
 
-    # print("="*100)
-    #
-    # print(args.cconv)
-    # print(args.cconv.split(","))
-    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
-    # Tk = get_max_k(model)
-    # Tn = math.floor((HW_constraints["r_DSP"]-Tm) / Tm)
-
-
-
-
-
-    # print(dict(model.named_modules())["layer4.0.conv1"])
-
+    HW1 = [int(x.strip()) for x in args.dconv.split(",")]
+    HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
     print("="*10,model_name,"performance analysis:")
-
-    total_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-
+    total_lat = get_performance(model, HW1, HW2)
     print(total_lat)
-
-    #
-    # conv_modify = {}
-    # conv_modify["layer4.1.conv1"] = (dict(model.named_modules())["layer4.1.conv1"], 512, 440, ["layer4.1.bn1","layer4.1.conv2"])
-    # conv_modify["layer4.1.conv2"] = (dict(model.named_modules())["layer4.1.conv2"], 440, 512, [])
-    #
-    #
-    # bn_modifiy = {}
-    # bn_modifiy["layer4.1.bn1"] = (dict(model.named_modules())["layer4.1.bn1"], 440)
-    #
-    # print("="*100)
-    # ztNAS_cut_channel(model, conv_modify, bn_modifiy)
-    #
-    # print("=" * 10, model_name, "performance analysis:")
-    #
-    # total_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
-    # print(total_lat)
-    # sys.exit(0)
-    #
-    # print("="*100)
-    #
-    #
-    # W = dict(model.named_parameters())["layer4.0.conv1.weight"]
-    # Norm2 = W.norm(dim=(2, 3))
-    #
-    # Filter_OFM_Sum = Norm2.sum(dim=1)
-    # Filter_IFM_Sum = Norm2.sum(dim=0)
-    #
-    # Filter_OFM_Norm2_TopK = (Filter_OFM_Sum.topk(480))
-    # Filter_IFM_Norm2_TopK = (Filter_IFM_Sum.topk(210))
-    #
-    # print(W.shape)
-    # print(Norm2.shape)
-    # print(W[Filter_OFM_Norm2_TopK[1]].shape)
-    #
-    # W = W.transpose(0,1)[Filter_IFM_Norm2_TopK[1]].transpose(0,1)
-    # print(W.shape)
-    #
-    #
-    # # print(W[Filter_OFM_Norm2_TopK[1]].shape)
-    # sys.exit(0)
-    #
-    #
-    #
-    # print(Norm2.shape)
-    # print(W[Norm2_TopK[1]])
-    # # print(tuple(Norm2_TopK[1]))
-    # # print( dict(model.named_parameters())["layer4.1.conv1.weight"][Norm2_TopK[1]] )
-    # #
-    # # a = torch.randint(0, 10, [3, 3, 3, 3])
-    # # b = torch.LongTensor([[1,1,1], [2,2,2], [0, 0, 0]]).t()
-    # # print(a,a.shape)
-    # # print(b,b.shape)
-    # # print(a[tuple(b)])
-    #
-    # # t = torch.tensor([[5.7, 1.4, 9.5], [1.6, 6.1, 4.3], [5.0, 1.1, 9.5], [1.6, 3.1, 4.3], [4.7, 6.4, 9.5], [0.6, 4.1, 4.3]])
-    # #
-    # # t_norm = t.norm(dim=(1))
-    # #
-    # # print(t_norm)
-    # # values, indices = t_norm.topk(2)
-    # #
-    # #
-    # #
-    # # print(values)
-    # # print(indices)
-    # # print(t[indices])
-    # sys.exit(0)
