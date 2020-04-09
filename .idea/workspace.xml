@@ -269,14 +269,7 @@
       <updated>1585316010083</updated>
       <workItem from="1585316012039" duration="71940000" />
       <workItem from="1585780216815" duration="92451000" />
-      <workItem from="1586354215643" duration="48488000" />
-    </task>
-    <task id="LOCAL-00209" summary="mnasnet0_5_space">
-      <created>1586387124240</created>
-      <option name="number" value="00209" />
-      <option name="presentableId" value="LOCAL-00209" />
-      <option name="project" value="LOCAL" />
-      <updated>1586387124240</updated>
+      <workItem from="1586354215643" duration="48502000" />
     </task>
     <task id="LOCAL-00210" summary="mnasnet0_5_space">
       <created>1586387570298</created>
@@ -614,7 +607,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586415218370</updated>
     </task>
-    <option name="localTasksCounter" value="258" />
+    <task id="LOCAL-00258" summary="random">
+      <created>1586415407606</created>
+      <option name="number" value="00258" />
+      <option name="presentableId" value="LOCAL-00258" />
+      <option name="project" value="LOCAL" />
+      <updated>1586415407606</updated>
+    </task>
+    <option name="localTasksCounter" value="259" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -662,11 +662,11 @@
     </state>
     <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
     <state x="2002" y="230" width="638" height="405" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586369441160" />
-    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586415218234">
+    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586415407467">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586379153944" />
-    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586415218234" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586415407467" />
     <state x="1997" y="1" width="748" height="740" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037059773" />
     <state x="490" y="159" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040837181" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585902779737">
@@ -787,7 +787,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/NAS_Module/train.py</url>
-          <line>503</line>
+          <line>504</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

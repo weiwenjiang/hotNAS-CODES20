@@ -36,6 +36,7 @@ except ImportError:
 best_acc5 = 0
 
 def save_chk_point(model_without_ddp,optimizer,lr_scheduler,epoch,acc5):
+    global args
     global best_acc5
     if acc5>best_acc5:
         best_acc5 = acc5
