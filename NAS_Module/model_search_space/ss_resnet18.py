@@ -1,4 +1,5 @@
 import sys
+sys.path.append("./")
 sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
