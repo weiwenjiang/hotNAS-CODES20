@@ -251,7 +251,7 @@ if __name__ == "__main__":
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-
+    start_time = time.time()
     count = 200
 
     latency = []
