@@ -6,7 +6,7 @@ sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
 from model_modify import *
-
+import train
 import random
 
 # [1,22,49,54], 3, [100,210,210,470,470]
@@ -267,5 +267,9 @@ if __name__ == "__main__":
         total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
         print(total_lat)
         latency.append(total_lat)
+
+        acc1, acc5, _ = train.main(args, dna, HW, data_loader, data_loader_test)
+        print(acc1,acc5,total_lat)
+
     print(min(latency),max(latency),sum(latency)/len(latency))
 
