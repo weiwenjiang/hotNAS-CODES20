@@ -146,7 +146,7 @@ def get_space():
     global p3size
     global p5size
 
-    p3size = 3
+    p3size = 1
     p5size = 6
 
     space_name = ("KP-3","KP-3","KP-3","KP-3",
