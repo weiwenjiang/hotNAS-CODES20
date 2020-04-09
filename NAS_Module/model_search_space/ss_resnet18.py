@@ -112,7 +112,7 @@ if __name__ == "__main__":
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in hw_str.split(",")]
     HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
     start_time = time.time()
-    count = 10
+    count = 60
     record = {}
     for i in range(count):
         model = globals()["resnet18"]()
