@@ -22,9 +22,9 @@ from search_space import *
 from rl_input import *
 
 
-from model_search_space.ss_mnasnet0_5 import mnasnet0_5_space
-from model_search_space.ss_resnet18 import resnet_18_space
-from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
+# from model_search_space.ss_mnasnet0_5 import mnasnet0_5_space
+# from model_search_space.ss_resnet18 import resnet_18_space
+# from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
 from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2
 
@@ -217,15 +217,15 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         HW[5] += comm_point[0]
         HW[6] += comm_point[1]
         HW[7] += comm_point[2]
-        model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+        model = ss_resnet18.resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
     elif args.model == "mnasnet0_5":
         # pattern_3_3_idx = dna[0:4]
         # pattern_5_5_idx = dna[4:8]
         # pattern_do_or_not = dna
         # q_list = dna[8:23]
-        model = mnasnet0_5_space(model, dna, args)
+        model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
     elif args.model == "mobilenet_v2":
-        model = mobilenet_v2_space(model, args)
+        model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
 
     else:
         print("Currently not support the given model {}".format("args.model"))
