@@ -357,7 +357,7 @@ def parse_args():
     parser.add_argument("--rl", dest="reinfoce", help="execute reinforcement leraning", action="store_true", )
     parser.add_argument('--train_stop_batch', default=100, type=int, metavar='N',help='number of batch to terminate in training')
     parser.add_argument('--test_stop_batch', default=200, type=int, metavar='N',help='number of batch to terminate in testing')
-    parser.add_argument('-f', '--finetue_dna', default="4 3 5 2 130 439 541 250 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8", help="hardware desgin of cconv", )
+    parser.add_argument('-f', '--finetue_dna', default="4 3 5 2 130 439 384 250 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 10", help="target latency range, determining reward", )
