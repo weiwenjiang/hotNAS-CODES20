@@ -215,7 +215,7 @@ if __name__ == "__main__":
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
     start_time = time.time()
-    count = 30
+    count = 100
 
     latency = []
     record = {}
