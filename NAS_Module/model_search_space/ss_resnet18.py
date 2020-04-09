@@ -126,7 +126,7 @@ if __name__ == "__main__":
         pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
         model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
-
+        model = model.to(args.device)
         print("=" * 10, model_name, "performance analysis:")
         if W_p + comm_point[0] + I_p + comm_point[1] + O_p + comm_point[2] <= int(
                 HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
