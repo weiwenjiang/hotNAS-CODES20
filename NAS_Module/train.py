@@ -22,6 +22,11 @@ from search_space import *
 from rl_input import *
 
 
+from model_search_space.mnasnet0_5 import mnasnet0_5_space
+from model_search_space.resnet18 import resnet_18_space
+from model_search_space.mobilenet_v2 import mobilenet_v2_space
+
+
 try:
     from apex import amp
 except ImportError:

@@ -37,7 +37,15 @@ def tell_conv_type(in_channels,groups):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-
+def quantize_ori(x, num_int_bits, num_frac_bits, signed=True):
+    precision = 1 / 2 ** num_frac_bits
+    x = torch.round(x / precision) * precision
+    if signed is True:
+        bound = 2 ** (num_int_bits - 1)
+        return torch.clamp(x, -bound, bound - precision)
+    else:
+        bound = 2 ** num_int_bits
+        return torch.clamp(x, 0, bound - precision)
 
 def quantize(x, num_int_bits, num_frac_bits, signed=True):
 
@@ -77,13 +85,12 @@ def re_quantize(x, total_num = 16, signed=True):
 
 if __name__== "__main__":
 
-    x = torch.tensor([15.631393432617188,12.55533],dtype=torch.float32)
-    int_num,frac_num = re_quantize(x.max().abs())
-    print("re_quant",int_num,frac_num)
-    print(float(quantize(x,int_num,frac_num,True)[0]))
-
-
-    sys.exit(0)
+    # x = torch.tensor([15.631393432617188,12.55533],dtype=torch.float32)
+    # int_num,frac_num = re_quantize(x.max().abs())
+    # print("re_quant",int_num,frac_num)
+    # print(float(quantize(x,int_num,frac_num,True)[0]))
+    # print(float(quantize_ori(x, int_num, frac_num, True)[0]))
+    # sys.exit(0)
 
     # B, C, H, W = 10, 3, 4, 4
     # x = torch.randn(B, C, H, W)
@@ -103,13 +110,13 @@ if __name__== "__main__":
     print(len(Model_Zoo))
 
     i = 0
-    for model_name in Model_Zoo_w_dconv:
+    for model_name in Model_Zoo:
         print(model_name)
         model = globals()[model_name](pretrained=True)
         print(model)
 
         for name, param in model.named_parameters():
-            if max(abs(float(param.min())),abs(float(param.max()))) > 1:
+            if max(abs(float(param.min())),abs(float(param.max()))) > 0.5:
                 print (name,param.requires_grad,param.data.shape,float(param.min()),float(param.max()))
 
         sys.exit(0)

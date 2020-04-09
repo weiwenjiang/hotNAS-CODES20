@@ -15,6 +15,8 @@ import argparse
 from ztNAS_model_change import *
 import copy_conv2d
 
+from utility import *
+
 def get_max_k(model):
     max_k = 0
     for layer_name, layer in model.named_modules():
@@ -41,6 +43,11 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                 is_same(layer.stride), tell_conv_type(layer.in_channels, layer.groups), is_same(layer.padding))
 
             if T == "cconv":
+                w = model.state_dict()[layer_name + ".weight"]
+                x = max(abs(float(w.min())), abs(float(w.max())))
+                int_num, frac_num = re_quantize(x, 16, True)
+                print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
                                                                    HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                                                                    HW_constraints["BITWIDTH"])
@@ -58,7 +65,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
+                    # print(layer_name,perf[0]/10**5,perf[1],[x/10**5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -86,7 +93,7 @@ if __name__== "__main__":
 
     args = parser.parse_args()
     model_name = args.model
-    model = globals()[model_name]()
+    model = globals()[model_name](pretrained=True)
 
 
 

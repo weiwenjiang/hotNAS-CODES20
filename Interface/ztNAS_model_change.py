@@ -147,6 +147,13 @@ def ztNAS_add_kernel_mask(model,layer, layer_name, is_pattern, pattern, pattern_
 
 
 def ztNAS_add_kernel_quant(model,layer, layer_name, is_quant, quan_paras):
+
+    if isinstance(layer,copy_conv2d.Conv2d_Custom):
+        layer.is_quant = is_quant
+        layer.quan_paras =  quan_paras
+        return
+
+
     [M, N, K, S, G, P, b] = (
         layer.out_channels, layer.in_channels, is_same(layer.kernel_size),
         is_same(layer.stride), layer.groups, is_same(layer.padding), layer.bias)
@@ -236,7 +243,7 @@ def ztNAS_cut_channel(model,conv_modify,bn_modifiy):
 
         if M != layer.out_channels or force:
             # OFM Filtering
-            # print(layer_name,force)
+            print(layer_name,force,M, layer.out_channels)
             W = model.state_dict()[layer_name + ".weight"][:]
             Idx = W.norm(dim=(2, 3)).sum(dim=1).topk(M)[1]
 

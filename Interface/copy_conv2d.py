@@ -7,31 +7,31 @@ from torch.nn import init
 from torch.nn.modules.utils import _single, _pair, _triple
 from torch._jit_internal import List
 
-
-def quantize(x, num_int_bits, num_frac_bits, signed=True):
-
-    precision = 1 / 2 ** num_frac_bits
-    # print(precision)
-    if signed:
-        bound = 2 ** (num_int_bits - 1)
-        lower_bound = -1*bound
-        upper_bound = bound - precision
-    else:
-        bound = 2 ** num_int_bits
-        lower_bound = 0
-        upper_bound = bound - precision
-
-    return torch.clamp(x.div(precision).int().float().mul(precision), lower_bound, upper_bound)
-
+#
 # def quantize(x, num_int_bits, num_frac_bits, signed=True):
+#
 #     precision = 1 / 2 ** num_frac_bits
-#     x = torch.round(x / precision) * precision
-#     if signed is True:
+#     # print(precision)
+#     if signed:
 #         bound = 2 ** (num_int_bits - 1)
-#         return torch.clamp(x, -bound, bound - precision)
+#         lower_bound = -1*bound
+#         upper_bound = bound - precision
 #     else:
 #         bound = 2 ** num_int_bits
-#         return torch.clamp(x, 0, bound - precision)
+#         lower_bound = 0
+#         upper_bound = bound - precision
+#
+#     return torch.clamp(x.div(precision).int().float().mul(precision), lower_bound, upper_bound)
+
+def quantize(x, num_int_bits, num_frac_bits, signed=True):
+    precision = 1 / 2 ** num_frac_bits
+    x = torch.round(x / precision) * precision
+    if signed is True:
+        bound = 2 ** (num_int_bits - 1)
+        return torch.clamp(x, -bound, bound - precision)
+    else:
+        bound = 2 ** num_int_bits
+        return torch.clamp(x, 0, bound - precision)
 
 class _ConvNd(Module):
 
@@ -131,6 +131,14 @@ class Conv2d_Custom(_ConvNd):
 
         return  F.conv2d(input, weight, self.bias, self.stride,
                         self.padding, self.dilation, self.groups)
+
+    def check_layer(self, print_patter=False):
+        print("Pattern:",self.is_pattern)
+        if print_patter:
+            print("\t\tpatterns:",self.pattern)
+        print("\t\tnumber of ones in pattern:", self.pattern_ones)
+        print("Quantization:", self.is_quant)
+        print("\t\tInt: {}, Fraction: {}, Sign: {}".format(self.quan_paras[0],self.quan_paras[1],self.quan_paras[2]))
 
 
     def forward(self, input):
