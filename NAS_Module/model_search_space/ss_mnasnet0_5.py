@@ -1,13 +1,16 @@
 import sys
+from torchvision import models
+
+from torchvision.models import *
 sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
 from model_modify import *
-from model_search_space import mnasnet0_5, resnet18, mobilenet_v2
 
+import random
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
+def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, pattern_do_or_not, q_list, args):
 
     # pattern_idx = [0, 1, 2, 3]
 
@@ -20,6 +23,11 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     layer_names_55 = ["layers.9.0.layers.3","layers.9.1.layers.3","layers.9.2.layers.3",
                       "layers.10.1.layers.3","layers.10.2.layers.3"]
 
+    layer_names_55_select = []
+    for i in range(5):
+        if pattern_do_or_not[i] == 1:
+            layer_names_55_select.append(layer_names_55[i])
+
 
     pattern_33_space = pattern_sets_generate_3((3, 3), 1)
     pattern_33 = {}
@@ -30,8 +38,13 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     layer_33_names = ["layers.3", "layers.8.1.layers.3", "layers.8.2.layers.3"]
 
-    Kernel_Patter(model, layer_names_55, pattern_55, args)
-    Kernel_Patter(model, layer_33_names, pattern_33, args)
+    layer_names_33_select = []
+    for i in range(3):
+        if pattern_do_or_not[i+5] == 1:
+            layer_names_33_select.append(layer_33_names[i])
+
+    Kernel_Patter(model, layer_names_55_select, pattern_55, args)
+    Kernel_Patter(model, layer_names_33_select, pattern_33, args)
 
     # Change all layer to 16 bit
     quan_paras = {}
@@ -137,18 +150,15 @@ def get_space():
 
     space = (list(range(6)),list(range(6)),list(range(6)),list(range(6)),
              list(range(924)), list(range(924)), list(range(924)), list(range(924)),
-             list(range(4, 10, 2)), list(range(4, 10, 2)), list(range(2, 10, 2)), list(range(1, 8, 2)),
-             list(range(1, 8, 2)), list(range(4, 10, 2)), list(range(2, 10, 2)), list(range(1, 8, 2)),
-             list(range(4, 10, 2)), list(range(1, 8, 2)), list(range(2, 10, 2)), list(range(4, 10, 2)),
-             list(range(1, 8, 2)), list(range(1, 8, 2)), list(range(1, 8, 2)), list(range(1, 8, 2)))
+             [0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],
+             list(range(4, 11, 2)), list(range(4, 13, 3)), list(range(2, 14, 3)), list(range(1, 12, 3)),
+             list(range(1, 14, 3)), list(range(4, 13, 3)), list(range(2, 14, 3)), list(range(1, 13, 3)),
+             list(range(4, 12, 3)), list(range(1, 14, 3)), list(range(2, 13, 3)), list(range(4, 13, 3)),
+             list(range(1, 14, 3)), list(range(1, 13, 3)), list(range(1, 14, 3)), list(range(1, 14, 3)))
     return space_name,space
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
-    parser.add_argument(
-        '-m', '--model',
-        default='mnasnet0_5'
-    )
     parser.add_argument(
         '-c', '--cconv',
         default="100, 16, 32, 32, 3, 6, 10, 14",
@@ -160,34 +170,37 @@ if __name__ == "__main__":
         help="hardware desgin of cconv",
     )
 
-    parser.add_argument(
-        '-d', '--dna',
-        # default="8 8 8 8 8 8 8 8 8 8 8 8 8 8 8",
-        default="0 1 2 3 130 439 342 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
-
-        # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
-        help="exploration results",
-    )
     parser.add_argument('--device', default='cpu', help='device')
-
     args = parser.parse_args()
-    model_name = args.model
-    model = globals()[model_name]()
 
-    dna = [int(x) for x in args.dna.split(" ")]
-
-    pattern_3_3_idx = dna[0:4]
-    pattern_5_5_idx = dna[4:8]
-    q_list = dna[8:23]
-    model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
+    model_name = "mnasnet0_5"
+    model = globals()["mnasnet0_5"]()
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
 
-    print("=" * 10, model_name, "performance analysis:")
-    total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
+    count = 10
 
-    print(total_lat/2)
+    latency = []
 
+    for i in range(count):
 
-    print("Success")
+        _, space = get_space()
+        dna = []
+        for selection in space:
+            dna.append(random.choice(selection))
+        print(dna)
+
+        pattern_3_3_idx = dna[0:4]
+        pattern_5_5_idx = dna[4:8]
+        pattern_do_or_not = dna[8:16]
+        q_list = dna[16:]
+
+        model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, pattern_do_or_not, q_list, args)
+
+        print("=" * 10, model_name, "performance analysis:")
+        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
+        print(total_lat)
+        latency.append(total_lat)
+    print(min(latency),max(latency),sum(latency)/len(latency))
+

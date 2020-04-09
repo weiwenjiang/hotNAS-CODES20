@@ -18,7 +18,7 @@ import train
 import utils
 
 from pattern_generator import pattern_sets_generate_3
-from model_search_space import mnasnet0_5, resnet18, mobilenet_v2
+from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2
 
 logger = logging.getLogger(__name__)
 
@@ -58,14 +58,14 @@ class Controller(object):
 
 
         if self.args.model == "resnet18":
-            space_name = resnet18.get_space()[0]
-            space = resnet18.get_space()[1]
+            space_name = ss_resnet18.get_space()[0]
+            space = ss_resnet18.get_space()[1]
         elif self.args.model == "mnasnet0_5":
-            space_name = mnasnet0_5.get_space()[0]
-            space = mnasnet0_5.get_space()[1]
+            space_name = ss_mnasnet0_5.get_space()[0]
+            space = ss_mnasnet0_5.get_space()[1]
         elif self.args.model == "mobilenet_v2":
-            space_name = mobilenet_v2.get_space()[0]
-            space = mobilenet_v2.get_space()[1]
+            space_name = ss_mobilenet_v2.get_space()[0]
+            space = ss_mobilenet_v2.get_space()[1]
 
         self.nn1_search_space = space
         # self.hw1_search_space = controller_params['hw_space']

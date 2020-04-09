@@ -48,9 +48,6 @@ def get_performance(model, HW1, HW2,device=None):
 
             if T == "cconv":
 
-
-
-
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW2
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
@@ -72,11 +69,11 @@ def get_performance(model, HW1, HW2,device=None):
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
                     # # if perf[1] == "loading IFM":
-                    if perf[1] == "loading Weight":
-                        w = model.state_dict()[layer_name + ".weight"]
-                        x = max(abs(float(w.min())), abs(float(w.max())))
-                        int_num, frac_num = re_quantize(x, 16, True)
-                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                    # if perf[1] == "loading Weight":
+                    #     w = model.state_dict()[layer_name + ".weight"]
+                    #     x = max(abs(float(w.min())), abs(float(w.max())))
+                    #     int_num, frac_num = re_quantize(x, 16, True)
+                    #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
                     # # if perf[1] == "computing":
                     #     print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
@@ -104,11 +101,11 @@ def get_performance(model, HW1, HW2,device=None):
 
                     dTT+=perf[0]
 
-                    if perf[1] == "loading Weight":
-                        w = model.state_dict()[layer_name + ".weight"]
-                        x = max(abs(float(w.min())), abs(float(w.max())))
-                        int_num, frac_num = re_quantize(x, 16, True)
-                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                    # if perf[1] == "loading Weight":
+                    #     w = model.state_dict()[layer_name + ".weight"]
+                    #     x = max(abs(float(w.min())), abs(float(w.max())))
+                    #     int_num, frac_num = re_quantize(x, 16, True)
+                    #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
 
                     # # if perf[1] == "loading IFM":
                     # # if perf[1] == "computing":
@@ -118,7 +115,8 @@ def get_performance(model, HW1, HW2,device=None):
                                                                                                       nn.AvgPool2d):
             input = layer(input)
 
-    return (cTT+dTT) / 10 ** 5
+    # 2 is 200 MHz
+    return (cTT+dTT) / 10 ** 5 / 2
 
 
 

@@ -13,7 +13,7 @@ import bottleneck_conv_only
 import bottlenect_conv_dconv
 from pattern_generator import *
 from search_space import *
-from model_search_space.resnet18 import *
+from model_search_space.ss_resnet18 import *
 
 def Kernel_Patter(model,layer_names,pattern,args):
     layer_pattern = utils.get_layers_pattern(model, layer_names, pattern, args.device)

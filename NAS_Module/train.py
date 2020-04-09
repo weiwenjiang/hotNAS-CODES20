@@ -22,11 +22,11 @@ from search_space import *
 from rl_input import *
 
 
-from model_search_space.mnasnet0_5 import mnasnet0_5_space
-from model_search_space.resnet18 import resnet_18_space
-from model_search_space.mobilenet_v2 import mobilenet_v2_space
+from model_search_space.ss_mnasnet0_5 import mnasnet0_5_space
+from model_search_space.ss_resnet18 import resnet_18_space
+from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
-from model_search_space import mnasnet0_5, resnet18, mobilenet_v2
+from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2
 
 try:
     from apex import amp
@@ -256,13 +256,14 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
         print("HW_Test Done")
-        if total_lat>int(args.target_lat.split(" ")[1]):
-            print("Latency Cannot satisfy", total_lat, int(args.target_lat.split(" ")[1]))
+        if total_lat>float(args.target_lat.split(" ")[1]):
+            print("Latency Cannot satisfy", total_lat, float(args.target_lat.split(" ")[1]))
             return 0, 0, -1
         elif total_lat==-1 or total_lat==0:
-            print("No latency got", total_lat, int(args.target_lat.split(" ")[1]))
+            print("No latency got", total_lat, float(args.target_lat.split(" ")[1]))
             return 0, 0, -1
-        print("Hardware Test Pass {}/{}".format(total_lat,int(args.target_lat.split(" ")[1])))
+
+        print("Hardware Test Pass {}/{}".format(total_lat,float(args.target_lat.split(" ")[1])))
 
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
@@ -383,14 +384,14 @@ def parse_args():
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
 
     if args.model == "resnet18":
-        space_name = resnet18.get_space()[0]
-        space = resnet18.get_space()[1]
+        space_name = ss_resnet18.get_space()[0]
+        space = ss_resnet18.get_space()[1]
     elif args.model == "mnasnet0_5":
-        space_name = mnasnet0_5.get_space()[0]
-        space = mnasnet0_5.get_space()[1]
+        space_name = ss_mnasnet0_5.get_space()[0]
+        space = ss_mnasnet0_5.get_space()[1]
     elif args.model == "mobilenet_v2":
-        space_name = mobilenet_v2.get_space()[0]
-        space = mobilenet_v2.get_space()[1]
+        space_name = ss_mobilenet_v2.get_space()[0]
+        space = ss_mobilenet_v2.get_space()[1]
 
 
     for idx in range(len(space)):
@@ -432,7 +433,6 @@ def get_data_loader(args):
 
 if __name__ == "__main__":
     args = parse_args()
-    sys.exit(0)
     data_loader,data_loader_test = get_data_loader(args)
     dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
