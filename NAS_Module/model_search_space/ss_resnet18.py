@@ -133,8 +133,8 @@ if __name__ == "__main__":
             total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p + comm_point[0],
                                                              I_p + comm_point[1], O_p + comm_point[2], args.device)
 
-            latency.append(total_lat)
-            # print(total_lat)
+            # latency.append(total_lat)
+            print(total_lat)
         else:
             total_lat = -1
             print("-1")
