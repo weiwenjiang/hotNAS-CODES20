@@ -10,7 +10,12 @@ from model_modify import *
 import random
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, pattern_do_or_not, q_list, args):
+def mnasnet0_5_space(model, dna, args):
+
+    pattern_3_3_idx = dna[0:4]
+    pattern_5_5_idx = dna[4:8]
+    pattern_do_or_not = dna[8:16]
+    q_list = dna[16:]
 
     # pattern_idx = [0, 1, 2, 3]
 

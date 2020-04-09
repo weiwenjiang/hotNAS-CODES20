@@ -201,10 +201,11 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         HW[7] += comm_point[2]
         model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
     elif args.model == "mnasnet0_5":
-        pattern_3_3_idx = dna[0:4]
-        pattern_5_5_idx = dna[4:8]
-        q_list = dna[8:23]
-        model = mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args)
+        # pattern_3_3_idx = dna[0:4]
+        # pattern_5_5_idx = dna[4:8]
+        # pattern_do_or_not = dna
+        # q_list = dna[8:23]
+        model = mnasnet0_5_space(model, dna, args)
     elif args.model == "mobilenet_v2":
         model = mobilenet_v2_space(model, args)
 
