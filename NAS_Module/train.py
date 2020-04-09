@@ -434,7 +434,7 @@ def parse_args():
     elif args.model == "mnasnet0_5":
         model_pointer = ss_mnasnet0_5
     elif args.model == "mnasnet1_0":
-        model_pointer == ss_mnasnet1_0
+        model_pointer = ss_mnasnet1_0
     elif args.model == "mobilenet_v2":
         model_pointer = ss_mobilenet_v2
     elif args.model == "proxyless_mobile":
