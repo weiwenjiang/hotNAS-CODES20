@@ -20,7 +20,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
                       "layers.10.1.layers.3","layers.10.2.layers.3"]
 
 
-    pattern_33_space = pattern_sets_generate_3((3, 3))
+    pattern_33_space = pattern_sets_generate_3((3, 3), 2)
     pattern_33 = {}
     i = 0
     for idx in pattern_3_3_idx:
@@ -30,7 +30,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     layer_33_names = ["layers.8.1.layers.3", "layers.8.2.layers.3"]
 
     Kernel_Patter(model, layer_names_55, pattern_55, args)
-    # Kernel_Patter(model, layer_33_names, pattern_33, args)
+    Kernel_Patter(model, layer_33_names, pattern_33, args)
 
     # Change all layer to 16 bit
     quan_paras = {}
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-d', '--dna',
         # default="8 8 8 8 8 8 8 8 8 8 8 8 8 8 8",
-        default="30 39 41 50 130 439 541 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
+        default="0 1 2 3 130 439 541 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
 
         # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",
