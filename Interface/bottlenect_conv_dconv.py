@@ -15,6 +15,8 @@ import argparse
 from ztNAS_model_change import *
 import copy_conv2d
 
+from utility import *
+
 def get_max_k(model):
     max_k = 0
     for layer_name, layer in model.named_modules():
@@ -45,13 +47,19 @@ def get_performance(model, HW1, HW2,device=None):
                 is_same(layer.stride), tell_conv_type(layer.in_channels, layer.groups), is_same(layer.padding))
 
             if T == "cconv":
+
+                w = model.state_dict()[layer_name + ".weight"]
+                x = max(abs(float(w.min())), abs(float(w.max())))
+                int_num,frac_num = re_quantize(x, 16, True)
+                print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name,int_num,frac_num))
+
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW2
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                 HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
                 HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
                 HW_constraints["BITWIDTH"])
-                # print('''quan_paras["{}"] = [0, 16, True]'''.format(layer_name))
+
                 # print("\t",layer_name,M, N, R, C, K, S, T)
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
@@ -66,13 +74,17 @@ def get_performance(model, HW1, HW2,device=None):
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
                     # # if perf[1] == "loading IFM":
-                    if perf[1] == "loading Weight":
-                        print('''quan_paras["{}"] = [0, 16, True]'''.format(layer_name))
+                    # if perf[1] == "loading Weight":
+                    #     print('''quan_paras["{}"] = [0, 16, True]'''.format(layer_name))
                     # # if perf[1] == "computing":
                     #     print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
-                # print('''quan_paras["{}"] = [0, 16, True]'''.format(layer_name))
+                w = model.state_dict()[layer_name + ".weight"]
+                x = max(abs(float(w.min())), abs(float(w.max())))
+                int_num, frac_num = re_quantize(x, 16, True)
+                print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
                 # print("\t",layer_name,M, N, R, C, K, S, T)
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
@@ -94,8 +106,8 @@ def get_performance(model, HW1, HW2,device=None):
 
                     dTT+=perf[0]
 
-                    if perf[1] == "loading Weight":
-                        print("\t", layer_name, M, N, R, C, K, S, T)
+                    # if perf[1] == "loading Weight":
+                    #     print("\t", layer_name, M, N, R, C, K, S, T)
                     # # if perf[1] == "loading IFM":
                     # # if perf[1] == "computing":
                     #     print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
@@ -114,7 +126,7 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mobilenet_v2'
+        default='mnasnet0_5'
     )
     parser.add_argument(
         '-c', '--cconv',
@@ -135,7 +147,7 @@ if __name__== "__main__":
     elif "FBNET" in model_name:
         model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
     else:
-        model = globals()[model_name]()
+        model = globals()[model_name](pretrained=True)
 
     print(model)
 

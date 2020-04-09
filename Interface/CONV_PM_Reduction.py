@@ -13,6 +13,7 @@ import PM_FPGA_Template
 from ztNAS_model_change import *
 from utility import *
 from copy_conv2d import *
+import math
 
 def tell_conv_type(in_channels,groups):
     if in_channels==groups:
@@ -39,23 +40,50 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def quantize(x, num_int_bits, num_frac_bits, signed=True):
-    precision = 1 / 2 ** num_frac_bits
-    x = torch.round(x / precision) * precision
 
-    if signed is True:
+    precision = 1 / 2 ** num_frac_bits
+    print(precision)
+    if signed:
         bound = 2 ** (num_int_bits - 1)
-        return torch.clamp(x, -bound, bound - precision)
+        lower_bound = -1*bound
+        upper_bound = bound - precision
     else:
         bound = 2 ** num_int_bits
-        return torch.clamp(x, 0, bound - precision)
+        lower_bound = 0
+        upper_bound = bound - precision
+
+    return torch.clamp(x.div(precision).int().float().mul(precision), lower_bound, upper_bound)
+    # return torch.clamp(x, lower_bound, upper_bound)
+
+
+
+def re_quantize(x, total_num = 16, signed=True):
+    if signed:
+        int_num = 1
+    else:
+        int_num = 0
+
+    y = int(x.ceil())
+
+    while y!=1:
+        y = math.ceil(y/2)
+        int_num+=1
+        if int_num > total_num:
+            return total_num,0
+
+    return int_num,total_num-int_num
+
 
 
 if __name__== "__main__":
 
-    # x = torch.tensor(2.634,dtype=torch.float32)
-    # print(quantize(x,3,32,True))
-    #
-    # sys.exit(0)
+    x = torch.tensor([15.631393432617188,12.55533],dtype=torch.float32)
+    int_num,frac_num = re_quantize(x.max().abs())
+    print("re_quant",int_num,frac_num)
+    print(float(quantize(x,int_num,frac_num,True)[0]))
+
+
+    sys.exit(0)
 
     # B, C, H, W = 10, 3, 4, 4
     # x = torch.randn(B, C, H, W)
@@ -70,7 +98,7 @@ if __name__== "__main__":
 
     Model_Zoo = [ 'resnet18', 'densenet121', 'alexnet',  'densenet161',  'densenet169', 'densenet201', 'squeezenet1_0', 'squeezenet1_1',  'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn', 'vgg19', 'vgg19_bn','wide_resnet101_2', 'wide_resnet50_2',  'vgg11',  'resnet50', 'resnet101', 'resnet152',  'resnet34' ]
 
-    Model_Zoo_w_dconv = [   'mobilenet_v2', 'mnasnet0_5',    'mnasnet1_0', 'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0']
+    Model_Zoo_w_dconv = [   'mnasnet0_5',  'mobilenet_v2',   'mnasnet1_0', 'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0']
 
     print(len(Model_Zoo))
 

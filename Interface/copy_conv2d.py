@@ -7,15 +7,31 @@ from torch.nn import init
 from torch.nn.modules.utils import _single, _pair, _triple
 from torch._jit_internal import List
 
+
 def quantize(x, num_int_bits, num_frac_bits, signed=True):
+
     precision = 1 / 2 ** num_frac_bits
-    x = torch.round(x / precision) * precision
-    if signed is True:
+    print(precision)
+    if signed:
         bound = 2 ** (num_int_bits - 1)
-        return torch.clamp(x, -bound, bound - precision)
+        lower_bound = -1*bound
+        upper_bound = bound - precision
     else:
         bound = 2 ** num_int_bits
-        return torch.clamp(x, 0, bound - precision)
+        lower_bound = 0
+        upper_bound = bound - precision
+
+    return torch.clamp(x.div(precision).int().float().mul(precision), lower_bound, upper_bound)
+
+# def quantize(x, num_int_bits, num_frac_bits, signed=True):
+#     precision = 1 / 2 ** num_frac_bits
+#     x = torch.round(x / precision) * precision
+#     if signed is True:
+#         bound = 2 ** (num_int_bits - 1)
+#         return torch.clamp(x, -bound, bound - precision)
+#     else:
+#         bound = 2 ** num_int_bits
+#         return torch.clamp(x, 0, bound - precision)
 
 class _ConvNd(Module):
 
