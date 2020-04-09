@@ -265,9 +265,9 @@ if __name__ == "__main__":
         q_list = dna[19:]
 
         model = proxyless_mobile_space(model, dna, args)
-
+        model = model.to(args.device)
         print("=" * 10, model_name, "performance analysis:")
-        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
+        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
         print(total_lat)
         latency.append(total_lat)
 
