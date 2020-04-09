@@ -88,7 +88,7 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
             if isreinfoce:
                 return
 
-        if batch_idx % 1000 == 0:
+        if batch_idx % 500 == 0:
             acc1,acc5 = evaluate(model, criterion, data_loader_test, device=device)
             save_chk_point(model_without_ddp, optimizer, lr_scheduler, epoch, acc5)
 
