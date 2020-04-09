@@ -10,7 +10,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     # pattern_idx = [0, 1, 2, 3]
 
-    pattern_55_space = pattern_sets_generate_3((5, 5))
+    pattern_55_space = pattern_sets_generate_3((5, 5),8)
     pattern_55 = {}
     i = 0
     for idx in pattern_5_5_idx:
@@ -94,20 +94,20 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     quan_paras = {}
     quan_paras["layers.0"] = [6, 4, True]
     quan_paras["layers.10.0.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.0.layers.3"] = [3, 4, True]
-    quan_paras["layers.12.0.layers.6"] = [4, 4, True]
-    quan_paras["layers.12.1.layers.0"] = [3, 4, True]
+    quan_paras["layers.12.0.layers.3"] = [3, 2, True]
+    quan_paras["layers.12.0.layers.6"] = [4, 1, True]
+    quan_paras["layers.12.1.layers.0"] = [3, 1, True]
     quan_paras["layers.12.1.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.1.layers.6"] = [3, 4, True]
-    quan_paras["layers.12.2.layers.0"] = [4, 4, True]
+    quan_paras["layers.12.1.layers.6"] = [3, 2, True]
+    quan_paras["layers.12.2.layers.0"] = [4, 1, True]
     quan_paras["layers.12.2.layers.3"] = [5, 4, True]
-    quan_paras["layers.12.2.layers.6"] = [3, 4, True]
-    quan_paras["layers.12.3.layers.0"] = [4, 4, True]
+    quan_paras["layers.12.2.layers.6"] = [3, 1, True]
+    quan_paras["layers.12.3.layers.0"] = [4, 2, True]
     quan_paras["layers.12.3.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.3.layers.6"] = [3, 4, True]
-    quan_paras["layers.13.0.layers.0"] = [4, 4, True]
-    quan_paras["layers.13.0.layers.6"] = [3, 4, True]
-    quan_paras["layers.14"] = [3, 4, True]
+    quan_paras["layers.12.3.layers.6"] = [3, 1, True]
+    quan_paras["layers.13.0.layers.0"] = [4, 1, True]
+    quan_paras["layers.13.0.layers.6"] = [3, 1, True]
+    quan_paras["layers.14"] = [3, 1, True]
 
     Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
