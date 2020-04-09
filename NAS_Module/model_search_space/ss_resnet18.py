@@ -139,7 +139,7 @@ if __name__ == "__main__":
             total_lat = -1
             print("-1")
 
-        acc1,acc5,_ = main(args, dna, HW, data_loader, data_loader_test)
+        acc1,acc5,_ = train.main(args, dna, HW, data_loader, data_loader_test)
         record[i] = (acc5,total_lat)
         print("Random {}: acc-{}, lat-{}".format(i, acc5,total_lat))
 
