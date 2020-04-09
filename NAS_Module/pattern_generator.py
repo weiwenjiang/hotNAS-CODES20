@@ -36,6 +36,16 @@ def pattern_sets_generate_3(kernal_shape, zero_num=3):
                     pattern_space[pattern_idx] = tmp_tensor
                     pattern_idx += 1
 
+        elif zero_num==1:
+            pattern_idx = 0
+            for i in range(num_one - 2):
+                    if i == 4:
+                        continue
+                    tmp_tensor = base_tensor.clone()
+                    tmp_tensor[i] = 0
+                    pattern_space[pattern_idx] = tmp_tensor
+                    pattern_idx += 1
+
     elif kernal_shape[0] == 5 and kernal_shape[1] == 5:
         fix_one_set = [2,10,14,22,6,7,8,11,12,13,16,17,18]
         pattern_idx = 0

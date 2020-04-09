@@ -20,7 +20,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
                       "layers.10.1.layers.3","layers.10.2.layers.3"]
 
 
-    pattern_33_space = pattern_sets_generate_3((3, 3), 2)
+    pattern_33_space = pattern_sets_generate_3((3, 3), 1)
     pattern_33 = {}
     i = 0
     for idx in pattern_3_3_idx:
@@ -118,7 +118,7 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     # (pre_attr, last_attr, last_not_digit) = get_last_attr_idx(model, seq)
     # print(last_attr[3].check_layer())
 
-    print(model)
+    # print(model)
     return model
 
 
