@@ -62,7 +62,7 @@ class Controller(object):
             self.nn_model_helper = ss_mnasnet0_5
         elif self.args.model == "mobilenet_v2":
             self.nn_model_helper = ss_mobilenet_v2
-        elif self.args.model == "mobilenet_v2":
+        elif self.args.model == "proxyless_mobile":
             self.nn_model_helper = ss_proxyless_mobile
 
 
