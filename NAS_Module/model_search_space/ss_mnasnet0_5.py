@@ -143,6 +143,8 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, pattern_do_or_not,
 def get_space():
     space_name = ("KP-3","KP-3","KP-3","KP-3",
                   "KP-5","KP-5","KP-5","KP-5",
+                  "KP5 S or N", "KP5 S or N", "KP5 S or N", "KP5 S or N", "KP5 S or N",
+                  "KP3 S or N", "KP3 S or N", "KP3 S or N",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
@@ -156,6 +158,25 @@ def get_space():
              list(range(4, 12, 3)), list(range(1, 14, 3)), list(range(2, 13, 3)), list(range(4, 13, 3)),
              list(range(1, 14, 3)), list(range(1, 13, 3)), list(range(1, 14, 3)), list(range(1, 14, 3)))
     return space_name,space
+
+def dna_analysis(dna,logger):
+    pattern_3_3_idx = dna[0:4]
+    pattern_5_5_idx = dna[4:8]
+    pattern_do_or_not = dna[8:16]
+    q_list = dna[16:]
+
+    pattern_55_space = pattern_sets_generate_3((5, 5), 6)
+    pattern_33_space = pattern_sets_generate_3((3, 3), 1)
+
+    for p in pattern_3_3_idx:
+        logger.info("--------->Pattern 3-3 {}: {}".format(p, pattern_33_space[p].flatten()))
+    for p in pattern_5_5_idx:
+        logger.info("--------->Pattern 5-5 {}: {}".format(p, pattern_55_space[p].flatten()))
+    logger.info("--------->Weight Pruning or Not: {}".format(pattern_do_or_not))
+    logger.info("--------->Quantization Selection: {}".format(q_list))
+
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')

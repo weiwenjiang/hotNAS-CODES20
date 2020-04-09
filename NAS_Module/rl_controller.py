@@ -56,16 +56,17 @@ class Controller(object):
 
         self.hidden_units = controller_params['hidden_units']
 
-
         if self.args.model == "resnet18":
-            space_name = ss_resnet18.get_space()[0]
-            space = ss_resnet18.get_space()[1]
+            self.nn_model_helper = ss_resnet18
         elif self.args.model == "mnasnet0_5":
-            space_name = ss_mnasnet0_5.get_space()[0]
-            space = ss_mnasnet0_5.get_space()[1]
+            self.nn_model_helper = ss_mnasnet0_5
         elif self.args.model == "mobilenet_v2":
-            space_name = ss_mobilenet_v2.get_space()[0]
-            space = ss_mobilenet_v2.get_space()[1]
+            self.nn_model_helper = ss_mobilenet_v2
+
+
+        space_name = self.nn_model_helper.get_space()[0]
+        space = self.nn_model_helper.get_space()[1]
+
 
         self.nn1_search_space = space
         # self.hw1_search_space = controller_params['hw_space']
@@ -386,8 +387,8 @@ class Controller(object):
                 # logger.info("--------->NN: {}, Top-1: {}, Top-5: {}, Lat {}, reward: {}".format(str_NNs, acc1, acc5,lat,reward))
 
                 dna = Para_NN1
-                pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[
-                                                                                                                   18:21]
+                # pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[
+                #                                                                                                    18:21]
 
                 logger.info("--------->Parameter: {}".format(str_NNs))
                 logger.info("--------->Top-1: {}%".format(acc1))
@@ -397,12 +398,14 @@ class Controller(object):
                 logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,self.alpha))
                 logger.info("--------->Reward-Lat: {}*{}".format(lat_reward,1-self.alpha))
                 logger.info("")
-                for p in pat_point:
-                    logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
-                logger.info("--------->Exp Selection: {}".format(exp_point))
-                logger.info("--------->Cutting Ch Selection: {}".format(ch_point))
-                logger.info("--------->Quantization Selection: {}".format(quant_point))
-                logger.info("--------->Communication Selection: {}".format(comm_point))
+
+                self.nn_model_helper.dna_analysis(dna,logger)
+                # for p in pat_point:
+                #     logger.info("--------->Pattern{}: {}".format(p,self.pattern_space[p]))
+                # logger.info("--------->Exp Selection: {}".format(exp_point))
+                # logger.info("--------->Cutting Ch Selection: {}".format(ch_point))
+                # logger.info("--------->Quantization Selection: {}".format(quant_point))
+                # logger.info("--------->Communication Selection: {}".format(comm_point))
                 # logger.info("--------->HW: {}, Specs.: {}".format(str_HWs, HW_Eff))
                 # for p in Para_NN1[:-1]:
                 #     logger.info("--------->Parameter: {}".format(self.pattern_space[p]))
