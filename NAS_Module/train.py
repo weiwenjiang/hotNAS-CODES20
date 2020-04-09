@@ -281,7 +281,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
-        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile"::
+        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile":
             # print(ori_HW2, ori_HW)
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
@@ -303,7 +303,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 total_lat = 99999999999
-        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile"::
+        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile":
             # print(ori_HW2, ori_HW)
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
