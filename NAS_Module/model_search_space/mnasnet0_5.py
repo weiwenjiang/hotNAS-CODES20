@@ -144,7 +144,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-d', '--dna',
         # default="8 8 8 8 8 8 8 8 8 8 8 8 8 8 8",
-        default="0 1 2 3 130 439 541 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
+        default="0 1 2 3 130 439 342 250 8 8 8 8 8 8 4 4 4 4 4 4 4 4 4",
 
         # default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
         help="exploration results",

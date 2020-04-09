@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
 
 
-    pattern_space = pattern_sets_generate_3((5,5))
+    pattern_space = pattern_sets_generate_3((5,5),8)
 
     # for k,v in pattern_space.items():
     #     print(k,v.reshape((5,5)))
