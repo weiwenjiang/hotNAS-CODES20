@@ -33,8 +33,22 @@ try:
 except ImportError:
     amp = None
 
+best_acc5 = 0
 
-def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, apex=False,
+def save_chk_point(model_without_ddp,optimizer,lr_scheduler,epoch,acc5):
+
+    if acc5>best_acc5:
+        checkpoint = {
+            'model': model_without_ddp.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'lr_scheduler': lr_scheduler.state_dict(),
+            'epoch': epoch,
+            'args': args}
+        utils.save_on_master(
+            checkpoint,
+            os.path.join(args.output_dir, 'ckp_{}.pth'.format(acc5)))
+
+def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, print_freq, model_without_ddp, lr_scheduler, apex=False,
                     data_loader_test=0,isreinfoce=False, stop_batch=6000):
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -68,11 +82,14 @@ def train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, pri
         batch_idx += 1
         if batch_idx == stop_batch:
             # evaluate(model, criterion, data_loader_test, device=device)
+            acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device)
+            save_chk_point(model_without_ddp, optimizer, lr_scheduler, epoch, acc5)
             if isreinfoce:
                 return
 
         if batch_idx % 1000 == 0:
-            evaluate(model, criterion, data_loader_test, device=device)
+            acc1,acc5 = evaluate(model, criterion, data_loader_test, device=device)
+            save_chk_point(model_without_ddp, optimizer, lr_scheduler, epoch, acc5)
 
 
 def evaluate(model, criterion, data_loader, device, print_freq=10, isreinfoce=False, stop_batch=200):
@@ -290,8 +307,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
-        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, args.apex,
-                        data_loader_test, args.reinfoce, stop_batch=args.train_stop_batch)
+        train_one_epoch(model, criterion, optimizer, data_loader, device, epoch, args.print_freq, model_without_ddp,
+                        lr_scheduler, args.apex, data_loader_test, args.reinfoce, stop_batch=args.train_stop_batch)
         lr_scheduler.step()
         acc1, acc5 = evaluate(model, criterion, data_loader_test, device=device,
                               isreinfoce=args.reinfoce, stop_batch=args.test_stop_batch)
