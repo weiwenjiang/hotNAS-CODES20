@@ -252,7 +252,7 @@ if __name__ == "__main__":
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
 
-    count = 10
+    count = 200
 
     latency = []
     record = {}
@@ -280,6 +280,8 @@ if __name__ == "__main__":
         print(acc1,acc5,total_lat)
         record[i] = (acc5, total_lat)
         print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
+        print(dna)
+        print("="*100)
 
     print("=" * 100)
     total_time = time.time() - start_time
