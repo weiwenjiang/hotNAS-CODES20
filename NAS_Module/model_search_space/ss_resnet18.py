@@ -4,7 +4,7 @@ sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
 from model_modify import *
-
+import model_modify
 
 
 #
@@ -67,10 +67,10 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     quan_paras["layer4.1.conv2"] = [0, q_list[7], True]
 
 
-    Channel_Cut(model, channel_cut_layers)
-    Kernel_Patter(model, layer_names, pattern, args)
-    Kenel_Expand(model, layer_kernel_inc)
-    Kenel_Quantization(model, quant_layers, quan_paras)
+    model_modify.Channel_Cut(model, channel_cut_layers)
+    model_modify.Kernel_Patter(model, layer_names, pattern, args)
+    model_modify.Kenel_Expand(model, layer_kernel_inc)
+    model_modify.Kenel_Quantization(model, quant_layers, quan_paras)
 
     # Kernel_Patter(model, layer_names_77, parttern_77, args)
 
