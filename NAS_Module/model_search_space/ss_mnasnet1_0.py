@@ -9,6 +9,11 @@ from model_modify import *
 import model_modify
 import random
 
+
+import train
+import random
+import time
+import datetime
 # [1,22,49,54], 3, [100,210,210,470,470]
 def mnasnet1_0_space(model, dna, args):
     global p3size
@@ -183,35 +188,38 @@ def dna_analysis(dna,logger):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser('Parser User Input Arguments')
-    parser.add_argument(
-        '-m', '--model',
-        default='mnasnet1_0'
-    )
-    parser.add_argument(
-        '-c', '--cconv',
-        default="100, 18, 32, 32, 3, 10, 10, 10",
-        help="hardware desgin of cconv",
-    )
-    parser.add_argument(
-        '-dc', '--dconv',
-        default="704, 1, 32, 32, 5, 10, 10, 10",
-        help="hardware desgin of cconv",
-    )
+    # parser = argparse.ArgumentParser('Parser User Input Arguments')
+    # parser.add_argument(
+    #     '-m', '--model',
+    #     default='mnasnet1_0'
+    # )
+    # parser.add_argument(
+    #     '-c', '--cconv',
+    #     default="100, 18, 32, 32, 3, 10, 10, 10",
+    #     help="hardware desgin of cconv",
+    # )
+    # parser.add_argument(
+    #     '-dc', '--dconv',
+    #     default="704, 1, 32, 32, 5, 10, 10, 10",
+    #     help="hardware desgin of cconv",
+    # )
+    #
+    # parser.add_argument('--device', default='cpu', help='device')
+    # args = parser.parse_args()
 
-    parser.add_argument('--device', default='cpu', help='device')
-    args = parser.parse_args()
+    args = train.parse_args()
+    data_loader, data_loader_test = train.get_data_loader(args)
 
     model_name = "mnasnet1_0"
     model = globals()["mnasnet1_0"]()
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-
-    count = 10
+    start_time = time.time()
+    count = 30
 
     latency = []
-
+    record = {}
     for i in range(count):
 
         _, space = get_space()
@@ -220,13 +228,29 @@ if __name__ == "__main__":
             dna.append(random.choice(selection))
         print(dna)
 
-
+        # pattern_3_3_idx = dna[0:4]
+        # pattern_5_5_idx = dna[4:8]
+        # pattern_do_or_not = dna[8:16]
+        # q_list = dna[16:]
 
         model = mnasnet1_0_space(model, dna, args)
-
+        model = model.to(args.device)
         print("=" * 10, model_name, "performance analysis:")
         total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2)
         print(total_lat)
         latency.append(total_lat)
-    print(min(latency),max(latency),sum(latency)/len(latency))
 
+        acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
+        print(acc1, acc5, total_lat)
+        record[i] = (acc5, total_lat)
+        print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
+        print(dna)
+        print("=" * 100)
+
+    print("=" * 100)
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+
+    print("Exploration End, using time {}".format(total_time_str))
+    for k, v in record.items():
+        print(k, v)
