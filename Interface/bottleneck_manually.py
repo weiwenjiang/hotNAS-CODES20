@@ -73,14 +73,16 @@ def get_performance(model, HW1, HW2,device=None):
                     else:
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
-                    # # if perf[1] == "loading IFM":
-                    if perf[1] == "loading Weight":
-                        w = model.state_dict()[layer_name + ".weight"]
-                        x = max(abs(float(w.min())), abs(float(w.max())))
-                        int_num, frac_num = re_quantize(x, 16, True)
-                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
-                    # if perf[1] == "computing" and K==3:
-                    #     print(layer_name)
+
+                    # if perf[1] == "loading Weight":
+                    #     w = model.state_dict()[layer_name + ".weight"]
+                    #     x = max(abs(float(w.min())), abs(float(w.max())))
+                    #     int_num, frac_num = re_quantize(x, 16, True)
+                    #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+
+
+                    if perf[1] == "computing" and K==5:
+                        print(layer_name)
                         # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
             elif T == "dconv":
@@ -111,15 +113,15 @@ def get_performance(model, HW1, HW2,device=None):
 
                     dTT+=perf[0]
 
-                    if perf[1] == "loading Weight":
-                        w = model.state_dict()[layer_name + ".weight"]
-                        x = max(abs(float(w.min())), abs(float(w.max())))
-                        int_num, frac_num = re_quantize(x, 16, True)
-                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
-
-                    # # if perf[1] == "loading IFM":
-                    # if perf[1] == "computing" and K == 3:
-                    #     print(layer_name)
+                    # if perf[1] == "loading Weight":
+                    #     w = model.state_dict()[layer_name + ".weight"]
+                    #     x = max(abs(float(w.min())), abs(float(w.max())))
+                    #     int_num, frac_num = re_quantize(x, 16, True)
+                    #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                    #
+                    #
+                    if perf[1] == "computing" and K == 5:
+                        print(layer_name)
                         # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
@@ -137,16 +139,16 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='proxyless_mobile'
+        default='mnasnet1_0'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="100, 16, 32, 32, 3, 10, 10, 10",
+        default="100, 18, 32, 32, 3, 10, 10, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="832, 1, 32, 32, 7, 10, 10, 10",
+        default="704, 1, 32, 32, 5, 10, 10, 10",
         help="hardware desgin of cconv",
     )
 

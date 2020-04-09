@@ -26,7 +26,7 @@ from rl_input import *
 # from model_search_space.ss_resnet18 import resnet_18_space
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
-from model_search_space import ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
+from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
 
 try:
     from apex import amp
@@ -234,6 +234,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         # pattern_do_or_not = dna
         # q_list = dna[8:23]
         model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
+    elif args.model == "mnasnet1_0":
+        model = ss_mnasnet1_0.mnasnet1_0_space(model,dna,args)
     elif args.model == "mobilenet_v2":
         model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
     elif args.model == "proxyless_mobile":
@@ -282,7 +284,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
-        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile":
+        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
             # print(ori_HW2, ori_HW)
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
@@ -304,7 +306,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 total_lat = 99999999999
-        elif args.model == "mnasnet0_5" or args.model == "proxyless_mobile":
+        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
             # print(ori_HW2, ori_HW)
             total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
 
@@ -431,6 +433,8 @@ def parse_args():
         model_pointer = ss_resnet18
     elif args.model == "mnasnet0_5":
         model_pointer = ss_mnasnet0_5
+    elif args.model == "mnasnet1_0":
+        model_pointer == ss_mnasnet1_0
     elif args.model == "mobilenet_v2":
         model_pointer = ss_mobilenet_v2
     elif args.model == "proxyless_mobile":
