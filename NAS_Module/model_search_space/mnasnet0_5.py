@@ -3,6 +3,7 @@ sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
 from model_modify import *
+from model_search_space import mnasnet0_5, resnet18, mobilenet_v2
 
 
 # [1,22,49,54], 3, [100,210,210,470,470]
@@ -90,24 +91,29 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
 
     Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
+
+
     # Modify layers that is dominated by loading weight
     quan_paras = {}
-    quan_paras["layers.0"] = [6, 4, True]
-    quan_paras["layers.10.0.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.0.layers.3"] = [3, 2, True]
-    quan_paras["layers.12.0.layers.6"] = [4, 1, True]
-    quan_paras["layers.12.1.layers.0"] = [3, 1, True]
-    quan_paras["layers.12.1.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.1.layers.6"] = [3, 2, True]
-    quan_paras["layers.12.2.layers.0"] = [4, 1, True]
-    quan_paras["layers.12.2.layers.3"] = [5, 4, True]
-    quan_paras["layers.12.2.layers.6"] = [3, 1, True]
-    quan_paras["layers.12.3.layers.0"] = [4, 2, True]
-    quan_paras["layers.12.3.layers.3"] = [4, 4, True]
-    quan_paras["layers.12.3.layers.6"] = [3, 1, True]
-    quan_paras["layers.13.0.layers.0"] = [4, 1, True]
-    quan_paras["layers.13.0.layers.6"] = [3, 1, True]
-    quan_paras["layers.14"] = [3, 1, True]
+    quan_paras["layers.0"] = [6, q_list[0], True]
+    quan_paras["layers.10.0.layers.3"] = [4, q_list[1], True]
+    quan_paras["layers.12.0.layers.3"] = [3, q_list[2], True]
+    quan_paras["layers.12.0.layers.6"] = [4, q_list[3], True]
+
+    quan_paras["layers.12.1.layers.0"] = [3, q_list[4], True]
+    quan_paras["layers.12.1.layers.3"] = [4, q_list[5], True]
+    quan_paras["layers.12.1.layers.6"] = [3, q_list[6], True]
+    quan_paras["layers.12.2.layers.0"] = [4, q_list[7], True]
+
+    quan_paras["layers.12.2.layers.3"] = [5, q_list[8], True]
+    quan_paras["layers.12.2.layers.6"] = [3, q_list[9], True]
+    quan_paras["layers.12.3.layers.0"] = [4, q_list[10], True]
+    quan_paras["layers.12.3.layers.3"] = [4, q_list[11], True]
+
+    quan_paras["layers.12.3.layers.6"] = [3, q_list[12], True]
+    quan_paras["layers.13.0.layers.0"] = [4, q_list[13], True]
+    quan_paras["layers.13.0.layers.6"] = [3, q_list[14], True]
+    quan_paras["layers.14"] = [3, q_list[15], True]
 
     Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
@@ -121,8 +127,21 @@ def mnasnet0_5_space(model, pattern_3_3_idx, pattern_5_5_idx, q_list, args):
     # print(model)
     return model
 
+def get_space():
+    space_name = ("KP-3","KP-3","KP-3","KP-3",
+                  "KP-5","KP-5","KP-5","KP-5",
+                  "Quan","Quan","Quan","Quan",
+                  "Quan","Quan","Quan","Quan",
+                  "Quan","Quan","Quan","Quan",
+                  "Quan","Quan","Quan","Quan")
 
-
+    space = (list(range(6)),list(range(6)),list(range(6)),list(range(6)),
+             list(range(924)), list(range(924)), list(range(924)), list(range(924)),
+             list(range(4, 10, 2)), list(range(4, 10, 2)), list(range(2, 10, 2)), list(range(1, 8, 2)),
+             list(range(1, 8, 2)), list(range(4, 10, 2)), list(range(2, 10, 2)), list(range(1, 8, 2)),
+             list(range(4, 10, 2)), list(range(1, 8, 2)), list(range(2, 10, 2)), list(range(4, 10, 2)),
+             list(range(1, 8, 2)), list(range(1, 8, 2)), list(range(1, 8, 2)), list(range(1, 8, 2)))
+    return space_name,space
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')

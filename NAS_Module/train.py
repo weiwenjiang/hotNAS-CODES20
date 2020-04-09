@@ -26,6 +26,7 @@ from model_search_space.mnasnet0_5 import mnasnet0_5_space
 from model_search_space.resnet18 import resnet_18_space
 from model_search_space.mobilenet_v2 import mobilenet_v2_space
 
+from model_search_space import mnasnet0_5, resnet18, mobilenet_v2
 
 try:
     from apex import amp
@@ -347,7 +348,7 @@ def parse_args():
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
     # NAS related options
-    parser.add_argument('--model', default='resnet18', help='model')
+    parser.add_argument('--model', default='mnasnet0_5', help='model')
     parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
                         action="store_true", )
     parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -380,9 +381,27 @@ def parse_args():
     print("-" * 58)
     print("-" * 10, "Search Space of Reinforcement Learning", "-" * 10)
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
-    for idx in range(len(controller_params["sw_space"])):
-        sp = ' '.join([str(elem) for elem in controller_params["sw_space"][idx]])
-        print("\t{:<20} {:<15}".format(controller_params["sw_space_name"][idx], sp))
+
+    if args.model == "resnet18":
+        space_name = resnet18.get_space()[0]
+        space = resnet18.get_space()[1]
+    elif args.model == "mnasnet0_5":
+        space_name = mnasnet0_5.get_space()[0]
+        space = mnasnet0_5.get_space()[1]
+    elif args.model == "mobilenet_v2":
+        space_name = mobilenet_v2.get_space()[0]
+        space = mobilenet_v2.get_space()[1]
+
+
+    for idx in range(len(space)):
+        if len(space[idx])>=2:
+            sp = str(min(space[idx]))+" --"+str(space[idx][1]-space[idx][0])+"--> "+str(max(space[idx]))
+        elif len(space[idx])==1:
+            sp = space[idx][0]
+        else:
+            print("[Error]: Space has no element")
+            sys.exit(0)
+        print("\t{:<20} {:<15}".format(space_name[idx], sp))
     print("-" * 58)
 
     return args
@@ -413,6 +432,7 @@ def get_data_loader(args):
 
 if __name__ == "__main__":
     args = parse_args()
+    sys.exit(0)
     data_loader,data_loader_test = get_data_loader(args)
     dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]

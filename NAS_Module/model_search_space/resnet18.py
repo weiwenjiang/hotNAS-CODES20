@@ -76,47 +76,44 @@ def resnet_18_space(model, pattern_idx, k_expand, ch_list, q_list, args):
     return model
 
 
+def get_space():
+
+    space_name = ("KP", "KP", "KP", "KP",
+                  "KE",
+                  "CC", "CC", "CC", "CC", "CC",
+                  "Qu", "Qu", "Qu", "Qu", "Qu", "Qu", "Qu", "Qu",
+                  "HW","HW", "HW")
+
+    space = (list(range(56)), list(range(56)), list(range(56)), list(range(56)),
+             list(range(4)),
+             [128], [256, 240, 224], [256, 240, 224], [512, 496, 480, 464], [512, 496, 480, 464],
+             [16], [16], [16], [16], [16, 12, 8], [16, 12, 8], [16, 12, 8], [16, 12, 8],
+             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2])
+
+    return space_name,space
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
-    parser.add_argument(
-        '-m', '--model',
-        default='resnet18'
-    )
-    parser.add_argument(
-        '-c', '--cconv',
-        default="70, 36, 64, 64, 7, 18, 6, 6",
-        help="hardware desgin of cconv",
-    )
-    parser.add_argument(
-        '-dc', '--dconv',
-        default="576, 1, 32, 32, 3, 10, 10, 10",
-        help="hardware desgin of cconv",
-    )
-
-    parser.add_argument(
-        '-d', '--dna',
-        default="30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2",
-        help="exploration results",
-    )
     parser.add_argument('--device', default='cpu', help='device')
-
     args = parser.parse_args()
-    model_name = args.model
-    model = globals()[model_name]()
 
-    dna = [int(x) for x in args.dna.split(" ")]
+    model_name = "resnet18"
+    model = globals()["resnet18"]()
+
+    dna_str = "30 39 41 50 0 128 224 224 512 512 4 4 4 4 4 8 16 2 1 -2 2"
+    dna = [int(x) for x in dna_str.split(" ")]
     pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
     model = resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
 
-    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in args.cconv.split(",")]
+    hw_str = "70, 36, 64, 64, 7, 18, 6, 6"
+    [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in hw_str.split(",")]
     print("=" * 10, model_name, "performance analysis:")
     if W_p + comm_point[0] + I_p + comm_point[1] + O_p + comm_point[2] <= int(
             HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
         total_lat = bottleneck_conv_only.get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p + comm_point[0],
                                                          I_p + comm_point[1], O_p + comm_point[2])
-        print(total_lat)
+        print(total_lat/2)
     else:
         print("-1")
 
