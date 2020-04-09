@@ -236,7 +236,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
     elif args.model == "mobilenet_v2":
         model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
     elif args.model == "proxyless_mobile":
-        model = ss_proxyless_mobile.proxyless_mobile_space(model.dna,args)
+        model = ss_proxyless_mobile.proxyless_mobile_space(model, dna,args)
     else:
         print("Currently not support the given model {}".format("args.model"))
         sys.exit(0)
