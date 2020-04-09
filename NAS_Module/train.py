@@ -478,6 +478,7 @@ def get_data_loader(args):
     return data_loader,data_loader_test
 
 if __name__ == "__main__":
+    global args
     args = parse_args()
     data_loader,data_loader_test = get_data_loader(args)
     dna = [int(x.strip()) for x in args.finetue_dna.split(" ")]
