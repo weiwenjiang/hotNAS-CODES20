@@ -209,7 +209,16 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
     device = torch.device(args.device)
 
     print("Creating model")
-    model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
+
+    if "proxyless" in args.model:
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', args.model)
+    elif "FBNET" in args.model:
+        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+    else:
+        model =torchvision.models.__dict__[args.model](pretrained=args.pretrained)
+
+
+    # model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
     if args.model == "resnet18":
         pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
