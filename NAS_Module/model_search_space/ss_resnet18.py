@@ -142,7 +142,8 @@ if __name__ == "__main__":
         acc1,acc5,_ = train.main(args, dna, HW, data_loader, data_loader_test)
         record[i] = (acc5,total_lat)
         print("Random {}: acc-{}, lat-{}".format(i, acc5,total_lat))
-
+        print(dna)
+        print("=" * 100)
 
     print("="*100)
     total_time = time.time() - start_time
