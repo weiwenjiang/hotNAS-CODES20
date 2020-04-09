@@ -5,9 +5,12 @@ from torchvision.models import *
 sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
-from model_modify import *
+import model_modify
+
 import train
 import random
+import time
+import datetime
 
 # [1,22,49,54], 3, [100,210,210,470,470]
 def proxyless_mobile_space(model, dna, args):
@@ -67,8 +70,8 @@ def proxyless_mobile_space(model, dna, args):
         if pattern_do_or_not[i+9] == 1:
             layer_names_33_select.append(layer_33_names[i])
 
-    Kernel_Patter(model, layer_names_55_select, pattern_55, args)
-    Kernel_Patter(model, layer_names_33_select, pattern_33, args)
+    model_modify.Kernel_Patter(model, layer_names_55_select, pattern_55, args)
+    model_modify.Kernel_Patter(model, layer_names_33_select, pattern_33, args)
 
     # Change all layer to 16 bit
     quan_paras = {}
@@ -136,7 +139,7 @@ def proxyless_mobile_space(model, dna, args):
     quan_paras["feature_mix_layer.conv"] = [1, 15, True]
 
 
-    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
 
 
@@ -156,7 +159,7 @@ def proxyless_mobile_space(model, dna, args):
     quan_paras["blocks.21.mobile_inverted_conv.point_linear.conv"] = [1, q_list[9], True]
     quan_paras["feature_mix_layer.conv"] = [1, q_list[10], True]
 
-    Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
 
 
@@ -250,7 +253,7 @@ if __name__ == "__main__":
     count = 10
 
     latency = []
-
+    record = {}
     for i in range(count):
 
         _, space = get_space()
@@ -273,6 +276,15 @@ if __name__ == "__main__":
 
         acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
         print(acc1,acc5,total_lat)
+        record[i] = (acc5, total_lat)
+        print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
 
-    print(min(latency),max(latency),sum(latency)/len(latency))
+    print("=" * 100)
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+
+    print("Exploration End, using time {}".format(total_time_str))
+    for k, v in record.items():
+        print(k, v)
+    # print(min(latency),max(latency),sum(latency)/len(latency))
 
