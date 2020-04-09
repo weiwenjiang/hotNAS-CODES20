@@ -271,7 +271,7 @@ if __name__ == "__main__":
         print(total_lat)
         latency.append(total_lat)
 
-        acc1, acc5, _ = train.main(args, dna, HW, data_loader, data_loader_test)
+        acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
         print(acc1,acc5,total_lat)
 
     print(min(latency),max(latency),sum(latency)/len(latency))
