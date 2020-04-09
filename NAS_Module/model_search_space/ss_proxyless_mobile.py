@@ -223,20 +223,23 @@ def dna_analysis(dna,logger):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser('Parser User Input Arguments')
-    parser.add_argument(
-        '-c', '--cconv',
-        default="100, 16, 32, 32, 3, 10, 10, 10",
-        help="hardware desgin of cconv",
-    )
-    parser.add_argument(
-        '-dc', '--dconv',
-        default="832, 1, 32, 32, 7, 10, 10, 10",
-        help="hardware desgin of cconv",
-    )
+    # parser = argparse.ArgumentParser('Parser User Input Arguments')
+    # parser.add_argument(
+    #     '-c', '--cconv',
+    #     default="100, 16, 32, 32, 3, 10, 10, 10",
+    #     help="hardware desgin of cconv",
+    # )
+    # parser.add_argument(
+    #     '-dc', '--dconv',
+    #     default="832, 1, 32, 32, 7, 10, 10, 10",
+    #     help="hardware desgin of cconv",
+    # )
+    #
+    # parser.add_argument('--device', default='cpu', help='device')
+    # args = parser.parse_args()
 
-    parser.add_argument('--device', default='cpu', help='device')
-    args = parser.parse_args()
+    args = train.parse_args()
+    data_loader, data_loader_test = train.get_data_loader(args)
 
     model_name = "proxyless_mobile"
     model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
