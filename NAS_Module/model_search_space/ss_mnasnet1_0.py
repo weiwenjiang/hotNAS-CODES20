@@ -148,7 +148,7 @@ def get_space():
     global p5size
 
     p3size = 2
-    p5size = 8
+    p5size = 6
 
     space_name = ("KP-3","KP-3","KP-3","KP-3",
                   "KP-5","KP-5","KP-5","KP-5",
@@ -165,9 +165,9 @@ def get_space():
     space = (list(range(k3_s)),list(range(k3_s)),list(range(k3_s)),list(range(k3_s)),
              list(range(k5_s)), list(range(k5_s)), list(range(k5_s)), list(range(k5_s)),
              [0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],
-             list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
-             list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
-             list(range(4, 15, 4)), list(range(4, 15, 4)))
+             list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
+             list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
+             list(range(4, 15, 2)), list(range(4, 15, 2)))
     return space_name,space
 
 def dna_analysis(dna,logger):
@@ -205,12 +205,12 @@ if __name__ == "__main__":
         )
         parser.add_argument(
             '-c', '--cconv',
-            default="100, 18, 32, 32, 3, 12, 10, 10",
+            default="100, 18, 32, 32, 3, 10, 12, 10",
             help="hardware desgin of cconv",
         )
         parser.add_argument(
             '-dc', '--dconv',
-            default="704, 1, 32, 32, 5, 12, 10, 10",
+            default="704, 1, 32, 32, 5, 10, 12, 10",
             help="hardware desgin of cconv",
         )
 
