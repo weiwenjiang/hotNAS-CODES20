@@ -30,6 +30,9 @@ def get_performance(model, HW1, HW2,device=None):
     input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
     cTT = 0
     dTT = 0
+
+    count = [0,0,0,0]
+
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
@@ -81,9 +84,22 @@ def get_performance(model, HW1, HW2,device=None):
                     #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
 
 
-                    if perf[1] == "computing" and K==5:
-                        print(layer_name)
-                        # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    # if perf[1] == "computing" and K==5:
+                    #     print(layer_name)
+                    # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+
+                    if perf[1] == "loading Weight":
+                        count[1]+=1
+                    elif perf[1] == "loading IFM":
+                        count[0]+=1
+                    elif perf[1] == "storing OFM":
+                        count[2] += 1
+                    elif perf[1] == "computing":
+                        count[3] += 1
+                    else:
+                        print(perf[1],"not recognized")
+                        sys.exit(0)
+
 
             elif T == "dconv":
 
@@ -120,16 +136,28 @@ def get_performance(model, HW1, HW2,device=None):
                     #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
                     #
                     #
-                    if perf[1] == "computing" and K == 5:
-                        print(layer_name)
-                        # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
-
+                    # if perf[1] == "computing" and K == 5:
+                    #     print(layer_name)
+                    #     # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    if perf[1] == "loading Weight":
+                        count[1]+=1
+                    elif perf[1] == "loading IFM":
+                        count[0]+=1
+                    elif perf[1] == "storing OFM":
+                        count[2] += 1
+                    elif perf[1] == "computing":
+                        count[3] += 1
+                    else:
+                        print(perf[1],"not recognized")
+                        sys.exit(0)
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
             input = layer(input)
 
+
+
     # 2 is 200 MHz
-    return (cTT+dTT) / 10 ** 5 / 2
+    return (cTT+dTT) / 10 ** 5 / 2, count
 
 
 
@@ -139,11 +167,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mnasnet1_0'
+        default='resnet18'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="100, 18, 32, 32, 3, 10, 10, 10",
+        default="70, 36, 64, 64, 7, 18, 6, 6",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
@@ -161,15 +189,16 @@ if __name__== "__main__":
         model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
     else:
         model = globals()[model_name](pretrained=True)
-
-    print(model)
-
-    for name, para in model.named_parameters():
-        print(name)
+    #
+    # print(model)
+    #
+    # for name, para in model.named_parameters():
+    #     print(name)
 
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-    print("="*10,model_name,"performance analysis:")
-    total_lat = get_performance(model, HW1, HW2)
-    print(total_lat)
+    # print("="*10,model_name,"performance analysis:")
+    total_lat,count = get_performance(model, HW1, HW2)
+    # print("=" * 10, model_name, "performance analysis end")
+    print(model_name, count, total_lat)

@@ -228,67 +228,112 @@ def dna_analysis(dna,logger):
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser('Parser User Input Arguments')
-    # parser.add_argument(
-    #     '-c', '--cconv',
-    #     default="100, 16, 32, 32, 3, 10, 10, 10",
-    #     help="hardware desgin of cconv",
-    # )
-    # parser.add_argument(
-    #     '-dc', '--dconv',
-    #     default="832, 1, 32, 32, 7, 10, 10, 10",
-    #     help="hardware desgin of cconv",
-    # )
-    #
-    # parser.add_argument('--device', default='cpu', help='device')
-    # args = parser.parse_args()
 
-    args = train.parse_args()
-    data_loader, data_loader_test = train.get_data_loader(args)
 
-    model_name = "proxyless_mobile"
-    model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
-    HW1 = [int(x.strip()) for x in args.dconv.split(",")]
-    HW2 = [int(x.strip()) for x in args.cconv.split(",")]
+    local = True
 
-    start_time = time.time()
-    count = 200
+    if local:
 
-    latency = []
-    record = {}
-    for i in range(count):
+        parser = argparse.ArgumentParser('Parser User Input Arguments')
+        parser.add_argument(
+            '-c', '--cconv',
+            default="100, 16, 32, 32, 3, 8, 12, 12",
+            help="hardware desgin of cconv",
+        )
+        parser.add_argument(
+            '-dc', '--dconv',
+            default="832, 1, 32, 32, 7, 8, 12, 12",
+            help="hardware desgin of cconv",
+        )
 
-        _, space = get_space()
-        dna = []
-        for selection in space:
-            dna.append(random.choice(selection))
-        print(dna)
+        parser.add_argument('--device', default='cpu', help='device')
+        args = parser.parse_args()
 
-        pattern_3_3_idx = dna[0:4]
-        pattern_5_5_idx = dna[4:8]
-        pattern_do_or_not = dna[8:19]
-        q_list = dna[19:]
+        model_name = "proxyless_mobile"
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
+        HW1 = [int(x.strip()) for x in args.dconv.split(",")]
+        HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-        model = proxyless_mobile_space(model, dna, args)
-        model = model.to(args.device)
-        print("=" * 10, model_name, "performance analysis:")
-        total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
-        print(total_lat)
-        latency.append(total_lat)
 
-        acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
-        print(acc1,acc5,total_lat)
-        record[i] = (acc5, total_lat)
-        print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
-        print(dna)
-        print("="*100)
+        count = 20
 
-    print("=" * 100)
-    total_time = time.time() - start_time
-    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+        latency = []
 
-    print("Exploration End, using time {}".format(total_time_str))
-    for k, v in record.items():
-        print(k, v)
-    # print(min(latency),max(latency),sum(latency)/len(latency))
+        for i in range(count):
+
+            _, space = get_space()
+            dna = []
+            for selection in space:
+                dna.append(random.choice(selection))
+            print(dna)
+
+            pattern_3_3_idx = dna[0:4]
+            pattern_5_5_idx = dna[4:8]
+            pattern_do_or_not = dna[8:19]
+            q_list = dna[19:]
+
+            model = proxyless_mobile_space(model, dna, args)
+            model = model.to(args.device)
+            print("=" * 10, model_name, "performance analysis:")
+            total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
+            print(total_lat)
+            latency.append(total_lat)
+
+
+        print("=" * 100)
+
+
+        print(min(latency), max(latency), sum(latency) / len(latency))
+
+
+    else:
+
+        args = train.parse_args()
+        data_loader, data_loader_test = train.get_data_loader(args)
+
+        model_name = "proxyless_mobile"
+        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
+        HW1 = [int(x.strip()) for x in args.dconv.split(",")]
+        HW2 = [int(x.strip()) for x in args.cconv.split(",")]
+
+        start_time = time.time()
+        count = 200
+
+        latency = []
+        record = {}
+        for i in range(count):
+
+            _, space = get_space()
+            dna = []
+            for selection in space:
+                dna.append(random.choice(selection))
+            print(dna)
+
+            pattern_3_3_idx = dna[0:4]
+            pattern_5_5_idx = dna[4:8]
+            pattern_do_or_not = dna[8:19]
+            q_list = dna[19:]
+
+            model = proxyless_mobile_space(model, dna, args)
+            model = model.to(args.device)
+            print("=" * 10, model_name, "performance analysis:")
+            total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
+            print(total_lat)
+            latency.append(total_lat)
+
+            acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
+            print(acc1,acc5,total_lat)
+            record[i] = (acc5, total_lat)
+            print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
+            print(dna)
+            print("="*100)
+
+        print("=" * 100)
+        total_time = time.time() - start_time
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+
+        print("Exploration End, using time {}".format(total_time_str))
+        for k, v in record.items():
+            print(k, v)
+        # print(min(latency),max(latency),sum(latency)/len(latency))
 
