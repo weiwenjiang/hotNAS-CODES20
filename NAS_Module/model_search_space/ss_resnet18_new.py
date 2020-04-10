@@ -95,18 +95,21 @@ def get_space():
 
     return space_name,space
 
-
-def dna_analysis(dna, logger):
-    pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+def dna_analysis(dna,logger):
+    pattern_3_3_idx = dna[0:4]
+    channel_expand = dna[4]
+    q_list = dna[5:]
 
     pattern_33_space = pattern_sets_generate_3((3, 3), 1)
 
-    for p in pat_point:
+    for p in pattern_3_3_idx:
         logger.info("--------->Pattern 3-3 {}: {}".format(p, pattern_33_space[p].flatten()))
-    logger.info("--------->Kernel Expand: {}".format(exp_point))
-    logger.info("--------->Channel Cut: {}".format(ch_point))
-    logger.info("--------->Qunatization: {}".format(quant_point))
-    logger.info("--------->HW: {}".format(comm_point))
+    for p in pattern_5_5_idx:
+        logger.info("--------->Pattern 5-5 {}: {}".format(p, pattern_55_space[p].flatten()))
+    logger.info("--------->Weight Pruning or Not: {}".format(pattern_do_or_not))
+    logger.info("--------->Quantization Selection: {}".format(q_list))
+
+
 
 if __name__ == "__main__":
     # parser = argparse.ArgumentParser('Parser User Input Arguments')
