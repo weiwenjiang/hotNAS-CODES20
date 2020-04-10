@@ -99,7 +99,7 @@ def get_space():
 def dna_analysis(dna, logger):
     pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
 
-    pattern_33_space = pattern_sets_generate_3((3, 3), 1)
+    pattern_33_space = pattern_sets_generate_3((3, 3), 3)
 
     for p in pat_point:
         logger.info("--------->Pattern 3-3 {}: {}".format(p, pattern_33_space[p].flatten()))
