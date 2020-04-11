@@ -226,7 +226,8 @@ def dna_analysis(dna,logger):
     pattern_3_3_idx = dna[0:4]
     pattern_5_5_idx = dna[4:8]
     pattern_do_or_not = dna[8:19]
-    q_list = dna[19:]
+    q_list = dna[19:30]
+    hw_port = dna[25:]
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -238,6 +239,7 @@ def dna_analysis(dna,logger):
         logger.info("--------->Pattern 5-5 {}: {}".format(p, pattern_55_space[p].flatten()))
     logger.info("--------->Weight Pruning or Not: {}".format(pattern_do_or_not))
     logger.info("--------->Quantization Selection: {}".format(q_list))
+    logger.info("--------->Hardware Exploration: {}".format(hw_port))
 
 
 
