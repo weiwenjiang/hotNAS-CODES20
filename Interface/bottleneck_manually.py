@@ -188,8 +188,7 @@ if __name__== "__main__":
     elif "FBNET" in model_name:
         model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
     else:
-        model = globals()[model_name]()
-        # pretrained=True)
+        model = globals()[model_name](pretrained=True)
     #
     # print(model)
     #
