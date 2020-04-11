@@ -25,7 +25,10 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
     pattern_5_5_idx = dna[4:8]
     pattern_do_or_not = dna[8:19]
     q_list = dna[19:30]
-    hw_port = dna[25:]
+    hw_port = dna[30:]
+
+
+    print("===",hw_port)
 
     hw_cconv[5] += hw_port[0]
     hw_cconv[6] += hw_port[1]
@@ -33,10 +36,10 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
 
     hw_dconv[5], hw_dconv[6], hw_dconv[7] = hw_cconv[5], hw_cconv[6], hw_cconv[7]
 
-    hw_cconv[0] += hw_port[3]
-    hw_cconv[1] += hw_port[4]
-
-    hw_dconv[0] = rl_input.HW_constraints["r_DSP"] - hw_cconv[0] - hw_cconv[1]
+    # hw_cconv[0] += hw_port[3]
+    # hw_cconv[1] += hw_port[4]
+    #
+    # hw_dconv[0] = rl_input.HW_constraints["r_DSP"] - hw_cconv[0] * hw_cconv[1]
 
     # pattern_idx = [0, 1, 2, 3]
 
@@ -202,7 +205,7 @@ def get_space():
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan",
-                  "I_p", "W_p", "O_p", "T_m", "T_n")
+                  "I_p", "W_p", "O_p")
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -216,7 +219,8 @@ def get_space():
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
-             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2],[-10,-5,0,5,10],[-3,-2,-1,0,1,2,3])
+             # [0], [0], [0], [-10, -5, 0], [-3, -2, -1, 0])
+             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2])
     return space_name,space
 
 def dna_analysis(dna,logger):
@@ -227,7 +231,7 @@ def dna_analysis(dna,logger):
     pattern_5_5_idx = dna[4:8]
     pattern_do_or_not = dna[8:19]
     q_list = dna[19:30]
-    hw_port = dna[25:]
+    hw_port = dna[30:]
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -254,12 +258,12 @@ if __name__ == "__main__":
         parser = argparse.ArgumentParser('Parser User Input Arguments')
         parser.add_argument(
             '-c', '--cconv',
-            default="100, 16, 32, 32, 3, 8, 12, 12",
+            default="100, 16, 32, 32, 3, 10, 10, 10",
             help="hardware desgin of cconv",
         )
         parser.add_argument(
             '-dc', '--dconv',
-            default="832, 1, 32, 32, 7, 8, 12, 12",
+            default="832, 1, 32, 32, 7, 10, 10, 10",
             help="hardware desgin of cconv",
         )
 
@@ -271,8 +275,6 @@ if __name__ == "__main__":
         HW1 = [int(x.strip()) for x in args.dconv.split(",")]
         HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-        print(HW1,HW2)
-        sys.exit(0)
 
         count = 20
 
@@ -291,10 +293,17 @@ if __name__ == "__main__":
             pattern_do_or_not = dna[8:19]
             q_list = dna[19:]
 
-            model = proxyless_mobile_space(model, dna, args)
-            model = model.to(args.device)
+
+            import copy
+            HW_d = copy.deepcopy(HW1)
+            HW_c = copy.deepcopy(HW2)
+
+            model,HW_c,HW_d = proxyless_mobile_space(model, dna, HW_c, HW_d, args)
+            print(HW_c,HW_d)
+
+            # model = model.to(args.device)
             print("=" * 10, model_name, "performance analysis:")
-            total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, HW_d, HW_c, args.device)
             print(total_lat)
             latency.append(total_lat)
 
