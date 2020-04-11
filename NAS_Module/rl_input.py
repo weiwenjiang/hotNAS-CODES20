@@ -10,10 +10,10 @@ controller_params = {
 
 
 HW_constraints = {
-    "r_Ports_BW": 1024,
+    "r_Ports_BW": 512,
     "r_DSP": 2520,
     "r_BRAM": 1824,
     "r_BRAM_Size": 18000,
     "BITWIDTH": 16,
-    "target_HW_Eff": 1
+    "target_HW_Eff": 1000000000
 }

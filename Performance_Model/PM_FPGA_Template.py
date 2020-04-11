@@ -44,10 +44,10 @@ class FPGA_Templates:
                 DSP = Tm*Tn
                 Port_BW = 16*(W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    #print("[Error] DSP exceeds")
+                    print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    #print("[Error] Communication bitwidth exceeds")
+                    print("[Error] Communication bitwidth exceeds",W_p,I_p,O_p,Port_BW,r_PortBW)
                     return -1
             elif BITWIDTH==32:
                 DSP = 5*Tm*Tn
@@ -70,7 +70,7 @@ class FPGA_Templates:
                 bW = Tm*Tn*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                #print("[Error] BRAM exceeds")
+                print("[Error] BRAM exceeds")
                 return -1
 
         elif T=="dconv":
@@ -80,22 +80,22 @@ class FPGA_Templates:
                 DSP = Tm * 1
                 Port_BW = 16 * (W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    #print("[Error] DSP exceeds")
+                    print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    #print("[Error] Communication bitwidth exceeds")
+                    print("[Error] Communication bitwidth exceeds")
                     return -1
             elif BITWIDTH == 32:
                 DSP = 5 * Tm * 1
                 Port_BW = 32 * (W_p + I_p + O_p)
                 if DSP > r_DSP:
-                    #print("[Error] DSP exceeds")
+                    print("[Error] DSP exceeds")
                     return -1
                 if Port_BW > r_PortBW:
-                    #print("[Error] Communication bitwidth exceeds")
+                    print("[Error] Communication bitwidth exceeds")
                     return -1
             else:
-                #print("[Error] only support 16-bit fixed point and 32-bit floating point")
+                print("[Error] only support 16-bit fixed point and 32-bit floating point")
                 sys.exit(0)
 
             bI = 2*Tn*ceil(Tr*Tc*BITWIDTH/r_BRAM_Size)
@@ -106,7 +106,7 @@ class FPGA_Templates:
                 bW = Tm*1*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                #print("[Error] BRAM exceeds")
+                print("[Error] BRAM exceeds")
                 return -1
 
         else:
