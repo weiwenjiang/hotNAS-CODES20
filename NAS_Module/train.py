@@ -195,7 +195,7 @@ def load_data(traindir, valdir, cache_dataset, distributed):
 
     return dataset, dataset_test, train_sampler, test_sampler
 
-def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
+def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
 
     # print("==============Train==========")
     # print(pat_point, exp_point, ch_point)
@@ -235,7 +235,9 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
         # q_list = dna[8:23]
         model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
     elif args.model == "mnasnet1_0":
-        model = ss_mnasnet1_0.mnasnet1_0_space(model,dna,args)
+        HW_cconv = copy.deepcopy(ori_HW)
+        HW_dconv = copy.deepcopy(ori_HW_dconv)
+        model,ori_HW, ori_HW_dconv = ss_mnasnet1_0.mnasnet1_0_space(model,dna, HW_cconv, HW_dconv ,args)
     elif args.model == "mobilenet_v2":
         model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
     elif args.model == "proxyless_mobile":
@@ -285,8 +287,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
         elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
-            # print(ori_HW2, ori_HW)
-            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
+            # print(ori_HW_dconv, ori_HW)
+            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW_dconv, ori_HW, device)
 
         print("HW_Test Done")
         if total_lat>float(args.target_lat.split(" ")[1]):
@@ -307,8 +309,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW2=[]):
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 total_lat = 99999999999
         elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
-            # print(ori_HW2, ori_HW)
-            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW2, ori_HW, device)
+            # print(ori_HW_dconv, ori_HW)
+            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW_dconv, ori_HW, device)
 
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)

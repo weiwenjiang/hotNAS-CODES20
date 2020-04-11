@@ -15,15 +15,21 @@ import random
 import time
 import datetime
 # [1,22,49,54], 3, [100,210,210,470,470]
-def mnasnet1_0_space(model, dna, args):
+def mnasnet1_0_space(model, dna, hw_cconv, hw_dconv, args):
     global p3size
     global p5size
 
     pattern_3_3_idx = dna[0:4]
     pattern_5_5_idx = dna[4:8]
     pattern_do_or_not = dna[8:15]
-    q_list = dna[15:]
+    q_list = dna[15:25]
+    hw_port = dna[25:]
 
+    hw_cconv[5] += hw_port[0]
+    hw_cconv[6] += hw_port[1]
+    hw_cconv[7] += hw_port[2]
+
+    hw_dconv[5],hw_dconv[6],hw_dconv[7] = hw_cconv[5],hw_cconv[6],hw_cconv[7]
     # pattern_idx = [0, 1, 2, 3]
 
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -141,7 +147,7 @@ def mnasnet1_0_space(model, dna, args):
     # print(last_attr[3].check_layer())
 
     # print(model)
-    return model
+    return model, hw_cconv, hw_dconv
 
 def get_space():
     global p3size
@@ -156,7 +162,8 @@ def get_space():
                   "KP3 S or N", "KP3 S or N", "KP3 S or N", "KP3 S or N",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
-                  "Quan","Quan")
+                  "Quan","Quan",
+                  "I_p", "W_p", "O_p")
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -167,7 +174,8 @@ def get_space():
              [0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],
              list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
              list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
-             list(range(4, 15, 2)), list(range(4, 15, 2)))
+             list(range(4, 15, 2)), list(range(4, 15, 2)),
+             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2])
     return space_name,space
 
 def dna_analysis(dna,logger):
@@ -176,8 +184,9 @@ def dna_analysis(dna,logger):
 
     pattern_3_3_idx = dna[0:4]
     pattern_5_5_idx = dna[4:8]
-    pattern_do_or_not = dna[8:16]
-    q_list = dna[16:]
+    pattern_do_or_not = dna[8:15]
+    q_list = dna[15:25]
+    hw_port = dna[25:]
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -188,6 +197,7 @@ def dna_analysis(dna,logger):
         logger.info("--------->Pattern 5-5 {}: {}".format(p, pattern_55_space[p].flatten()))
     logger.info("--------->Weight Pruning or Not: {}".format(pattern_do_or_not))
     logger.info("--------->Quantization Selection: {}".format(q_list))
+    logger.info("--------->Hardware Modification: {}".format(hw_port))
 
 
 
@@ -222,7 +232,9 @@ if __name__ == "__main__":
         HW1 = [int(x.strip()) for x in args.dconv.split(",")]
         HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
-        count = 20
+
+
+        count = 100
         latency = []
 
         for i in range(count):
@@ -233,10 +245,14 @@ if __name__ == "__main__":
                 dna.append(random.choice(selection))
             print(dna)
 
-            model = mnasnet1_0_space(model, dna, args)
-            model = model.to(args.device)
+            import copy
+            HW1_c = copy.deepcopy(HW1)
+            HW2_c = copy.deepcopy(HW2)
+
+            model,HW_cconv,HW_dconv = mnasnet1_0_space(model, dna, HW2_c, HW1_c, args)
+            # model = model.to(args.device)
             print("=" * 10, model_name, "performance analysis:")
-            total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, HW_dconv, HW_cconv, args.device)
             print(total_lat)
             latency.append(total_lat)
             print("=" * 100)
