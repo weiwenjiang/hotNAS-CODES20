@@ -149,7 +149,7 @@ def mnasnet1_0_space(model, dna, hw_cconv, hw_dconv, args):
     # print(model)
     return model, hw_cconv, hw_dconv
 
-def get_space():random_mnasnet1_0_150_k28.res
+def get_space():
     global p3size
     global p5size
 
