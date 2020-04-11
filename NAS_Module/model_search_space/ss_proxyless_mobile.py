@@ -202,7 +202,7 @@ def get_space():
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan",
-                  "I_p", "W_p", "O_p")
+                  "I_p", "W_p", "O_p", "T_m", "T_n")
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
