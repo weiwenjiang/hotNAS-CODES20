@@ -27,7 +27,7 @@ def mnasnet1_0_space(model, dna, hw_cconv, hw_dconv, args):
 
     hw_cconv[5] += hw_port[0]
     hw_cconv[6] += hw_port[1]
-    hw_cconv[7] += hw_port[2]
+    hw_cconv[7] = 32 - hw_cconv[5] - hw_cconv[6]
 
     hw_dconv[5],hw_dconv[6],hw_dconv[7] = hw_cconv[5],hw_cconv[6],hw_cconv[7]
     # pattern_idx = [0, 1, 2, 3]
@@ -163,7 +163,7 @@ def get_space():
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan",
-                  "I_p", "W_p", "O_p")
+                  "I_p", "W_p")
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -175,7 +175,7 @@ def get_space():
              list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
              list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)), list(range(4, 15, 2)),
              list(range(4, 15, 2)), list(range(4, 15, 2)),
-             [0], [0], [0])
+             [-3,-2,-1,0,1,2,3], [-3,-2,-1,0,1,2,3])
     return space_name,space
 
 def dna_analysis(dna,logger):
