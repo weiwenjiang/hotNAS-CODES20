@@ -15,7 +15,7 @@ import time
 import datetime
 
 # [1,22,49,54], 3, [100,210,210,470,470]
-def proxyless_mobile_space(model, dna, args):
+def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
 
     global p3size
     global p5size
@@ -23,7 +23,14 @@ def proxyless_mobile_space(model, dna, args):
     pattern_3_3_idx = dna[0:4]
     pattern_5_5_idx = dna[4:8]
     pattern_do_or_not = dna[8:19]
-    q_list = dna[19:]
+    q_list = dna[19:30]
+    hw_port = dna[25:]
+
+    hw_cconv[5] += hw_port[0]
+    hw_cconv[6] += hw_port[1]
+    hw_cconv[7] += hw_port[2]
+
+    hw_dconv[5], hw_dconv[6], hw_dconv[7] = hw_cconv[5], hw_cconv[6], hw_cconv[7]
 
     # pattern_idx = [0, 1, 2, 3]
 
@@ -171,7 +178,7 @@ def proxyless_mobile_space(model, dna, args):
     # print(last_attr[3].check_layer())
 
     # print(model)
-    return model
+    return model, hw_cconv, hw_dconv
 
 def get_space():
 
@@ -188,7 +195,8 @@ def get_space():
                   "KP3 S or N", "KP3 S or N",
                   "Quan","Quan","Quan","Quan",
                   "Quan","Quan","Quan","Quan",
-                  "Quan","Quan","Quan")
+                  "Quan","Quan","Quan",
+                  "I_p", "W_p", "O_p")
 
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     pattern_55_space = pattern_sets_generate_3((5, 5), p5size)
@@ -201,7 +209,8 @@ def get_space():
              [0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
-             list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)))
+             list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
+             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2])
     return space_name,space
 
 def dna_analysis(dna,logger):
