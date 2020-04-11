@@ -8,6 +8,7 @@ sys.path.append("../../Performance_Model")
 
 from model_modify import *
 import model_modify
+import rl_input
 
 import train
 import random
@@ -31,6 +32,11 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
     hw_cconv[7] += hw_port[2]
 
     hw_dconv[5], hw_dconv[6], hw_dconv[7] = hw_cconv[5], hw_cconv[6], hw_cconv[7]
+
+    hw_cconv[0] += hw_port[3]
+    hw_cconv[1] += hw_port[4]
+
+    hw_dconv[0] = rl_input.HW_constraints["r_DSP"] - hw_cconv[0] - hw_cconv[1]
 
     # pattern_idx = [0, 1, 2, 3]
 
@@ -210,7 +216,7 @@ def get_space():
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
              list(range(4, 15, 4)), list(range(4, 15, 4)), list(range(4, 15, 4)),
-             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2])
+             [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2], [-2, -1, 0, 1, 2],[-10,-5,0,5,10],[-3,-2,-1,0,1,2,3])
     return space_name,space
 
 def dna_analysis(dna,logger):
@@ -263,6 +269,8 @@ if __name__ == "__main__":
         HW1 = [int(x.strip()) for x in args.dconv.split(",")]
         HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
+        print(HW1,HW2)
+        sys.exit(0)
 
         count = 20
 
