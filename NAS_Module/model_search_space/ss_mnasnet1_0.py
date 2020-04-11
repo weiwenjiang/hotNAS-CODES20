@@ -292,14 +292,21 @@ if __name__ == "__main__":
             # pattern_do_or_not = dna[8:16]
             # q_list = dna[16:]
 
-            model = mnasnet1_0_space(model, dna, args)
+            import copy
+
+            HW1_c = copy.deepcopy(HW1)
+            HW2_c = copy.deepcopy(HW2)
+
+            model, HW_cconv, HW_dconv = mnasnet1_0_space(model, dna, HW2_c, HW1_c, args)
+
+            # model = mnasnet1_0_space(model, dna, args)
             model = model.to(args.device)
             print("=" * 10, model_name, "performance analysis:")
-            total_lat = bottlenect_conv_dconv.get_performance(model, HW1, HW2, args.device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, HW_dconv, HW_cconv, args.device)
             print(total_lat)
             latency.append(total_lat)
 
-            acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
+            acc1, acc5, _ = train.main(args, dna, HW_cconv, data_loader, data_loader_test, HW_dconv)
             print(acc1, acc5, total_lat)
             record[i] = (acc5, total_lat)
             print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
