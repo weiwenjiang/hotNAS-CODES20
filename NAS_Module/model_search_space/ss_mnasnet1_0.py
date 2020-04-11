@@ -149,7 +149,7 @@ def mnasnet1_0_space(model, dna, hw_cconv, hw_dconv, args):
     # print(model)
     return model, hw_cconv, hw_dconv
 
-def get_space():
+def get_space():random_mnasnet1_0_150_k28.res
     global p3size
     global p5size
 
@@ -204,7 +204,7 @@ def dna_analysis(dna,logger):
 
 if __name__ == "__main__":
 
-    local = True
+    local = False
 
     if local:
 
