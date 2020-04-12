@@ -88,8 +88,8 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
         if pattern_do_or_not[i+9] == 1:
             layer_names_33_select.append(layer_33_names[i])
 
-    # model_modify.Kernel_Patter(model, layer_names_55_select, pattern_55, args)
-    # model_modify.Kernel_Patter(model, layer_names_33_select, pattern_33, args)
+    model_modify.Kernel_Patter(model, layer_names_55_select, pattern_55, args)
+    model_modify.Kernel_Patter(model, layer_names_33_select, pattern_33, args)
 
     # Change all layer to 16 bit
     quan_paras = {}
@@ -177,7 +177,7 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
     quan_paras["blocks.21.mobile_inverted_conv.point_linear.conv"] = [1, q_list[9], True]
     quan_paras["feature_mix_layer.conv"] = [1, q_list[10], True]
 
-    model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    # model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
 
 
