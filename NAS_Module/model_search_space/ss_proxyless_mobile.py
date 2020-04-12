@@ -88,8 +88,8 @@ def proxyless_mobile_space(model, dna, hw_cconv, hw_dconv, args):
         if pattern_do_or_not[i+9] == 1:
             layer_names_33_select.append(layer_33_names[i])
 
-    model_modify.Kernel_Patter(model, layer_names_55_select, pattern_55, args)
-    model_modify.Kernel_Patter(model, layer_names_33_select, pattern_33, args)
+    # model_modify.Kernel_Patter(model, layer_names_55_select, pattern_55, args)
+    # model_modify.Kernel_Patter(model, layer_names_33_select, pattern_33, args)
 
     # Change all layer to 16 bit
     quan_paras = {}

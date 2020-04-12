@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet0_5.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet0_5.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet1_0.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet1_0.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mobilenet_v2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_proxyless_mobile.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_proxyless_mobile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_resnet18.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_resnet18.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_resnet18_new.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,6 +235,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.mnasnet0_5" />
       <item itemvalue="Python.resnet18" />
       <item itemvalue="Python.train" />
       <item itemvalue="Python.bottleneck_manually" />
@@ -758,6 +764,10 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="568" y="369" width="464" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585433735613" />
+    <state x="2004" y="247" width="614" height="562" key="git4idea.branch.GitBranchIsNotFullyMergedDialog" timestamp="1586660560282">
+      <screen x="1600" y="132" width="1366" height="768" />
+    </state>
+    <state x="2004" y="247" width="614" height="562" key="git4idea.branch.GitBranchIsNotFullyMergedDialog/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586660560282" />
     <state x="559" y="241" width="471" height="415" key="git4idea.merge.GitMergeDialog" timestamp="1585405436326">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
