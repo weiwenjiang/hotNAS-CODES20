@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mobilenet_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet1_0.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet1_0.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -272,13 +272,6 @@
       <workItem from="1585316012039" duration="71940000" />
       <workItem from="1585780216815" duration="92451000" />
       <workItem from="1586354215643" duration="82396000" />
-    </task>
-    <task id="LOCAL-00259" summary="random">
-      <created>1586415422612</created>
-      <option name="number" value="00259" />
-      <option name="presentableId" value="LOCAL-00259" />
-      <option name="project" value="LOCAL" />
-      <updated>1586415422612</updated>
     </task>
     <task id="LOCAL-00260" summary="random">
       <created>1586415752441</created>
@@ -616,14 +609,20 @@
       <option name="project" value="LOCAL" />
       <updated>1586660609286</updated>
     </task>
-    <option name="localTasksCounter" value="308" />
+    <task id="LOCAL-00308" summary="mobilenet">
+      <created>1586661111003</created>
+      <option name="number" value="00308" />
+      <option name="presentableId" value="LOCAL-00308" />
+      <option name="project" value="LOCAL" />
+      <updated>1586661111003</updated>
+    </task>
+    <option name="localTasksCounter" value="309" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Model Generator" />
     <MESSAGE value="Quantization" />
     <MESSAGE value="Fine-tune RL w/o quantization" />
     <MESSAGE value="fine-tune-rl with quantization" />
@@ -648,7 +647,8 @@
     <MESSAGE value="mnasnet kp size =1" />
     <MESSAGE value="bottleneck statistic" />
     <MESSAGE value="proxyless hw" />
-    <option name="LAST_COMMIT_MESSAGE" value="proxyless hw" />
+    <MESSAGE value="mobilenet" />
+    <option name="LAST_COMMIT_MESSAGE" value="mobilenet" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="110" width="800" height="677" key="#Notifications" timestamp="1585405034104">
@@ -664,11 +664,11 @@
     </state>
     <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
     <state x="2002" y="230" width="638" height="405" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586369441160" />
-    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586660609042">
+    <state x="1997" y="159" width="876" height="741" key="CommitChangelistDialog2" timestamp="1586661110873">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528015811" />
-    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586660609042" />
+    <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586661110873" />
     <state x="1997" y="1" width="748" height="740" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037059773" />
     <state x="490" y="159" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040837181" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585902779737">
@@ -742,11 +742,11 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1586660612439">
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1586661113394">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528018681" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586660612439" />
+    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586661113394" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037062064" />
     <state x="445" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040842578" />
     <state x="1987" y="159" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1586452537713">
