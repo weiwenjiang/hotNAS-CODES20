@@ -331,10 +331,10 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 total_lat = 99999999999
-        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile" or args.dataset=="cifar10"::
+        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile" or args.dataset=="cifar10":
             # print(ori_HW_dconv, ori_HW)
             total_lat = bottlenect_conv_dconv.get_performance(model, args.dataset, ori_HW_dconv, ori_HW, device)
-
+        print(total_lat)
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
         return 0,0,0
