@@ -10,6 +10,7 @@ import random
 import train
 import time
 import datetime
+import copy
 #
 # layers format:
 # [ ["layer4.0.conv1", "layer4.0.conv2", "layer4.0.bn1", (256, 480, 512)],
@@ -28,7 +29,7 @@ def resnet_18_space(model,dna, hw_cconv, args):
     hw_cconv[6] += hw_port[1]
     hw_cconv[7] = 32 - hw_cconv[5] - hw_cconv[6]
 
-    print(hw_cconv)
+    # print(hw_cconv)
 
     pattern_space = pattern_sets_generate_3((3, 3),p3size)
 
@@ -69,7 +70,7 @@ def resnet_18_space(model,dna, hw_cconv, args):
     model_modify.Kernel_Patter(model, select_layer, pattern, args)
     model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
-    return model
+    return model,hw_cconv
 
 
 def get_space():
@@ -118,14 +119,14 @@ if __name__ == "__main__":
 
     hw_str = "130, 19, 32, 32, 3, 18, 2, 10"
     [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = [int(x.strip()) for x in hw_str.split(",")]
-
+    oriHW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
     start_time = time.time()
     count = 60
     record = {}
     for i in range(count):
 
         model = getattr(cifar10_models, model_name)(pretrained=True)
-        HW = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
+
 
         # model = globals()["resnet18"]()
 
@@ -135,8 +136,9 @@ if __name__ == "__main__":
             dna.append(random.choice(selection))
         print(dna)
 
+        HW = copy.deepcopy(oriHW)
 
-        model = resnet_18_space(model, dna, HW, args)
+        model,HW = resnet_18_space(model, dna, HW, args)
 
         model = model.to(args.device)
 

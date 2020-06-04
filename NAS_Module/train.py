@@ -13,6 +13,8 @@ import torchvision
 from torchvision import transforms
 
 sys.path.append("../Interface")
+sys.path.append("..")
+import cifar10_models
 from ztNAS_model_change import *
 from model_modify import *
 import utils
@@ -21,12 +23,15 @@ import bottlenect_conv_dconv
 from search_space import *
 from rl_input import *
 
+from torchvision.datasets import CIFAR10
+from torch.utils.data import DataLoader
 
 # from model_search_space.ss_mnasnet0_5 import mnasnet0_5_space
 # from model_search_space.ss_resnet18 import resnet_18_space
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
+from model_search_space import ss_resnet18_cifar
 
 try:
     from apex import amp
@@ -211,43 +216,55 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
 
     print("Creating model")
 
-    if "proxyless" in args.model:
-        model = torch.hub.load('mit-han-lab/ProxylessNAS', args.model)
-    elif "FBNET" in args.model:
-        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
-    else:
-        model =torchvision.models.__dict__[args.model](pretrained=args.pretrained)
-
+    if args.dataset == "imagenet":
+        if "proxyless" in args.model:
+            model = torch.hub.load('mit-han-lab/ProxylessNAS', args.model)
+        elif "FBNET" in args.model:
+            model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+        else:
+            model =torchvision.models.__dict__[args.model](pretrained=args.pretrained)
+    elif args.dataset == "cifar10":
+        model = getattr(cifar10_models, args.model)(pretrained=True)
 
     # model = torchvision.models.__dict__[args.model](pretrained=args.pretrained)
 
-    if args.model == "resnet18":
-        pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
-        HW = copy.deepcopy(ori_HW)
-        HW[5] += comm_point[0]
-        HW[6] += comm_point[1]
-        HW[7] += comm_point[2]
-        model = ss_resnet18.resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
-    elif args.model == "mnasnet0_5":
-        # pattern_3_3_idx = dna[0:4]
-        # pattern_5_5_idx = dna[4:8]
-        # pattern_do_or_not = dna
-        # q_list = dna[8:23]
-        model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
-    elif args.model == "mnasnet1_0":
-        HW_cconv = copy.deepcopy(ori_HW)
-        HW_dconv = copy.deepcopy(ori_HW_dconv)
-        model,ori_HW, ori_HW_dconv = ss_mnasnet1_0.mnasnet1_0_space(model,dna, HW_cconv, HW_dconv ,args)
-    elif args.model == "mobilenet_v2":
-        model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
-    elif args.model == "proxyless_mobile":
-        HW_cconv = copy.deepcopy(ori_HW)
-        HW_dconv = copy.deepcopy(ori_HW_dconv)
-        model,ori_HW, ori_HW_dconv = ss_proxyless_mobile.proxyless_mobile_space(model, dna, HW_cconv, HW_dconv ,args)
-    else:
-        print("Currently not support the given model {}".format("args.model"))
-        sys.exit(0)
+    if args.dataset == "imagenet":
+        if args.model == "resnet18":
+            pat_point, exp_point, ch_point, quant_point, comm_point = dna[0:4], dna[4], dna[5:10], dna[10:18], dna[18:21]
+            HW = copy.deepcopy(ori_HW)
+            HW[5] += comm_point[0]
+            HW[6] += comm_point[1]
+            HW[7] += comm_point[2]
+            model = ss_resnet18.resnet_18_space(model, pat_point, exp_point, ch_point, quant_point, args)
+        elif args.model == "mnasnet0_5":
+            # pattern_3_3_idx = dna[0:4]
+            # pattern_5_5_idx = dna[4:8]
+            # pattern_do_or_not = dna
+            # q_list = dna[8:23]
+            model = ss_mnasnet0_5.mnasnet0_5_space(model, dna, args)
+        elif args.model == "mnasnet1_0":
+            HW_cconv = copy.deepcopy(ori_HW)
+            HW_dconv = copy.deepcopy(ori_HW_dconv)
+            model,ori_HW, ori_HW_dconv = ss_mnasnet1_0.mnasnet1_0_space(model,dna, HW_cconv, HW_dconv ,args)
+        elif args.model == "mobilenet_v2":
+            model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
+        elif args.model == "proxyless_mobile":
+            HW_cconv = copy.deepcopy(ori_HW)
+            HW_dconv = copy.deepcopy(ori_HW_dconv)
+            model,ori_HW, ori_HW_dconv = ss_proxyless_mobile.proxyless_mobile_space(model, dna, HW_cconv, HW_dconv ,args)
+        else:
+            print("Currently not support the given model {}".format("args.model"))
+            sys.exit(0)
 
+    elif args.dataset == "cifar10":
+        if args.model == "resnet18":
+            model = ss_resnet18_cifar.resnet_18_space(model, dna, ori_HW, args)
+        else:
+            print("Currently not support the given model {}".format("args.model"))
+            sys.exit(0)
+
+
+    print(model)
 
     model.to(device)
     if args.distributed and args.sync_bn:
@@ -281,16 +298,20 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
 
     if args.hw_test:
         print("HW_Test")
-        if args.model == "resnet18":
+        if args.model == "resnet18" and args.dataset=="imagenet":
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
                 total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
                                                                  HW[4], HW[5], HW[6], HW[7], device)
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 return 0, 0, -1
-        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
+        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile" or args.dataset=="cifar10":
             # print(ori_HW_dconv, ori_HW)
-            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW_dconv, ori_HW, device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, args.dataset, ori_HW_dconv, ori_HW, device)
+
+
+
+
 
         print("HW_Test Done")
         if total_lat>float(args.target_lat.split(" ")[1]):
@@ -362,8 +383,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='PyTorch Classification Training')
 
     parser.add_argument('--data-path', default='/mnt/weiwen/ImageNet', help='dataset')
-    # parser.add_argument('--device', default='cuda', help='device')
-    parser.add_argument('--device', default='cpu', help='device')
+    parser.add_argument('--device', default='cuda', help='device')
+    # parser.add_argument('--device', default='cpu', help='device')
     parser.add_argument('-b', '--batch-size', default=32, type=int)
 
     parser.add_argument('-j', '--workers', default=16, type=int, metavar='N',
@@ -398,7 +419,7 @@ def parse_args():
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
     # NAS related options
-    parser.add_argument('--model', default='mnasnet0_5', help='model')
+    parser.add_argument('--model', default='resnet18', help='model')
     parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
                         action="store_true", )
     parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -408,15 +429,15 @@ def parse_args():
     parser.add_argument("--rl", dest="reinfoce", help="execute reinforcement leraning", action="store_true", )
     parser.add_argument('--train_stop_batch', default=100, type=int, metavar='N',help='number of batch to terminate in training')
     parser.add_argument('--test_stop_batch', default=100000, type=int, metavar='N',help='number of batch to terminate in testing')
-    parser.add_argument('-f', '--finetue_dna', default="4 3 5 2 130 439 384 250 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8", help="hardware desgin of cconv", )
+    parser.add_argument('-f', '--finetue_dna', default="54 33 39 44 1 1 0 1 0 30 25 24 28 24 23 12 12 7 30 17 7 12 2 2 1", help="hardware desgin of cconv", )
     parser.add_argument('-a', '--alpha', default="0.7", help="rl controller reward parameter", )
     parser.add_argument('-acc', '--target_acc', default="80 89", help="target accuracy range, determining reward", )
     parser.add_argument('-lat', '--target_lat', default="7 10", help="target latency range, determining reward", )
     parser.add_argument('-rlopt', '--rl_optimizer', default="Adam", help="optimizer of rl", )
     parser.add_argument("--hwt", dest="hw_test", help="whether test hardware", action="store_true", )
     parser.add_argument('-dc', '--dconv',default="832, 1, 32, 32, 5, 6, 10, 16",help="hardware desgin of dconv", )
-    parser.add_argument('-c', '--cconv',default="100, 16, 32, 32, 3, 6, 10, 16",help="hardware desgin of cconv",)
-
+    parser.add_argument('-c', '--cconv',default="130, 19, 32, 32, 3, 18, 2, 10",help="hardware desgin of cconv",)
+    parser.add_argument('-d', '--dataset',default='cifar10')
     args = parser.parse_args()
 
     print("=" * 58)
@@ -433,17 +454,22 @@ def parse_args():
     print("\t{:<20} {:<15}".format('Attribute', 'Search space'))
 
 
-    if args.model == "resnet18":
-        model_pointer = ss_resnet18
-    elif args.model == "mnasnet0_5":
-        model_pointer = ss_mnasnet0_5
-    elif args.model == "mnasnet1_0":
-        model_pointer = ss_mnasnet1_0
-    elif args.model == "mobilenet_v2":
-        model_pointer = ss_mobilenet_v2
-    elif args.model == "proxyless_mobile":
-        model_pointer = ss_proxyless_mobile
+    datasets_name = args.dataset
 
+    if datasets_name == "imagenet":
+        if args.model == "resnet18":
+            model_pointer = ss_resnet18
+        elif args.model == "mnasnet0_5":
+            model_pointer = ss_mnasnet0_5
+        elif args.model == "mnasnet1_0":
+            model_pointer = ss_mnasnet1_0
+        elif args.model == "mobilenet_v2":
+            model_pointer = ss_mobilenet_v2
+        elif args.model == "proxyless_mobile":
+            model_pointer = ss_proxyless_mobile
+    elif datasets_name == "cifar10":
+        if args.model == "resnet18":
+            model_pointer = ss_resnet18_cifar
 
     space_name = model_pointer.get_space()[0]
     space = model_pointer.get_space()[1]
@@ -468,21 +494,38 @@ def get_data_loader(args):
         utils.mkdir(args.output_dir)
 
     utils.init_distributed_mode(args)
-
-
     torch.backends.cudnn.benchmark = True
 
-    train_dir = os.path.join(args.data_path, 'train')
-    val_dir = os.path.join(args.data_path, 'val')
-    dataset, dataset_test, train_sampler, test_sampler = load_data(train_dir, val_dir,
-                                                                         args.cache_dataset, args.distributed)
-    data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=args.batch_size,
-        sampler=train_sampler, num_workers=args.workers, pin_memory=True)
+    if args.dataset=="imagenet":
 
-    data_loader_test = torch.utils.data.DataLoader(
-        dataset_test, batch_size=args.batch_size,
-        sampler=test_sampler, num_workers=args.workers, pin_memory=True)
+        train_dir = os.path.join(args.data_path, 'train')
+        val_dir = os.path.join(args.data_path, 'val')
+        dataset, dataset_test, train_sampler, test_sampler = load_data(train_dir, val_dir,
+                                                                             args.cache_dataset, args.distributed)
+        data_loader = torch.utils.data.DataLoader(
+            dataset, batch_size=args.batch_size,
+            sampler=train_sampler, num_workers=args.workers, pin_memory=True)
+
+        data_loader_test = torch.utils.data.DataLoader(
+            dataset_test, batch_size=args.batch_size,
+            sampler=test_sampler, num_workers=args.workers, pin_memory=True)
+
+    elif args.dataset=="cifar10":
+        mean = [0.4914, 0.4822, 0.4465]
+        std = [0.2023, 0.1994, 0.2010]
+
+        transform_train = transforms.Compose([transforms.RandomCrop(32, padding=4),
+                                              transforms.RandomHorizontalFlip(),
+                                              transforms.ToTensor(),
+                                              transforms.Normalize(mean, std)])
+        dataset = CIFAR10(root=args.data_path, train=True, transform=transform_train)
+        data_loader = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, shuffle=True,
+                                drop_last=True, pin_memory=True)
+
+        transform_val = transforms.Compose([transforms.ToTensor(),
+                                            transforms.Normalize(mean, std)])
+        dataset = CIFAR10(root=args.data_path, train=False, transform=transform_val)
+        data_loader_test = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, pin_memory=True)
 
     return data_loader,data_loader_test
 
