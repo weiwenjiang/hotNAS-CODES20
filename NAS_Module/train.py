@@ -324,16 +324,16 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
         print("Hardware Test Pass {}/{}".format(total_lat,float(args.target_lat.split(" ")[1])))
 
     else:
-        if args.model == "resnet18":
+        if args.model == "resnet18" and args.dataset=="imagenet":
             if HW[5] + HW[6] + HW[7] <= int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]):
                 total_lat = bottleneck_conv_only.get_performance(model, HW[0], HW[1], HW[2], HW[3],
                                                                  HW[4], HW[5], HW[6], HW[7], device)
             else:
                 print("HW Port exceed",HW[5] + HW[6] + HW[7], int(HW_constraints["r_Ports_BW"] / HW_constraints["BITWIDTH"]))
                 total_lat = 99999999999
-        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile":
+        elif args.model == "mnasnet0_5" or args.model == "mnasnet1_0" or args.model == "proxyless_mobile" or args.dataset=="cifar10"::
             # print(ori_HW_dconv, ori_HW)
-            total_lat = bottlenect_conv_dconv.get_performance(model, ori_HW_dconv, ori_HW, device)
+            total_lat = bottlenect_conv_dconv.get_performance(model, args.dataset, ori_HW_dconv, ori_HW, device)
 
     if args.test_only:
         evaluate(model, criterion, data_loader_test, device=device)
