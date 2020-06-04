@@ -26,8 +26,11 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, HW1, HW2,device=None):
-    input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+def get_performance(model, dataset_name, HW1, HW2,device=None):
+    if dataset_name == "imagenet":
+        input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+    elif dataset_name == "cifar10":
+        input = torch.Tensor(torch.Size([1, 3, 32, 32])).to(torch.float32)
     cTT = 0
     dTT = 0
     for layer_name, layer in model.named_modules():

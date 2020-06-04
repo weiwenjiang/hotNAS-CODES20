@@ -6,6 +6,8 @@ import torch
 import sys
 import math
 sys.path.append("../Performance_Model")
+sys.path.append("../")
+import cifar10_models
 import PM_Config
 import PM_Layer
 import PM_FPGA_Template
@@ -26,12 +28,19 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, HW1, HW2,device=None):
-    input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+def get_performance(model, dataset_name, HW1, HW2,device=None):
+    if dataset_name == "imagenet":
+        input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+    elif dataset_name == "cifar10":
+        input = torch.Tensor(torch.Size([1, 3, 32, 32])).to(torch.float32)
+
     cTT = 0
     dTT = 0
 
     count = [0,0,0,0]
+
+    cconv_quan_ss = []
+    cconv_quan_sn = []
 
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
@@ -77,15 +86,29 @@ def get_performance(model, HW1, HW2,device=None):
                         perf = acc_1.get_layer_latency(Layer)
                     cTT += perf[0]
 
-                    # if perf[1] == "loading Weight":
-                    #     w = model.state_dict()[layer_name + ".weight"]
-                    #     x = max(abs(float(w.min())), abs(float(w.max())))
-                    #     int_num, frac_num = re_quantize(x, 16, True)
-                    #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                    if perf[1] == "loading Weight":
+                        w = model.state_dict()[layer_name + ".weight"]
+                        x = max(abs(float(w.min())), abs(float(w.max())))
+                        int_num, frac_num = re_quantize(x, 16, True)
+                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                        # print("cconv", layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1],
+                        #       [x / 10 ** 5 for x in perf[2]])
+
+                        sorted_per = torch.tensor(perf[2]).sort()[0]
+                        max_lat = sorted_per[-1].item()
+                        sec_lat = sorted_per[-2].item()
+                        quan_floor = math.floor(32/(float(max_lat)/sec_lat))
+                        quan_ceil = 32
+                        quan_count = 6
+                        step = math.ceil((quan_ceil - quan_floor)/quan_count)
+                        # print(range(quan_floor,quan_ceil,step))
+                        cconv_quan_ss.append(list(range(quan_floor,quan_ceil,step)))
+                        cconv_quan_sn.append("Qu")
 
 
-                    # if perf[1] == "computing" and K==5:
+                    # if perf[1] == "computing" and K==3:
                     #     print(layer_name)
+
                     # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
                     if perf[1] == "loading Weight":
@@ -156,6 +179,8 @@ def get_performance(model, HW1, HW2,device=None):
 
 
 
+    print(cconv_quan_ss)
+    print(cconv_quan_sn)
     # 2 is 200 MHz
     return (cTT+dTT) / 10 ** 5 / 2, count
 
@@ -171,7 +196,7 @@ if __name__== "__main__":
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 36, 64, 64, 7, 18, 6, 6",
+        default="130, 19, 32, 32, 3, 18, 2, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
@@ -179,16 +204,25 @@ if __name__== "__main__":
         default="704, 1, 32, 32, 5, 10, 10, 10",
         help="hardware desgin of cconv",
     )
+    parser.add_argument(
+        '-d', '--dataset',
+        default='cifar10'
+    )
 
     args = parser.parse_args()
     model_name = args.model
+    dataset_name = args.dataset
 
-    if "proxyless" in model_name:
-        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
-    elif "FBNET" in model_name:
-        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
-    else:
-        model = globals()[model_name](pretrained=True)
+    if dataset_name == "imagenet":
+        if "proxyless" in model_name:
+            model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
+        elif "FBNET" in model_name:
+            model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+        else:
+            model = globals()[model_name](pretrained=True)
+    elif dataset_name == "cifar10":
+        model = getattr(cifar10_models, model_name)(pretrained=True)
+
     #
     # print(model)
     #
@@ -199,6 +233,6 @@ if __name__== "__main__":
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
     # print("="*10,model_name,"performance analysis:")
-    total_lat,count = get_performance(model, HW1, HW2)
+    total_lat,count = get_performance(model, dataset_name, HW1, HW2)
     # print("=" * 10, model_name, "performance analysis end")
     print(model_name, count, total_lat)
