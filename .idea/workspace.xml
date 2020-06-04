@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="mobilenet">
-      <change afterPath="$PROJECT_DIR$/Interface/run_cifar10.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/densenet.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/googlenet.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/inception.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/mobilenetv2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/resnet.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/resnet_orig.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cifar10_models/vgg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="cifar-search space">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Interface/explore_conv_only.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/explore_conv_only.py" afterDir="false" />
@@ -260,14 +250,7 @@
       <workItem from="1585316012039" duration="71940000" />
       <workItem from="1585780216815" duration="92451000" />
       <workItem from="1586354215643" duration="82396000" />
-      <workItem from="1591300925558" duration="2921000" />
-    </task>
-    <task id="LOCAL-00261" summary="random">
-      <created>1586416038506</created>
-      <option name="number" value="00261" />
-      <option name="presentableId" value="LOCAL-00261" />
-      <option name="project" value="LOCAL" />
-      <updated>1586416038506</updated>
+      <workItem from="1591300925558" duration="4012000" />
     </task>
     <task id="LOCAL-00262" summary="random">
       <created>1586416054020</created>
@@ -605,14 +588,20 @@
       <option name="project" value="LOCAL" />
       <updated>1586662734839</updated>
     </task>
-    <option name="localTasksCounter" value="310" />
+    <task id="LOCAL-00310" summary="cifar-search space">
+      <created>1591303967850</created>
+      <option name="number" value="00310" />
+      <option name="presentableId" value="LOCAL-00310" />
+      <option name="project" value="LOCAL" />
+      <updated>1591303967852</updated>
+    </task>
+    <option name="localTasksCounter" value="311" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Quantization" />
     <MESSAGE value="Fine-tune RL w/o quantization" />
     <MESSAGE value="fine-tune-rl with quantization" />
     <MESSAGE value="proxyless" />
@@ -637,7 +626,8 @@
     <MESSAGE value="bottleneck statistic" />
     <MESSAGE value="proxyless hw" />
     <MESSAGE value="mobilenet" />
-    <option name="LAST_COMMIT_MESSAGE" value="mobilenet" />
+    <MESSAGE value="cifar-search space" />
+    <option name="LAST_COMMIT_MESSAGE" value="cifar-search space" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="110" width="800" height="677" key="#Notifications" timestamp="1585405034104">
@@ -653,13 +643,14 @@
     </state>
     <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
     <state x="2002" y="230" width="638" height="405" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586369441160" />
-    <state x="445" y="53" width="876" height="741" key="CommitChangelistDialog2" timestamp="1591300935472">
-      <screen x="67" y="27" width="1299" height="741" />
+    <state x="1366" y="159" width="1600" height="741" key="CommitChangelistDialog2" timestamp="1591304567786">
+      <screen x="67" y="159" width="2899" height="741" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528015811" />
     <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586662734690" />
     <state x="1997" y="1" width="748" height="740" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037059773" />
     <state x="490" y="159" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040837181" />
+    <state x="1366" y="159" width="1600" height="741" key="CommitChangelistDialog2/67.159.2899.741@67.159.2899.741" timestamp="1591304567786" />
     <state x="445" y="53" key="CommitChangelistDialog2/67.27.1299.741@67.27.1299.741" timestamp="1591300935472" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585902779737">
       <screen x="0" y="159" width="1600" height="741" />
@@ -736,13 +727,14 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1586662746381">
-      <screen x="1600" y="132" width="1366" height="768" />
+    <state x="1366" y="185" width="1600" height="510" key="Vcs.Push.Dialog.v2" timestamp="1591304572451">
+      <screen x="67" y="159" width="2899" height="741" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528018681" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586662746381" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037062064" />
     <state x="445" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040842578" />
+    <state x="1366" y="185" width="1600" height="510" key="Vcs.Push.Dialog.v2/67.159.2899.741@67.159.2899.741" timestamp="1591304572451" />
     <state x="1987" y="159" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1586452537713">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>

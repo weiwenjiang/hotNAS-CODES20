@@ -7,6 +7,7 @@ import sys
 import math
 sys.path.append("../Performance_Model")
 sys.path.append("../cifar10_models")
+sys.path.append("../")
 import cifar10_models
 import PM_Config
 import PM_Layer
