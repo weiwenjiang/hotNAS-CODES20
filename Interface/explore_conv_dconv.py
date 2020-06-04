@@ -6,6 +6,10 @@ import torch
 import sys
 import math
 sys.path.append("../Performance_Model")
+sys.path.append("../cifar10_models")
+import cifar10_models
+# from cifar10_models import *
+
 import PM_Config
 import PM_Layer
 import PM_FPGA_Template
@@ -31,8 +35,11 @@ def get_max_k_d(model):
 
     return  max_k,d_max_k
 
-def get_performance(model, HW1, HW2):
-    input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+def get_performance(model,dataset_name, HW1, HW2):
+    if dataset_name=="imagenet":
+        input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+    elif dataset_name=="cifar10":
+        input = torch.Tensor(torch.Size([1, 3, 32, 32])).to(torch.float32)
     cTT = 0
     dTT = 0
     for layer_name, layer in model.named_modules():
@@ -84,7 +91,7 @@ def get_performance(model, HW1, HW2):
 
 
 
-def do_exploration(model):
+def do_exploration(model,dataset_name):
     (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_cd_cconv']
     (d_rangeTm, d_rangeTc, d_rangeTr) = search_space['hw_cd_dconv']
 
@@ -114,7 +121,9 @@ def do_exploration(model):
                                 for Tc in rangeTc:
                                     for Tr in rangeTr:
                                         HW2 = [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p]
-                                        cur_lat = get_performance(model, HW1,HW2)
+
+                                        cur_lat = get_performance(model,dataset_name, HW1,HW2)
+
                                         print("==",HW1,HW2,cur_lat)
                                         # print("'", Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p, "':", cur_lat,best_lat)
                                         if cur_lat!=-1 and cur_lat<best_lat:
@@ -128,22 +137,33 @@ if __name__== "__main__":
 
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
+        '-d', '--dataset',
+        default='cifar10'
+    )
+
+    parser.add_argument(
         '-m', '--model',
-        default='FBNET'
+        default='resnet18'
     )
     args = parser.parse_args()
     model_name = args.model
+    dataset_name = args.dataset
 
-    if "proxyless" in model_name:
-        model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
-    elif "FBNET" in model_name:
-        model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
-    else:
-        model = globals()[model_name]()
+    if dataset_name == "imagenet":
+        if "proxyless" in model_name:
+            model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
+        elif "FBNET" in model_name:
+            model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+        else:
+            model = globals()[model_name]()
+    elif dataset_name == "cifar10":
+        model = getattr(cifar10_models, model_name)(pretrained=True)
+
+
 
     start_time = time.time()
 
-    best_lat,best_design = do_exploration(model)
+    best_lat,best_design = do_exploration(model,dataset_name)
 
     end_time = time.time()
 

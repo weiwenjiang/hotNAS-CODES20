@@ -6,6 +6,8 @@ import torch
 import sys
 import math
 sys.path.append("../Performance_Model")
+sys.path.append("../cifar10_models")
+import cifar10_models
 import PM_Config
 import PM_Layer
 import PM_FPGA_Template
@@ -24,8 +26,11 @@ def get_max_k(model):
                 max_k = cur_k
     return  max_k
 
-def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
-    input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+def get_performance(model,dataset_name, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
+    if dataset_name=="imagenet":
+        input = torch.Tensor(torch.Size([1, 3, 224, 224])).to(torch.float32)
+    elif dataset_name=="cifar10":
+        input = torch.Tensor(torch.Size([1, 3, 32, 32])).to(torch.float32)
     cTT = 0
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
@@ -60,7 +65,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
 
 
 
-def do_exploration(model):
+def do_exploration(model,dataset_name):
     (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv']
 
     best_lat = 999999999999
@@ -73,7 +78,7 @@ def do_exploration(model):
                 for W_p in range_Wp:
                     for I_p in range_Ip:
                         for O_p in range_Op:
-                            cur_lat = get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
+                            cur_lat = get_performance(model,dataset_name, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p)
                             if cur_lat!=-1:
                                 print([Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p], cur_lat)
                             if cur_lat!=-1 and cur_lat<best_lat:
@@ -88,12 +93,30 @@ if __name__== "__main__":
 
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
-        '-m', '--model',
-        default='alexnet'
+        '-d', '--dataset',
+        default='cifar10'
     )
+
+    parser.add_argument(
+        '-m', '--model',
+        default='resnet18'
+    )
+
+
+
     args = parser.parse_args()
+
+    dataset_name = args.dataset
+
+
+
     model_name = args.model
-    model = globals()[model_name]()
+
+    if dataset_name == "imagenet":
+        model = globals()[model_name]()
+    elif dataset_name == "cifar10":
+        model = getattr(cifar10_models, model_name)(pretrained=True)
+
 
     print("="*10,"Model:",model_name,"="*10)
     print("-"*10,"Search Space","-"*10)
@@ -108,7 +131,7 @@ if __name__== "__main__":
 
     start_time = time.time()
 
-    best_lat,best_design = do_exploration(model)
+    best_lat,best_design = do_exploration(model,dataset_name)
 
     end_time = time.time()
 
