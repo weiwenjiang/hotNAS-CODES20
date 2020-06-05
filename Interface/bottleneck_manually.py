@@ -109,7 +109,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         quan_ceil = 17-int_num
 
                         quan_count = 6
-                        step = math.ceil((quan_ceil - quan_floor)/quan_count)
+                        step = max(math.ceil((quan_ceil - quan_floor)/quan_count),1)
                         print(range(quan_floor,quan_ceil,step))
                         cconv_quan_ss.append(list(range(quan_floor,quan_ceil,step)))
                         cconv_quan_sn.append("Qu")
