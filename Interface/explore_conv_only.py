@@ -46,7 +46,7 @@ def get_performance(model,dataset_name, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
 
             if T == "cconv":
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                                                                   HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                                                                   HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                                                                    HW_constraints["BITWIDTH"])
 
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "cconv", P)
@@ -68,6 +68,8 @@ def get_performance(model,dataset_name, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p):
 
 def do_exploration(model,dataset_name):
     (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_only_cconv']
+
+    # rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op = [130], [32], [32], [18], [2], [10]
 
     best_lat = 999999999999
     best_design = []

@@ -69,9 +69,9 @@ class FPGA_Templates:
             elif BITWIDTH == 16:
                 bW = Tm*Tn*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
-            if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds - cconv",bI, bO, bW,BRAM,r_BRAM)
-                return -1
+            # if BRAM > r_BRAM:
+            #     print("[Error] BRAM exceeds - cconv",bI, bO, bW,BRAM,r_BRAM)
+            #     return -1
 
         elif T=="dconv":
             # Resource validating for depthwise conv
@@ -105,9 +105,9 @@ class FPGA_Templates:
             elif BITWIDTH == 16:
                 bW = Tm*1*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
-            if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds - dconv", BRAM, r_BRAM)
-                return -1
+            # if BRAM > r_BRAM:
+            #     print("[Error] BRAM exceeds - dconv", BRAM, r_BRAM)
+            #     return -1
 
         else:
             #print("[Error] only support conventional conv2d (cconv) and depthwise conv (dconv)")

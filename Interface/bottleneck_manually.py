@@ -78,6 +78,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
                                                         BITWIDTH)
                 if acc_1.Success == False:
+                    print(Tm, Tn, Tr, Tc,Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)
                     return -1
                 else:
                     if isinstance(layer, copy_conv2d.Conv2d_Custom):
@@ -202,11 +203,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='big_transfer'
+        default='mobilenet_v2'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="130, 19, 32, 32, 7, 18, 6, 6",
+        default="160, 9, 32, 32, 3, 14, 6, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
