@@ -474,7 +474,7 @@ def parse_args():
 
     space_name = model_pointer.get_space()[0]
     space = model_pointer.get_space()[1]
-
+    print(space)
 
     for idx in range(len(space)):
         if len(space[idx])>=2:

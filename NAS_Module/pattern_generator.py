@@ -11,7 +11,39 @@ def pattern_sets_generate_3(kernal_shape, zero_num=3):
 
     if kernal_shape[0]==3 and kernal_shape[1]==3:
 
-        if zero_num==3:
+        if zero_num==5:
+            pattern_idx = 0
+            for i in range(num_one-4):
+                for j in range(i+1,num_one-3):
+                    for k in range(j+1,num_one-2):
+                        for l in range(k+1,num_one-1):
+                            for m in range(l + 1, num_one - 1):
+                                if i==4 or j==4 or k==4 or l==4 or m==4:
+                                    continue
+                                tmp_tensor = base_tensor.clone()
+                                tmp_tensor[i] = 0
+                                tmp_tensor[j] = 0
+                                tmp_tensor[k] = 0
+                                tmp_tensor[l] = 0
+                                tmp_tensor[m] = 0
+                                pattern_space[pattern_idx] = tmp_tensor
+                                pattern_idx+=1
+        elif zero_num==4:
+            pattern_idx = 0
+            for i in range(num_one-3):
+                for j in range(i+1,num_one-2):
+                    for k in range(j+1,num_one-1):
+                        for l in range(k+1,num_one):
+                            if i==4 or j==4 or k==4 or l==4:
+                                continue
+                            tmp_tensor = base_tensor.clone()
+                            tmp_tensor[i] = 0
+                            tmp_tensor[j] = 0
+                            tmp_tensor[k] = 0
+                            tmp_tensor[l] = 0
+                            pattern_space[pattern_idx] = tmp_tensor
+                            pattern_idx+=1
+        elif zero_num==3:
             pattern_idx = 0
             for i in range(num_one-2):
                 for j in range(i+1,num_one-1):
@@ -45,6 +77,7 @@ def pattern_sets_generate_3(kernal_shape, zero_num=3):
                     tmp_tensor[i] = 0
                     pattern_space[pattern_idx] = tmp_tensor
                     pattern_idx += 1
+
 
     elif kernal_shape[0] == 5 and kernal_shape[1] == 5:
         fix_one_set = [2,10,14,22,6,7,8,11,12,13,16,17,18]

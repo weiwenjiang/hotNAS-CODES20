@@ -78,7 +78,7 @@ def get_space():
     p3size = 5
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     p3num = len(pattern_33_space.keys())
-
+    print(p3num)
     space_name = ("KP", "KP", "KP", "KP",
                   "sKP", "sKP", "sKP", "sKP", "sKP",
                   'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu',
