@@ -67,6 +67,7 @@ def get_performance(model,dataset_name, HW1, HW2):
                 acc_1 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "cconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
                                                         BITWIDTH)
+
                 if acc_1.Success:
                     cTT += acc_1.get_layer_latency(Layer)[0]
                 else:
@@ -81,8 +82,11 @@ def get_performance(model,dataset_name, HW1, HW2):
                 acc_2 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
                                                         Tk, W_p, I_p, O_p, "dconv", r_Ports, r_DSP, r_BRAM, r_BRAM_Size,
                                                         BITWIDTH)
+                if acc_2.Success:
+                    dTT += acc_2.get_layer_latency(Layer)[0]
+                else:
+                    return -1
 
-                dTT += acc_2.get_layer_latency(Layer)[0]
 
         elif isinstance(layer, nn.MaxPool2d) or isinstance(layer, nn.AdaptiveAvgPool2d) or isinstance(layer,
                                                                                                       nn.AvgPool2d):
@@ -95,6 +99,11 @@ def get_performance(model,dataset_name, HW1, HW2):
 def do_exploration(model,dataset_name):
     (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_cd_cconv']
     (d_rangeTm, d_rangeTc, d_rangeTr) = search_space['hw_cd_dconv']
+
+    rangeTm, rangeTc, rangeTr, range_Wp, range_Ip, range_Op = [160], [32], [32], [14], [6], [10]
+    d_rangeTm = [960]
+    d_rangeTc = [32]
+    d_rangeTr = [32]
 
     best_lat = 999999999999
     best_design = []
@@ -144,7 +153,7 @@ if __name__== "__main__":
 
     parser.add_argument(
         '-m', '--model',
-        default='big_transfer'
+        default='mobilenet_v2'
     )
     args = parser.parse_args()
     model_name = args.model

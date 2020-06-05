@@ -28,7 +28,7 @@ class FPGA_Templates:
         self.usage_comm_bw = 0
 
         if self.validate_design(Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p, T, r_PortBW, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH)==-1:
-            #print("[Error] resource cannot satisfied")
+            # print("[Error] resource cannot satisfied")
             self.Success = False
         else:
             # print("[INOF] construct sucessfully")
