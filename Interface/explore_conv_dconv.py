@@ -100,10 +100,10 @@ def do_exploration(model,dataset_name):
     (rangeTm,rangeTc,rangeTr,range_Wp,range_Ip,range_Op) = search_space['hw_cd_cconv']
     (d_rangeTm, d_rangeTc, d_rangeTr) = search_space['hw_cd_dconv']
 
-    rangeTm, rangeTc, rangeTr, range_Wp, range_Ip, range_Op = [160], [32], [32], [14], [6], [10]
-    d_rangeTm = [960]
-    d_rangeTc = [32]
-    d_rangeTr = [32]
+    # rangeTm, rangeTc, rangeTr, range_Wp, range_Ip, range_Op = [160], [32], [32], [14], [6], [10]
+    # d_rangeTm = [960]
+    # d_rangeTc = [32]
+    # d_rangeTr = [32]
 
     best_lat = 999999999999
     best_design = []
