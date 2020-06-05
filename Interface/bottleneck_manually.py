@@ -105,8 +105,9 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         sorted_per = torch.tensor(perf[2]).sort()[0]
                         max_lat = sorted_per[-1].item()
                         sec_lat = sorted_per[-2].item()
-                        quan_floor = max(math.floor(16/(float(max_lat)/sec_lat)),4)
-                        quan_ceil = max(17-int_num,quan_floor+1)
+                        quan_ceil = 17 - int_num
+                        quan_floor = min(max(math.floor(16/(float(max_lat)/sec_lat)),4),quan_ceil-1)
+
 
                         quan_count = 6
                         step = max(math.ceil((quan_ceil - quan_floor)/quan_count),1)
