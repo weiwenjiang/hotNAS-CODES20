@@ -105,7 +105,7 @@ class Conv2d_Custom(_ConvNd):
                  padding=0, dilation=1, groups=1,
                  bias=True, padding_mode='zeros',
                  is_pattern=False, pattern={}, pattern_ones=-1,
-                 is_quant=False, quan_paras=[]):
+                 is_quant=False, quan_paras=[], is_std_conv=False):
         kernel_size = _pair(kernel_size)
         stride = _pair(stride)
         padding = _pair(padding)
@@ -115,6 +115,7 @@ class Conv2d_Custom(_ConvNd):
         self.pattern_ones = pattern_ones
         self.is_quant = is_quant
         self.quan_paras = quan_paras
+        self.is_std_conv = is_std_conv
         super(Conv2d_Custom, self).__init__(
             in_channels, out_channels, kernel_size, stride, padding, dilation,
             False, _pair(0), groups, bias, padding_mode)
@@ -142,15 +143,21 @@ class Conv2d_Custom(_ConvNd):
 
 
     def forward(self, input):
+        w = self.weight
+        if self.is_std_conv:
+            v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
+            w = (w - m) / torch.sqrt(v + 1e-10)
+
+
         if self.is_pattern and not self.is_quant:
-            return self.conv2d_forward(input, self.weight * self.pattern)
+            return self.conv2d_forward(input, w * self.pattern)
         elif not self.is_pattern and self.is_quant:
-            return self.conv2d_forward(input, quantize(self.weight, self.quan_paras[0], self.quan_paras[1],
+            return self.conv2d_forward(input, quantize(w, self.quan_paras[0], self.quan_paras[1],
                                                        signed=self.quan_paras[2]))
         elif self.is_pattern and self.is_quant:
-            return self.conv2d_forward(input, quantize(self.weight * self.pattern, self.quan_paras[0],
+            return self.conv2d_forward(input, quantize(w * self.pattern, self.quan_paras[0],
                                                        self.quan_paras[1],signed=self.quan_paras[2]))
         else:
-            return self.conv2d_forward(input, self.weight)
+            return self.conv2d_forward(input, w)
 
         # print("Pattern take effects")

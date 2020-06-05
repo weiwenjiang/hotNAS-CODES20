@@ -99,7 +99,7 @@ def big_transfer_space(model,dna, hw_cconv, args):
     quan_paras["module.head.conv"] = [1, q_list[45], True]
 
     # model_modify.Kernel_Patter(model, select_layer, pattern, args)
-    # model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras, is_std_conv=True)
 
     return model,hw_cconv
 

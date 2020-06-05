@@ -32,12 +32,13 @@ def Kernel_Patter(model,layer_names,pattern,args):
                           pattern=layer_pattern[layer_name].to(args.device), pattern_ones=pattern_ones)
 
 
-def Kenel_Quantization(model,layer_names,quan_paras_dict):
+def Kenel_Quantization(model,layer_names,quan_paras_dict,is_std_conv=False):
 
     for layer_name in layer_names:
         layer = dict(model.named_modules())[layer_name]
         quan_paras = quan_paras_dict[layer_name]
-        ztNAS_add_kernel_quant(model,layer, layer_name, is_quant=True, quan_paras = quan_paras)
+        ztNAS_add_kernel_quant(model,layer, layer_name, is_quant=True, quan_paras = quan_paras
+                               ,is_std_conv=is_std_conv)
 
 
 

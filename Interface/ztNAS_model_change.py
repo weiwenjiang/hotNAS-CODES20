@@ -146,7 +146,7 @@ def ztNAS_add_kernel_mask(model,layer, layer_name, is_pattern, pattern, pattern_
 
 
 
-def ztNAS_add_kernel_quant(model,layer, layer_name, is_quant, quan_paras):
+def ztNAS_add_kernel_quant(model,layer, layer_name, is_quant, quan_paras,is_std_conv=False):
 
     if isinstance(layer,copy_conv2d.Conv2d_Custom):
         layer.is_quant = is_quant
@@ -180,18 +180,21 @@ def ztNAS_add_kernel_quant(model,layer, layer_name, is_quant, quan_paras):
     if last_not_digit == len(seq) - 1:
         # last one is the attribute, directly setattr
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras,
+                                             is_std_conv=is_std_conv)
         setattr(pre_attr, seq[-1], new_conv)
     elif last_not_digit == len(seq) - 2:
         # one index last_attr[]
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras,
+                                             is_std_conv=is_std_conv)
         last_attr[int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-2], last_attr)
     elif last_not_digit == len(seq) - 3:
         # two index last_attr[][]
         new_conv = copy_conv2d.Conv2d_Custom(N, M, kernel_size=(K,K), stride=(S, S),
-                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras)
+                             padding=(P,P), groups=G, bias=is_b, is_quant=is_quant, quan_paras=quan_paras,
+                                             is_std_conv=is_std_conv)
         last_attr[int(seq[-2])][int(seq[-1])] = new_conv
         setattr(pre_attr, seq[-3], last_attr)
     else:
