@@ -269,7 +269,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
             sys.exit(0)
 
 
-    print(model)
+    # print(model)
 
     model.to(device)
     if args.distributed and args.sync_bn:
