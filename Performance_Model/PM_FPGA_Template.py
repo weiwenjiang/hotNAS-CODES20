@@ -70,7 +70,7 @@ class FPGA_Templates:
                 bW = Tm*Tn*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds")
+                print("[Error] BRAM exceeds - cconv",bI, bO, bW,BRAM,r_BRAM)
                 return -1
 
         elif T=="dconv":
@@ -106,7 +106,7 @@ class FPGA_Templates:
                 bW = Tm*1*ceil(4*Tk*Tk*BITWIDTH/r_BRAM_Size)  # fix point
             BRAM = bI + bO + bW
             if BRAM > r_BRAM:
-                print("[Error] BRAM exceeds")
+                print("[Error] BRAM exceeds - dconv", BRAM, r_BRAM)
                 return -1
 
         else:

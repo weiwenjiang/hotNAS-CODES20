@@ -69,7 +69,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                 HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                 HW_constraints["BITWIDTH"])
 
                 # print("\t",layer_name,M, N, R, C, K, S, T)
@@ -89,10 +89,10 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                     if perf[1] == "loading Weight":
                         w = model.state_dict()[layer_name + ".weight"]
 
-                        # For conv_std only
-                        if True:
-                            v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
-                            w = (w - m) / torch.sqrt(v + 1e-10)
+                        # # For conv_std only
+                        # if True:
+                        #     v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
+                        #     w = (w - m) / torch.sqrt(v + 1e-10)
 
                         x = max(abs(float(w.min())), abs(float(w.max())))
 
@@ -145,7 +145,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                                             HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                                            HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                                            HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                                             HW_constraints["BITWIDTH"])
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "dconv", P)
                 acc_2 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
@@ -202,16 +202,16 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='big_transfer'
+        default='resnet18'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="130, 19, 32, 32, 7, 18, 6, 6",
+        default="130, 19, 1, 1, 3, 18, 2, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="704, 1, 32, 32, 5, 10, 10, 10",
+        default="960, 1, 32, 32, 3, 14, 6, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
@@ -243,7 +243,11 @@ if __name__== "__main__":
     HW1 = [int(x.strip()) for x in args.dconv.split(",")]
     HW2 = [int(x.strip()) for x in args.cconv.split(",")]
 
+
     # print("="*10,model_name,"performance analysis:")
+    # print(HW1)
+    # print(HW2)
+    # print(model)
     total_lat,count = get_performance(model, dataset_name, HW1, HW2)
     # print("=" * 10, model_name, "performance analysis end")
     print(model_name, count, total_lat)

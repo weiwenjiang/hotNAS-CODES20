@@ -49,7 +49,7 @@ def get_performance(model, Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p,device=None):
                 # print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                                                                   HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                                                                   HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                                                                    HW_constraints["BITWIDTH"])
 
                 # print("\t",layer_name,M, N, R, C, K, S, T)

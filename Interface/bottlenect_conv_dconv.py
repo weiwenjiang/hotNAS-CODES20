@@ -55,7 +55,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                 HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                 HW_constraints["BITWIDTH"])
 
                 # print("\t",layer_name,M, N, R, C, K, S, T)
@@ -87,7 +87,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                 [Tm, Tn, Tr, Tc, Tk, W_p, I_p, O_p] = HW1
                 [r_Ports, r_DSP, r_BRAM, r_BRAM_Size, BITWIDTH] = (
                                             HW_constraints["r_Ports_BW"], HW_constraints["r_DSP"],
-                                            HW_constraints["r_BRAM_Size"], HW_constraints["r_BRAM"],
+                                            HW_constraints["r_BRAM"], HW_constraints["r_BRAM_Size"],
                                             HW_constraints["BITWIDTH"])
                 Layer = PM_Layer.Layer_Class(B, M, N, R, C, K, S, "dconv", P)
                 acc_2 = PM_FPGA_Template.FPGA_Templates(Tm, Tn, Tr, Tc,
