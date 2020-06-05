@@ -258,7 +258,8 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
 
     elif args.dataset == "cifar10":
         if args.model == "resnet18":
-            model,ori_HW = ss_resnet18_cifar.resnet_18_space(model, dna, ori_HW, args)
+            HW_cconv = copy.deepcopy(ori_HW)
+            model,ori_HW = ss_resnet18_cifar.resnet_18_space(model, dna, HW_cconv, args)
         else:
             print("Currently not support the given model {}".format("args.model"))
             sys.exit(0)

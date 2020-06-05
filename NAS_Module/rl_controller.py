@@ -350,8 +350,8 @@ class Controller(object):
                             # acc5 = random.uniform(0, 1)
                             # lat = random.uniform(7, 10)
 
-                            acc1,acc5,lat = train.main(self.args, Para_NN1, self.HW, self.data_loader, \
-                                                       self.data_loader_test,self.HW2)
+                            acc1,acc5,lat = train.main(self.args, Para_NN1, copy.deepcopy(self.HW), self.data_loader, \
+                                                       self.data_loader_test,copy.deepcopy(self.HW2))
 
                             # Keep history trained data
 
