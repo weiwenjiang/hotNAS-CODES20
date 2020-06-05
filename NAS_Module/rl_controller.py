@@ -19,7 +19,7 @@ import utils
 
 from pattern_generator import pattern_sets_generate_3
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile, ss_resnet18_cifar
-
+from model_search_space import ss_big_transfer
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +70,8 @@ class Controller(object):
         elif self.args.dataset == "cifar10":
             if self.args.model == "resnet18":
                 self.nn_model_helper = ss_resnet18_cifar
+            if self.args.model == "big_transfer":
+                self.nn_model_helper = ss_big_transfer
 
 
         # space_name = self.nn_model_helper.get_space()[0]

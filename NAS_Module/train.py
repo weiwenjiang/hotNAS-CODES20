@@ -31,7 +31,7 @@ from torch.utils.data import DataLoader
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
-from model_search_space import ss_resnet18_cifar
+from model_search_space import ss_resnet18_cifar, ss_big_transfer
 
 try:
     from apex import amp
@@ -260,6 +260,10 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
         if args.model == "resnet18":
             HW_cconv = copy.deepcopy(ori_HW)
             model,ori_HW = ss_resnet18_cifar.resnet_18_space(model, dna, HW_cconv, args)
+        elif args.model == "big_transfer":
+            HW_cconv = copy.deepcopy(ori_HW)
+            model, ori_HW = ss_big_transfer.big_transfer_space(model, dna, HW_cconv, args)
+
         else:
             print("Currently not support the given model {}".format("args.model"))
             sys.exit(0)
@@ -420,7 +424,7 @@ def parse_args():
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
     # NAS related options
-    parser.add_argument('--model', default='resnet18', help='model')
+    parser.add_argument('--model', default='big_transfer', help='model')
     parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
                         action="store_true", )
     parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -471,6 +475,8 @@ def parse_args():
     elif datasets_name == "cifar10":
         if args.model == "resnet18":
             model_pointer = ss_resnet18_cifar
+        elif args.model == "big_transfer":
+            model_pointer = ss_big_transfer
 
     space_name = model_pointer.get_space()[0]
     space = model_pointer.get_space()[1]

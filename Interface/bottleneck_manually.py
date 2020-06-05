@@ -41,7 +41,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
     cconv_quan_ss = []
     cconv_quan_sn = []
-
+    quan_idx = 0
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
@@ -90,7 +90,8 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         w = model.state_dict()[layer_name + ".weight"]
                         x = max(abs(float(w.min())), abs(float(w.max())))
                         int_num, frac_num = re_quantize(x, 16, True)
-                        print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
+                        print('''quan_paras["{}"] = [{}, q_list[{}], True]'''.format(layer_name, int_num, quan_idx))
+                        quan_idx+=1
                         # print("cconv", layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1],
                         #       [x / 10 ** 5 for x in perf[2]])
 
@@ -106,7 +107,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         cconv_quan_sn.append("Qu")
 
 
-                    # if perf[1] == "computing" and K==3:
+                    # if perf[1] == "computing":
                     #     print(layer_name)
 
                     # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
@@ -192,11 +193,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='resnet18'
+        default='big_transfer'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="130, 19, 32, 32, 3, 18, 2, 10",
+        default="130, 19, 32, 32, 7, 18, 6, 6",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
@@ -208,20 +209,21 @@ if __name__== "__main__":
         '-d', '--dataset',
         default='cifar10'
     )
-
+    parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
+                        action="store_true", )
     args = parser.parse_args()
     model_name = args.model
     dataset_name = args.dataset
 
     if dataset_name == "imagenet":
         if "proxyless" in model_name:
-            model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=True)
+            model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name, pretrained=args.pretrained)
         elif "FBNET" in model_name:
             model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
         else:
-            model = globals()[model_name](pretrained=True)
+            model = globals()[model_name](pretrained=args.pretrained)
     elif dataset_name == "cifar10":
-        model = getattr(cifar10_models, model_name)(pretrained=True)
+        model = getattr(cifar10_models, model_name)(pretrained=args.pretrained)
 
     #
     # print(model)

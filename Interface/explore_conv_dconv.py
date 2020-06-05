@@ -158,7 +158,7 @@ if __name__== "__main__":
         else:
             model = globals()[model_name]()
     elif dataset_name == "cifar10":
-        model = getattr(cifar10_models, model_name)(pretrained=False)
+        model = getattr(cifar10_models, model_name)(pretrained=True)
 
 
 
