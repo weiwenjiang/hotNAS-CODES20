@@ -106,7 +106,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         max_lat = sorted_per[-1].item()
                         sec_lat = sorted_per[-2].item()
                         quan_ceil = 17 - int_num
-                        quan_floor = min(max(math.floor(16/(float(max_lat)/sec_lat)),4),quan_ceil-1)
+                        quan_floor = min(max(math.floor(16/(float(max_lat)/sec_lat)),1),quan_ceil-1)
 
 
                         quan_count = 6
