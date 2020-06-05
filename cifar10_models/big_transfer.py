@@ -183,7 +183,7 @@ KNOWN_MODELS = OrderedDict([
     ('BiT-M-R152x4', lambda *a, **kw: ResNetV2([3, 8, 36, 3], 4, *a, **kw)),
 ])
 
-def big_transfer(pretrained=False):
+def big_transfer(pretrained=False, device="cpu"):
     """Constructs a bit_transfer model.
 
     Args:
