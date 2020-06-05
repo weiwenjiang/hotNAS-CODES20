@@ -191,6 +191,7 @@ def big_transfer(pretrained=False, device="cpu"):
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     model = KNOWN_MODELS["BiT-M-R50x1"](head_size=10, zero_head=True)
+    model = torch.nn.DataParallel(model)
     if pretrained:
         script_dir = os.path.dirname(__file__)
         state_dict = torch.load(script_dir + '/state_dicts/big_transfer.pth.tar', map_location=device)
