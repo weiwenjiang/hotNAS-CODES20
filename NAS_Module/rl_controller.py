@@ -360,6 +360,10 @@ class Controller(object):
                         # norm_HW_Eff = (self.target_HW_Eff - HW_Eff) / self.target_HW_Eff
                         # Weiwen 01-24: Set weight of HW Eff to 1 for hardware exploration only
 
+                        # Weiwen 06-04 Cifar has no acc5
+                        if self.args.dataset=="cifar10":
+                            acc5 = acc1
+
 
                         if acc5>self.target_acc[1]:
                             acc_reward = 1
@@ -371,7 +375,7 @@ class Controller(object):
                         if lat==-1:
                             lat_reward = -1
                         elif lat>self.target_lat[1]:
-                            lat_reward = -1
+                            lat_reward = self.target_lat[1]-lat
                         elif lat<self.target_lat[0]:
                             lat_reward = 1
                         else:
@@ -401,7 +405,7 @@ class Controller(object):
 
                 logger.info("--------->Parameter: {}".format(str_NNs))
                 logger.info("--------->Top-1: {}%".format(acc1))
-                logger.info("--------->Top-5: {}%".format(acc5))
+                logger.info("--------->(cifar-Top-1)Top-5: {}%".format(acc5))
                 logger.info("--------->Lat: {}ms".format(lat))
                 logger.info("--------->Reward: {}".format(reward))
                 logger.info("--------->Reward-Acc: {}*{}".format(acc_reward,self.alpha))

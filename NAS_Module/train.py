@@ -316,7 +316,7 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
         print("HW_Test Done")
         if total_lat>float(args.target_lat.split(" ")[1]):
             print("Latency Cannot satisfy", total_lat, float(args.target_lat.split(" ")[1]))
-            return 0, 0, -1
+            return 0, 0, total_lat
         elif total_lat==-1 or total_lat==0:
             print("No latency got", total_lat, float(args.target_lat.split(" ")[1]))
             return 0, 0, -1
