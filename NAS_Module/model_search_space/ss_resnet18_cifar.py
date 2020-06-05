@@ -75,7 +75,7 @@ def resnet_18_space(model,dna, hw_cconv, args):
 
 def get_space():
     global p3size
-    p3size = 3
+    p3size = 5
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     p3num = len(pattern_33_space.keys())
 
