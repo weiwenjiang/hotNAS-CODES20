@@ -1,12 +1,12 @@
 from torchvision import models
 
-from torchvision.models import *
+# from torchvision.models import *
 from torch import nn
 import torch
 import sys
 import math
 sys.path.append("../Performance_Model")
-sys.path.append("../cifar10_models")
+# sys.path.append("../cifar10_models")
 sys.path.append("../")
 import cifar10_models
 # from cifar10_models import *
@@ -144,7 +144,7 @@ if __name__== "__main__":
 
     parser.add_argument(
         '-m', '--model',
-        default='resnet18'
+        default='big_transfer'
     )
     args = parser.parse_args()
     model_name = args.model
@@ -158,7 +158,7 @@ if __name__== "__main__":
         else:
             model = globals()[model_name]()
     elif dataset_name == "cifar10":
-        model = getattr(cifar10_models, model_name)(pretrained=True)
+        model = getattr(cifar10_models, model_name)(pretrained=False)
 
 
 
