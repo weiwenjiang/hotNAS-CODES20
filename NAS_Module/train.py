@@ -5,7 +5,7 @@ import time
 import sys
 
 import copy
-
+import bit_hyperrule
 import torch
 import torch.utils.data
 from torch import nn
@@ -518,22 +518,41 @@ def get_data_loader(args):
             sampler=test_sampler, num_workers=args.workers, pin_memory=True)
 
     elif args.dataset=="cifar10":
-        mean = [0.4914, 0.4822, 0.4465]
-        std = [0.2023, 0.1994, 0.2010]
+        if args.model!="big_transfer":
+            mean = [0.4914, 0.4822, 0.4465]
+            std = [0.2023, 0.1994, 0.2010]
 
-        transform_train = transforms.Compose([transforms.RandomCrop(32, padding=4),
-                                              transforms.RandomHorizontalFlip(),
-                                              transforms.ToTensor(),
-                                              transforms.Normalize(mean, std)])
-        dataset = CIFAR10(root=args.data_path, train=True, transform=transform_train)
-        data_loader = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, shuffle=True,
-                                drop_last=True, pin_memory=True)
+            transform_train = transforms.Compose([transforms.RandomCrop(32, padding=4),
+                                                  transforms.RandomHorizontalFlip(),
+                                                  transforms.ToTensor(),
+                                                  transforms.Normalize(mean, std)])
+            dataset = CIFAR10(root=args.data_path, train=True, transform=transform_train)
+            data_loader = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, shuffle=True,
+                                    drop_last=True, pin_memory=True)
 
-        transform_val = transforms.Compose([transforms.ToTensor(),
-                                            transforms.Normalize(mean, std)])
-        dataset = CIFAR10(root=args.data_path, train=False, transform=transform_val)
-        data_loader_test = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, pin_memory=True)
-
+            transform_val = transforms.Compose([transforms.ToTensor(),
+                                                transforms.Normalize(mean, std)])
+            dataset = CIFAR10(root=args.data_path, train=False, transform=transform_val)
+            data_loader_test = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, pin_memory=True)
+        else:
+            precrop, crop = bit_hyperrule.get_resolution_from_dataset(args.dataset)
+            train_tx = transforms.Compose([
+                transforms.Resize((precrop, precrop)),
+                transforms.RandomCrop((crop, crop)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ])
+            val_tx = transforms.Compose([
+                transforms.Resize((crop, crop)),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ])
+            dataset = CIFAR10(root=args.data_path, train=True, transform=train_tx)
+            data_loader = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, shuffle=True,
+                                     drop_last=True, pin_memory=True)
+            dataset = CIFAR10(root=args.data_path, train=False, transform=val_tx)
+            data_loader_test = DataLoader(dataset, batch_size=args.batch_size, num_workers=4, pin_memory=True)
     return data_loader,data_loader_test
 
 if __name__ == "__main__":
