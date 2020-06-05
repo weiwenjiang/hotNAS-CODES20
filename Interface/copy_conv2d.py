@@ -147,7 +147,7 @@ class Conv2d_Custom(_ConvNd):
         if self.is_std_conv:
             v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
             w = (w - m) / torch.sqrt(v + 1e-10)
-
+        return self.conv2d_forward(input, w)
 
         if self.is_pattern and not self.is_quant:
             return self.conv2d_forward(input, w * self.pattern)
