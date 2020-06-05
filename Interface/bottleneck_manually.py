@@ -88,8 +88,14 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
                     if perf[1] == "loading Weight":
                         w = model.state_dict()[layer_name + ".weight"]
+
+                        # For conv_std only
+                        if True:
+                            v, m = torch.var_mean(w, dim=[1, 2, 3], keepdim=True, unbiased=False)
+                            w = (w - m) / torch.sqrt(v + 1e-10)
+
                         x = max(abs(float(w.min())), abs(float(w.max())))
-                        print(x)
+
                         int_num, frac_num = re_quantize(x, 16, True)
                         print('''quan_paras["{}"] = [{}, q_list[{}], True]'''.format(layer_name, int_num, quan_idx))
                         quan_idx+=1
@@ -100,7 +106,8 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         max_lat = sorted_per[-1].item()
                         sec_lat = sorted_per[-2].item()
                         quan_floor = max(math.floor(16/(float(max_lat)/sec_lat)),4)
-                        quan_ceil = 17
+                        quan_ceil = 17-int_num
+
                         quan_count = 6
                         step = math.ceil((quan_ceil - quan_floor)/quan_count)
                         # print(range(quan_floor,quan_ceil,step))

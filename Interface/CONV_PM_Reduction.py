@@ -66,6 +66,7 @@ def quantize(x, num_int_bits, num_frac_bits, signed=True):
 
 
 def re_quantize(x, total_num = 16, signed=True):
+
     if signed:
         int_num = 1
     else:

@@ -51,52 +51,54 @@ def big_transfer_space(model,dna, hw_cconv, args):
 
     quan_paras = {}
 
-    quan_paras["module.root.conv"] = [1, q_list[0], True]
-    quan_paras["module.body.block1.unit01.conv2"] = [1, q_list[1], True]
-    quan_paras["module.body.block1.unit02.conv2"] = [1, q_list[2], True]
-    quan_paras["module.body.block1.unit03.conv2"] = [1, q_list[3], True]
-    quan_paras["module.body.block2.unit01.conv2"] = [1, q_list[4], True]
-    quan_paras["module.body.block2.unit01.conv3"] = [1, q_list[5], True]
-    quan_paras["module.body.block2.unit01.downsample"] = [1, q_list[6], True]
-    quan_paras["module.body.block2.unit02.conv1"] = [1, q_list[7], True]
-    quan_paras["module.body.block2.unit02.conv2"] = [1, q_list[8], True]
-    quan_paras["module.body.block2.unit02.conv3"] = [1, q_list[9], True]
-    quan_paras["module.body.block2.unit03.conv1"] = [1, q_list[10], True]
-    quan_paras["module.body.block2.unit03.conv2"] = [1, q_list[11], True]
-    quan_paras["module.body.block2.unit03.conv3"] = [1, q_list[12], True]
-    quan_paras["module.body.block2.unit04.conv1"] = [1, q_list[13], True]
-    quan_paras["module.body.block2.unit04.conv2"] = [1, q_list[14], True]
-    quan_paras["module.body.block2.unit04.conv3"] = [1, q_list[15], True]
-    quan_paras["module.body.block3.unit01.conv1"] = [1, q_list[16], True]
-    quan_paras["module.body.block3.unit01.conv2"] = [1, q_list[17], True]
-    quan_paras["module.body.block3.unit01.conv3"] = [1, q_list[18], True]
-    quan_paras["module.body.block3.unit01.downsample"] = [1, q_list[19], True]
-    quan_paras["module.body.block3.unit02.conv1"] = [1, q_list[20], True]
-    quan_paras["module.body.block3.unit02.conv2"] = [1, q_list[21], True]
-    quan_paras["module.body.block3.unit02.conv3"] = [1, q_list[22], True]
-    quan_paras["module.body.block3.unit03.conv1"] = [1, q_list[23], True]
-    quan_paras["module.body.block3.unit03.conv2"] = [1, q_list[24], True]
-    quan_paras["module.body.block3.unit03.conv3"] = [1, q_list[25], True]
-    quan_paras["module.body.block3.unit04.conv1"] = [1, q_list[26], True]
-    quan_paras["module.body.block3.unit04.conv2"] = [1, q_list[27], True]
-    quan_paras["module.body.block3.unit04.conv3"] = [1, q_list[28], True]
-    quan_paras["module.body.block3.unit05.conv1"] = [1, q_list[29], True]
-    quan_paras["module.body.block3.unit05.conv2"] = [1, q_list[30], True]
-    quan_paras["module.body.block3.unit05.conv3"] = [1, q_list[31], True]
-    quan_paras["module.body.block3.unit06.conv1"] = [1, q_list[32], True]
-    quan_paras["module.body.block3.unit06.conv2"] = [1, q_list[33], True]
-    quan_paras["module.body.block3.unit06.conv3"] = [1, q_list[34], True]
-    quan_paras["module.body.block4.unit01.conv1"] = [1, q_list[35], True]
-    quan_paras["module.body.block4.unit01.conv2"] = [1, q_list[36], True]
-    quan_paras["module.body.block4.unit01.conv3"] = [1, q_list[37], True]
-    quan_paras["module.body.block4.unit01.downsample"] = [1, q_list[38], True]
-    quan_paras["module.body.block4.unit02.conv1"] = [1, q_list[39], True]
-    quan_paras["module.body.block4.unit02.conv2"] = [1, q_list[40], True]
-    quan_paras["module.body.block4.unit02.conv3"] = [1, q_list[41], True]
-    quan_paras["module.body.block4.unit03.conv1"] = [1, q_list[42], True]
-    quan_paras["module.body.block4.unit03.conv2"] = [1, q_list[43], True]
-    quan_paras["module.body.block4.unit03.conv3"] = [1, q_list[44], True]
-    quan_paras["module.head.conv"] = [1, q_list[45], True]
+    quan_paras["module.root.conv"] = [2, q_list[0], True]
+    quan_paras["module.body.block1.unit01.conv2"] = [2, q_list[1], True]
+    quan_paras["module.body.block1.unit02.conv2"] = [2, q_list[2], True]
+    quan_paras["module.body.block1.unit03.conv2"] = [2, q_list[3], True]
+    quan_paras["module.body.block2.unit01.conv2"] = [2, q_list[4], True]
+    quan_paras["module.body.block2.unit01.conv3"] = [3, q_list[5], True]
+    quan_paras["module.body.block2.unit01.downsample"] = [2, q_list[6], True]
+    quan_paras["module.body.block2.unit02.conv1"] = [2, q_list[7], True]
+    quan_paras["module.body.block2.unit02.conv2"] = [2, q_list[8], True]
+    quan_paras["module.body.block2.unit02.conv3"] = [3, q_list[9], True]
+    quan_paras["module.body.block2.unit03.conv1"] = [2, q_list[10], True]
+    quan_paras["module.body.block2.unit03.conv2"] = [2, q_list[11], True]
+    quan_paras["module.body.block2.unit03.conv3"] = [3, q_list[12], True]
+    quan_paras["module.body.block2.unit04.conv1"] = [2, q_list[13], True]
+    quan_paras["module.body.block2.unit04.conv2"] = [2, q_list[14], True]
+    quan_paras["module.body.block2.unit04.conv3"] = [3, q_list[15], True]
+    quan_paras["module.body.block3.unit01.conv1"] = [2, q_list[16], True]
+    quan_paras["module.body.block3.unit01.conv2"] = [2, q_list[17], True]
+    quan_paras["module.body.block3.unit01.conv3"] = [3, q_list[18], True]
+    quan_paras["module.body.block3.unit01.downsample"] = [2, q_list[19], True]
+    quan_paras["module.body.block3.unit02.conv1"] = [2, q_list[20], True]
+    quan_paras["module.body.block3.unit02.conv2"] = [2, q_list[21], True]
+    quan_paras["module.body.block3.unit02.conv3"] = [3, q_list[22], True]
+    quan_paras["module.body.block3.unit03.conv1"] = [2, q_list[23], True]
+    quan_paras["module.body.block3.unit03.conv2"] = [2, q_list[24], True]
+    quan_paras["module.body.block3.unit03.conv3"] = [3, q_list[25], True]
+    quan_paras["module.body.block3.unit04.conv1"] = [2, q_list[26], True]
+    quan_paras["module.body.block3.unit04.conv2"] = [2, q_list[27], True]
+    quan_paras["module.body.block3.unit04.conv3"] = [3, q_list[28], True]
+    quan_paras["module.body.block3.unit05.conv1"] = [2, q_list[29], True]
+    quan_paras["module.body.block3.unit05.conv2"] = [2, q_list[30], True]
+    quan_paras["module.body.block3.unit05.conv3"] = [2, q_list[31], True]
+    quan_paras["module.body.block3.unit06.conv1"] = [2, q_list[32], True]
+    quan_paras["module.body.block3.unit06.conv2"] = [2, q_list[33], True]
+    quan_paras["module.body.block3.unit06.conv3"] = [3, q_list[34], True]
+    quan_paras["module.body.block4.unit01.conv1"] = [2, q_list[35], True]
+    quan_paras["module.body.block4.unit01.conv2"] = [2, q_list[36], True]
+    quan_paras["module.body.block4.unit01.conv3"] = [2, q_list[37], True]
+    quan_paras["module.body.block4.unit01.downsample"] = [2, q_list[38], True]
+    quan_paras["module.body.block4.unit02.conv1"] = [2, q_list[39], True]
+    quan_paras["module.body.block4.unit02.conv2"] = [2, q_list[40], True]
+    quan_paras["module.body.block4.unit02.conv3"] = [2, q_list[41], True]
+    quan_paras["module.body.block4.unit03.conv1"] = [2, q_list[42], True]
+    quan_paras["module.body.block4.unit03.conv2"] = [2, q_list[43], True]
+    quan_paras["module.body.block4.unit03.conv3"] = [2, q_list[44], True]
+    quan_paras["module.head.conv"] = [2, q_list[45], True]
+
+
 
     # model_modify.Kernel_Patter(model, select_layer, pattern, args)
     model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras, is_std_conv=True)
@@ -113,8 +115,16 @@ def get_space():
     space_name = ('Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu', 'Qu',
                   "HW","HW")
 
-    space = ([14, 15, 16], [9, 11, 13, 15], [9, 11, 13, 15], [9, 11, 13, 15], [4, 7, 10, 13, 16], [5, 7, 9, 11, 13, 15], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16], [4, 7, 10, 13, 16],
-             [-3,-2, -1, 0, 1, 2, 3], [-3,-2, -1, 0, 1, 2, 3],)
+    space = ([14], [9, 10, 11, 12, 13, 14], [9, 10, 11, 12, 13, 14], [9, 10, 11, 12, 13, 14], [4, 6, 8, 10, 12, 14],
+     [5, 7, 9, 11, 13], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12],
+     [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12],
+     [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14], [4, 6, 8, 10, 12, 14],
+     [4, 6, 8, 10, 12, 14], [-3,-2, -1, 0, 1, 2, 3], [-3,-2, -1, 0, 1, 2, 3],)
 
     return space_name,space
 

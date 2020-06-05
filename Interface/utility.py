@@ -11,7 +11,10 @@ def is_same(shape):
     return k_size
 
 
+import torch
 def re_quantize(x, total_num = 16, signed=True):
+
+
     if signed:
         int_num = 1
     else:
