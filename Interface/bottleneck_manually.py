@@ -202,11 +202,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mobilenet_v2'
+        default='big_transfer'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="160, 9, 32, 32, 3, 14, 6, 10",
+        default="130, 19, 32, 32, 7, 18, 6, 6",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
