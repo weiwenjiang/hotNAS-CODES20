@@ -117,10 +117,9 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         cconv_quan_sn.append("Qu")
 
 
-                    # if perf[1] == "computing":
-                    #     print(layer_name)
-
-                    # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    if perf[1] == "computing":
+                        print(layer_name)
+                        print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
                     if perf[1] == "loading Weight":
                         count[1]+=1
@@ -170,9 +169,9 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                     #     print('''quan_paras["{}"] = [{}, {}, True]'''.format(layer_name, int_num, frac_num))
                     #
                     #
-                    # if perf[1] == "computing" and K == 5:
-                    #     print(layer_name)
-                    #     # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                    if perf[1] == "computing":
+                        print(layer_name)
+                        print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
                     if perf[1] == "loading Weight":
                         count[1]+=1
                     elif perf[1] == "loading IFM":

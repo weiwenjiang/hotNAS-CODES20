@@ -31,7 +31,7 @@ from torch.utils.data import DataLoader
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
-from model_search_space import ss_resnet18_cifar, ss_big_transfer
+from model_search_space import ss_resnet18_cifar, ss_big_transfer,ss_mobilenet_cifar
 
 try:
     from apex import amp
@@ -263,6 +263,11 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
         elif args.model == "big_transfer":
             HW_cconv = copy.deepcopy(ori_HW)
             model, ori_HW = ss_big_transfer.big_transfer_space(model, dna, HW_cconv, args)
+        elif args.model == "mobilenet_v2":
+            HW_cconv = copy.deepcopy(ori_HW)
+            HW_dconv = copy.deepcopy(ori_HW_dconv)
+            model, ori_HW, ori_HW_dconv = ss_mobilenet_cifar.mobilenet_v2_space(model, dna, HW_cconv, HW_dconv,
+                                                                                     args)
 
         else:
             print("Currently not support the given model {}".format("args.model"))
@@ -424,7 +429,7 @@ def parse_args():
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
 
     # NAS related options
-    parser.add_argument('--model', default='big_transfer', help='model')
+    parser.add_argument('--model', default='mobilenet_v2', help='model')
     parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
                         action="store_true", )
     parser.add_argument('--epochs', default=90, type=int, metavar='N',
@@ -477,6 +482,8 @@ def parse_args():
             model_pointer = ss_resnet18_cifar
         elif args.model == "big_transfer":
             model_pointer = ss_big_transfer
+        elif args.model == "mobilenet_v2":
+            model_pointer = ss_mobilenet_cifar
 
     space_name = model_pointer.get_space()[0]
     space = model_pointer.get_space()[1]
