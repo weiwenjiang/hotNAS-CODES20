@@ -29,7 +29,7 @@ def resnet_18_space(model,dna, hw_cconv, args):
     hw_cconv[6] += hw_port[1]
     hw_cconv[7] = 32 - hw_cconv[5] - hw_cconv[6]
 
-    # print(hw_cconv)
+    print(hw_cconv)
 
     pattern_space = pattern_sets_generate_3((3, 3),p3size)
 
