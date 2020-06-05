@@ -89,6 +89,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                     if perf[1] == "loading Weight":
                         w = model.state_dict()[layer_name + ".weight"]
                         x = max(abs(float(w.min())), abs(float(w.max())))
+                        print(x)
                         int_num, frac_num = re_quantize(x, 16, True)
                         print('''quan_paras["{}"] = [{}, q_list[{}], True]'''.format(layer_name, int_num, quan_idx))
                         quan_idx+=1
