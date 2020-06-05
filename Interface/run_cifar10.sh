@@ -2,7 +2,7 @@
 
 
 
-for model in 'big_transfer' 'densenet121' 'densenet169' 'mobilenet_v2' 'resnet18' 'resnet34' 'resnet50';
+for model in 'big_transfer' 'densenet121' 'densenet169' 'resnet18' 'resnet34' 'resnet50';
 #'mnasnet0_5' 'mobilenet_v2' 'mnasnet1_0' 'shufflenet_v2_x0_5' 'shufflenet_v2_x1_0' 'proxyless_cpu' 'proxyless_gpu' 'proxyless_mobile' 'FBNET';
 do
 #	touch res/$model
