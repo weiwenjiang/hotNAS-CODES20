@@ -75,7 +75,7 @@ def resnet_18_space(model,dna, hw_cconv, args):
 
 def get_space():
     global p3size
-    p3size = 5
+    p3size = 3
     pattern_33_space = pattern_sets_generate_3((3, 3), p3size)
     p3num = len(pattern_33_space.keys())
     print(p3num)
@@ -123,6 +123,7 @@ if __name__ == "__main__":
     start_time = time.time()
     count = 60
     record = {}
+    latency = []
     for i in range(count):
 
         model = getattr(cifar10_models, model_name)(pretrained=True)
@@ -145,7 +146,7 @@ if __name__ == "__main__":
         print("=" * 10, model_name, "performance analysis:")
         total_lat = bottlenect_conv_dconv.get_performance(model, dataset_name, HW, HW, args.device)
         print(total_lat)
-        # latency.append(total_lat)
+        latency.append(total_lat)
 
         # acc1,acc5,_ = train.main(args, dna, HW, data_loader, data_loader_test)
         # record[i] = (acc5,total_lat)
@@ -154,6 +155,8 @@ if __name__ == "__main__":
         # print("=" * 100)
 
     print("="*100)
+
+    print("Min latency:",min(latency))
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
 
