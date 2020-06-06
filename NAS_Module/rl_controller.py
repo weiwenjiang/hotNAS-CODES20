@@ -19,7 +19,8 @@ import utils
 
 from pattern_generator import pattern_sets_generate_3
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile, ss_resnet18_cifar
-from model_search_space import ss_big_transfer,ss_mobilenet_cifar
+from model_search_space import ss_big_transfer,ss_mobilenet_cifar,ss_densenet121_cifar
+
 logger = logging.getLogger(__name__)
 
 
@@ -74,7 +75,8 @@ class Controller(object):
                 self.nn_model_helper = ss_big_transfer
             if self.args.model == "mobilenet_v2":
                 self.nn_model_helper = ss_mobilenet_cifar
-
+                if self.args.model == "densenet121":
+                self.nn_model_helper = ss_densenet121_cifar
 
         # space_name = self.nn_model_helper.get_space()[0]
         space = self.nn_model_helper.get_space()[1]
