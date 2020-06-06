@@ -75,7 +75,7 @@ class Controller(object):
                 self.nn_model_helper = ss_big_transfer
             if self.args.model == "mobilenet_v2":
                 self.nn_model_helper = ss_mobilenet_cifar
-                if self.args.model == "densenet121":
+            if self.args.model == "densenet121":
                 self.nn_model_helper = ss_densenet121_cifar
 
         # space_name = self.nn_model_helper.get_space()[0]
