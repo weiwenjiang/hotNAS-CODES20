@@ -42,6 +42,8 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
     cconv_quan_ss = []
     cconv_quan_sn = []
     quan_idx = 0
+    cconv_pattern = {}
+
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d) or isinstance(layer,copy_conv2d.Conv2d_Custom):
             input_shape = list(input.shape)
@@ -118,8 +120,13 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
 
                     if perf[1] == "computing":
-                        print(layer_name)
-                        print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                        # cconv_pattern.append(layer_name)
+                        if K not in cconv_pattern.keys():
+                            cconv_pattern[K] = [layer_name]
+                        else:
+                            cconv_pattern[K].append(layer_name)
+                        # print(layer_name)
+                        # print("cconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
 
                     if perf[1] == "loading Weight":
                         count[1]+=1
@@ -189,8 +196,12 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
 
 
 
-    print(cconv_quan_ss)
+    print(len(cconv_quan_ss),cconv_quan_ss)
     print(cconv_quan_sn)
+
+    for k,v in cconv_pattern.items():
+        print(k,len(v),v)
+    # print(len(cconv_pattern),cconv_pattern)
     # 2 is 200 MHz
     return (cTT+dTT) / 10 ** 5 / 2, count
 
@@ -202,11 +213,11 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='mobilenet_v2'
+        default='densenet121'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="160, 9, 32, 32, 3, 14, 6, 10",
+        default="70, 36, 32, 32, 3, 18, 6, 6",
         help="hardware desgin of cconv",
     )
     parser.add_argument(

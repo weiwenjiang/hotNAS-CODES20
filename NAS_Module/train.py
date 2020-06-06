@@ -31,7 +31,7 @@ from torch.utils.data import DataLoader
 # from model_search_space.ss_mobilenet_v2 import mobilenet_v2_space
 
 from model_search_space import ss_mnasnet1_0, ss_mnasnet0_5, ss_resnet18, ss_mobilenet_v2, ss_proxyless_mobile
-from model_search_space import ss_resnet18_cifar, ss_big_transfer,ss_mobilenet_cifar
+from model_search_space import ss_resnet18_cifar, ss_big_transfer,ss_mobilenet_cifar,ss_densenet121_cifar
 
 try:
     from apex import amp
@@ -268,7 +268,9 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
             HW_dconv = copy.deepcopy(ori_HW_dconv)
             model, ori_HW, ori_HW_dconv = ss_mobilenet_cifar.mobilenet_v2_space(model, dna, HW_cconv, HW_dconv,
                                                                                      args)
-
+        elif args.model == "densenet121":
+            HW_cconv = copy.deepcopy(ori_HW)
+            model, ori_HW = ss_densenet121_cifar.densenet121_space(model, dna, HW_cconv, args)
         else:
             print("Currently not support the given model {}".format("args.model"))
             sys.exit(0)
@@ -484,6 +486,8 @@ def parse_args():
             model_pointer = ss_big_transfer
         elif args.model == "mobilenet_v2":
             model_pointer = ss_mobilenet_cifar
+        elif args.model == "densenet121":
+            model_pointer = ss_densenet121_cifar
 
     space_name = model_pointer.get_space()[0]
     space = model_pointer.get_space()[1]

@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     print("="*100)
 
-    print("Min latency:",min(latency))
+    print("Min latency:",min(latency),max(latency),sum(latency)/float(len(latency)))
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
 
