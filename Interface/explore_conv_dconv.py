@@ -9,6 +9,7 @@ sys.path.append("../Performance_Model")
 # sys.path.append("../cifar10_models")
 sys.path.append("../")
 import cifar10_models
+from efficientnet_pytorch import EfficientNet
 # from cifar10_models import *
 
 import PM_Config
@@ -45,6 +46,7 @@ def get_performance(model,dataset_name, HW1, HW2):
     dTT = 0
     for layer_name, layer in model.named_modules():
         if isinstance(layer, nn.Conv2d):
+
             input_shape = list(input.shape)
             input_shape[1] = layer.in_channels
             input = torch.Tensor(torch.Size(input_shape)).to(torch.float32)
@@ -148,12 +150,12 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-d', '--dataset',
-        default='cifar10'
+        default='imagenet'
     )
 
     parser.add_argument(
         '-m', '--model',
-        default='mobilenet_v2'
+        default='efficientnet'
     )
     args = parser.parse_args()
     model_name = args.model
@@ -164,11 +166,15 @@ if __name__== "__main__":
             model = torch.hub.load('mit-han-lab/ProxylessNAS', model_name)
         elif "FBNET" in model_name:
             model = torch.hub.load('rwightman/gen-efficientnet-pytorch', 'fbnetc_100')
+        elif "efficientnet" in model_name:
+            model = EfficientNet.from_pretrained('efficientnet-b0')
         else:
             model = globals()[model_name]()
     elif dataset_name == "cifar10":
         model = getattr(cifar10_models, model_name)(pretrained=True)
 
+    # print(model)
+    # sys.exit(0)
 
 
     start_time = time.time()

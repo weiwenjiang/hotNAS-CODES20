@@ -247,7 +247,11 @@ def main(args, dna, ori_HW, data_loader, data_loader_test, ori_HW_dconv=[]):
             HW_dconv = copy.deepcopy(ori_HW_dconv)
             model,ori_HW, ori_HW_dconv = ss_mnasnet1_0.mnasnet1_0_space(model,dna, HW_cconv, HW_dconv ,args)
         elif args.model == "mobilenet_v2":
-            model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
+            HW_cconv = copy.deepcopy(ori_HW)
+            HW_dconv = copy.deepcopy(ori_HW_dconv)
+            model, ori_HW, ori_HW_dconv = ss_mobilenet_v2.mobilenet_v2_space(model, dna, HW_cconv, HW_dconv,
+                                                                                args)
+            # model = ss_mobilenet_v2.mobilenet_v2_space(model, args)
         elif args.model == "proxyless_mobile":
             HW_cconv = copy.deepcopy(ori_HW)
             HW_dconv = copy.deepcopy(ori_HW_dconv)
@@ -449,7 +453,7 @@ def parse_args():
     parser.add_argument("--hwt", dest="hw_test", help="whether test hardware", action="store_true", )
     parser.add_argument('-dc', '--dconv',default="832, 1, 32, 32, 5, 6, 10, 16",help="hardware desgin of dconv", )
     parser.add_argument('-c', '--cconv',default="130, 19, 32, 32, 3, 18, 2, 10",help="hardware desgin of cconv",)
-    parser.add_argument('-d', '--dataset',default='cifar10')
+    parser.add_argument('-d', '--dataset',default='imagenet')
     args = parser.parse_args()
 
     print("=" * 58)

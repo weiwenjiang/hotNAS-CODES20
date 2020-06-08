@@ -87,6 +87,8 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         perf = acc_1.get_layer_latency(Layer, layer.pattern_ones, layer.quan_paras)
                     else:
                         perf = acc_1.get_layer_latency(Layer)
+
+                    # print(perf[0])
                     cTT += perf[0]
 
                     if perf[1] == "loading Weight":
@@ -109,7 +111,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                         max_lat = sorted_per[-1].item()
                         sec_lat = sorted_per[-2].item()
                         quan_ceil = 17 - int_num
-                        quan_floor = min(max(math.floor(16/(float(max_lat)/sec_lat)),1),quan_ceil-1)
+                        quan_floor = min(max(math.floor(16/(float(max_lat)/sec_lat))-int_num,1),quan_ceil-1)
 
 
                         quan_count = 6
@@ -166,6 +168,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                     else:
                         perf = acc_2.get_layer_latency(Layer)
 
+                    # print(perf[0])
 
                     dTT+=perf[0]
 
@@ -177,8 +180,12 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
                     #
                     #
                     if perf[1] == "computing":
-                        print(layer_name)
-                        print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                        # print(layer_name)
+                        # print("dconv",layer_name, "Kernel:", K, perf[0] / 10 ** 5, perf[1], [x / 10 ** 5 for x in perf[2]])
+                        if K not in cconv_pattern.keys():
+                            cconv_pattern[K] = [layer_name]
+                        else:
+                            cconv_pattern[K].append(layer_name)
                     if perf[1] == "loading Weight":
                         count[1]+=1
                     elif perf[1] == "loading IFM":
@@ -203,6 +210,7 @@ def get_performance(model, dataset_name, HW1, HW2,device=None):
         print(k,len(v),v)
     # print(len(cconv_pattern),cconv_pattern)
     # 2 is 200 MHz
+    print(cTT,dTT)
     return (cTT+dTT) / 10 ** 5 / 2, count
 
 
@@ -213,21 +221,21 @@ if __name__== "__main__":
     parser = argparse.ArgumentParser('Parser User Input Arguments')
     parser.add_argument(
         '-m', '--model',
-        default='densenet121'
+        default='mobilenet_v2'
     )
     parser.add_argument(
         '-c', '--cconv',
-        default="70, 36, 32, 32, 3, 18, 6, 6",
+        default="160, 12, 32, 32, 3, 10, 10, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-dc', '--dconv',
-        default="960, 1, 32, 32, 3, 14, 6, 10",
+        default="576, 1, 32, 32, 3, 10, 10, 10",
         help="hardware desgin of cconv",
     )
     parser.add_argument(
         '-d', '--dataset',
-        default='cifar10'
+        default='imagenet'
     )
     parser.add_argument("--pretrained", dest="pretrained", help="Use pre-trained models from the modelzoo",
                         action="store_true", )
