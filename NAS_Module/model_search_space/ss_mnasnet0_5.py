@@ -2,6 +2,7 @@ import sys
 from torchvision import models
 
 from torchvision.models import *
+sys.path.append("./")
 sys.path.append("../")
 sys.path.append("../../Interface")
 sys.path.append("../../Performance_Model")
