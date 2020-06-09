@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7dbb9ec4-b31b-4671-a00a-2e5ca2fc69ee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/bottleneck_manually.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/bottleneck_manually.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/bottlenect_conv_dconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/bottlenect_conv_dconv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/Interface/explore_conv_dconv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mobilenet_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mobilenet_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NAS_Module/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet0_5.py" beforeDir="false" afterPath="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet0_5.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,6 +52,11 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/NAS_Module/model_search_space" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -78,7 +79,7 @@
       <recent name="$PROJECT_DIR$/util/conv_dconv_dse" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.explore_conv_dconv">
+  <component name="RunManager" selected="Python.ss_mnasnet0_5">
     <configuration name="bottleneck_manually" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="reverseNAS" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -167,7 +168,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="ss_mobilenet_cifar" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="ss_mnasnet0_5" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="reverseNAS" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -180,7 +181,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mobilenet_cifar.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NAS_Module/model_search_space/ss_mnasnet0_5.py" />
       <option name="PARAMETERS" value="--device cpu" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -214,18 +215,18 @@
     <list>
       <item itemvalue="Python.ss_big_transfer" />
       <item itemvalue="Python.bottleneck_manually" />
-      <item itemvalue="Python.ss_mobilenet_cifar" />
       <item itemvalue="Python.ss_densenet121_cifar" />
       <item itemvalue="Python.ss_mobilenet_v2" />
       <item itemvalue="Python.explore_conv_dconv" />
+      <item itemvalue="Python.ss_mnasnet0_5" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.ss_mnasnet0_5" />
         <item itemvalue="Python.explore_conv_dconv" />
         <item itemvalue="Python.ss_mobilenet_v2" />
         <item itemvalue="Python.bottleneck_manually" />
         <item itemvalue="Python.ss_densenet121_cifar" />
-        <item itemvalue="Python.ss_mobilenet_cifar" />
       </list>
     </recent_temporary>
   </component>
@@ -256,14 +257,7 @@
       <workItem from="1586354215643" duration="82396000" />
       <workItem from="1591300925558" duration="30841000" />
       <workItem from="1591379992117" duration="13634000" />
-      <workItem from="1591644543151" duration="3936000" />
-    </task>
-    <task id="LOCAL-00316" summary="cifar-search space - train-test file">
-      <created>1591313294110</created>
-      <option name="number" value="00316" />
-      <option name="presentableId" value="LOCAL-00316" />
-      <option name="project" value="LOCAL" />
-      <updated>1591313294110</updated>
+      <workItem from="1591644543151" duration="5998000" />
     </task>
     <task id="LOCAL-00317" summary="cifar-search space - train-test file">
       <created>1591313379412</created>
@@ -601,7 +595,14 @@
       <option name="project" value="LOCAL" />
       <updated>1591450445844</updated>
     </task>
-    <option name="localTasksCounter" value="365" />
+    <task id="LOCAL-00365" summary="cifar-densnet">
+      <created>1591648837818</created>
+      <option name="number" value="00365" />
+      <option name="presentableId" value="LOCAL-00365" />
+      <option name="project" value="LOCAL" />
+      <updated>1591648837819</updated>
+    </task>
+    <option name="localTasksCounter" value="366" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -640,27 +641,31 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="395" y="110" width="800" height="677" key="#Notifications/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585405034104" />
-    <state x="163" y="79" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591645096440">
+    <state x="163" y="79" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591732238189">
       <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state x="1774" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586400632671" />
     <state x="282" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.159.2899.741@67.159.2899.741" timestamp="1591449192699" />
-    <state x="163" y="79" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1299.741@67.27.1299.741" timestamp="1591645096440" />
+    <state x="163" y="79" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1299.741@67.27.1299.741" timestamp="1591732238189" />
     <state x="1366" y="254" width="638" height="405" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591305870739">
       <screen x="67" y="159" width="2899" height="741" />
     </state>
     <state x="471" y="254" width="674" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585895158152" />
     <state x="2002" y="230" width="638" height="405" key="#com.intellij.fileTypes.FileTypeChooser/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586369441160" />
     <state x="1366" y="254" key="#com.intellij.fileTypes.FileTypeChooser/67.159.2899.741@67.159.2899.741" timestamp="1591305870739" />
-    <state x="1366" y="159" width="890" height="741" key="CommitChangelistDialog2" timestamp="1591450445689">
-      <screen x="67" y="159" width="2899" height="741" />
+    <state x="390" y="27" width="642" height="741" key="#ss_mnasnet0_5" timestamp="1591732245772">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state x="390" y="27" width="642" height="741" key="#ss_mnasnet0_5/67.27.1299.741@67.27.1299.741" timestamp="1591732245772" />
+    <state x="445" y="27" width="890" height="741" key="CommitChangelistDialog2" timestamp="1591648837351">
+      <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state x="465" y="33" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528015811" />
     <state x="1997" y="159" width="748" height="741" key="CommitChangelistDialog2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586662734690" />
     <state x="1997" y="1" width="748" height="740" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037059773" />
     <state x="490" y="159" width="876" height="741" key="CommitChangelistDialog2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040837181" />
     <state x="1366" y="159" width="1600" height="741" key="CommitChangelistDialog2/67.159.2899.741@67.159.2899.741" timestamp="1591450445689" />
-    <state x="445" y="27" width="890" height="741" key="CommitChangelistDialog2/67.27.1299.741@67.27.1299.741" timestamp="1591381448892" />
+    <state x="445" y="27" width="890" height="741" key="CommitChangelistDialog2/67.27.1299.741@67.27.1299.741" timestamp="1591648837351" />
     <state x="100" y="98" width="1400" height="702" key="DiffContextDialog" timestamp="1585902779737">
       <screen x="0" y="159" width="1600" height="741" />
     </state>
@@ -671,7 +676,7 @@
     </state>
     <state x="544" y="192" width="501" height="513" key="FileChooserDialogImpl/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585316341535" />
     <state x="2064" y="166" width="501" height="532" key="FileChooserDialogImpl/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1585972616449" />
-    <state width="1253" height="187" key="GridCell.Tab.0.bottom" timestamp="1591648786115">
+    <state width="1253" height="187" key="GridCell.Tab.0.bottom" timestamp="1591732307770">
       <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state width="1554" height="200" key="GridCell.Tab.0.bottom/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586379614203" />
@@ -680,8 +685,8 @@
     <state width="1253" height="239" key="GridCell.Tab.0.bottom/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586042999167" />
     <state width="1253" height="239" key="GridCell.Tab.0.bottom/1600.132.1366.768/67.27.1299.741@67.27.1299.741" timestamp="1586284057843" />
     <state width="1253" height="166" key="GridCell.Tab.0.bottom/67.159.2899.741@67.159.2899.741" timestamp="1591459281666" />
-    <state width="1253" height="187" key="GridCell.Tab.0.bottom/67.27.1299.741@67.27.1299.741" timestamp="1591648786115" />
-    <state width="1253" height="187" key="GridCell.Tab.0.center" timestamp="1591648786114">
+    <state width="1253" height="187" key="GridCell.Tab.0.bottom/67.27.1299.741@67.27.1299.741" timestamp="1591732307770" />
+    <state width="1253" height="187" key="GridCell.Tab.0.center" timestamp="1591732307770">
       <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state width="1554" height="200" key="GridCell.Tab.0.center/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586379614203" />
@@ -690,8 +695,8 @@
     <state width="1253" height="239" key="GridCell.Tab.0.center/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586042999166" />
     <state width="1253" height="239" key="GridCell.Tab.0.center/1600.132.1366.768/67.27.1299.741@67.27.1299.741" timestamp="1586284057843" />
     <state width="1253" height="166" key="GridCell.Tab.0.center/67.159.2899.741@67.159.2899.741" timestamp="1591459281666" />
-    <state width="1253" height="187" key="GridCell.Tab.0.center/67.27.1299.741@67.27.1299.741" timestamp="1591648786114" />
-    <state width="1253" height="187" key="GridCell.Tab.0.left" timestamp="1591648786114">
+    <state width="1253" height="187" key="GridCell.Tab.0.center/67.27.1299.741@67.27.1299.741" timestamp="1591732307770" />
+    <state width="1253" height="187" key="GridCell.Tab.0.left" timestamp="1591732307769">
       <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state width="1554" height="200" key="GridCell.Tab.0.left/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586379614202" />
@@ -700,8 +705,8 @@
     <state width="1253" height="239" key="GridCell.Tab.0.left/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586042999166" />
     <state width="1253" height="239" key="GridCell.Tab.0.left/1600.132.1366.768/67.27.1299.741@67.27.1299.741" timestamp="1586284057843" />
     <state width="1253" height="166" key="GridCell.Tab.0.left/67.159.2899.741@67.159.2899.741" timestamp="1591459281665" />
-    <state width="1253" height="187" key="GridCell.Tab.0.left/67.27.1299.741@67.27.1299.741" timestamp="1591648786114" />
-    <state width="1253" height="187" key="GridCell.Tab.0.right" timestamp="1591648786114">
+    <state width="1253" height="187" key="GridCell.Tab.0.left/67.27.1299.741@67.27.1299.741" timestamp="1591732307769" />
+    <state width="1253" height="187" key="GridCell.Tab.0.right" timestamp="1591732307770">
       <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state width="1554" height="200" key="GridCell.Tab.0.right/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586379614203" />
@@ -710,7 +715,7 @@
     <state width="1253" height="239" key="GridCell.Tab.0.right/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586042999167" />
     <state width="1253" height="239" key="GridCell.Tab.0.right/1600.132.1366.768/67.27.1299.741@67.27.1299.741" timestamp="1586284057843" />
     <state width="1253" height="166" key="GridCell.Tab.0.right/67.159.2899.741@67.159.2899.741" timestamp="1591459281666" />
-    <state width="1253" height="187" key="GridCell.Tab.0.right/67.27.1299.741@67.27.1299.741" timestamp="1591648786114" />
+    <state width="1253" height="187" key="GridCell.Tab.0.right/67.27.1299.741@67.27.1299.741" timestamp="1591732307770" />
     <state width="1253" height="219" key="GridCell.Tab.1.bottom" timestamp="1586400515175">
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
@@ -741,15 +746,15 @@
       <screen x="0" y="159" width="1600" height="741" />
     </state>
     <state x="534" y="166" width="522" height="566" key="VCS.ChangeListViewerDialog/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1585404986570" />
-    <state x="1366" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1591450448185">
-      <screen x="67" y="159" width="2899" height="741" />
+    <state x="556" y="53" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1591648841219">
+      <screen x="67" y="27" width="1299" height="741" />
     </state>
     <state x="395" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@0.159.1600.741" timestamp="1586528018681" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/0.159.1600.741@1600.132.1366.768" timestamp="1586662746381" />
     <state x="1937" y="159" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@1600.132.1366.768" timestamp="1586037062064" />
     <state x="445" y="185" width="800" height="528" key="Vcs.Push.Dialog.v2/1600.132.1366.768/67.159.1533.741@67.159.1533.741" timestamp="1586040842578" />
     <state x="1366" y="185" width="1600" height="510" key="Vcs.Push.Dialog.v2/67.159.2899.741@67.159.2899.741" timestamp="1591450448185" />
-    <state x="556" y="53" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1299.741@67.27.1299.741" timestamp="1591381452174" />
+    <state x="556" y="53" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1299.741@67.27.1299.741" timestamp="1591648841219" />
     <state x="1366" y="185" width="683" height="741" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591319174952">
       <screen x="67" y="159" width="2899" height="741" />
     </state>
@@ -817,7 +822,7 @@
     <SUITE FILE_PATH="coverage/reverseNAS$ss_mobilenet_cifar.coverage" NAME="ss_mobilenet_cifar Coverage Results" MODIFIED="1591394757184" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
     <SUITE FILE_PATH="coverage/reverseNAS$ss_mnasnet1_0.coverage" NAME="ss_mnasnet1_0 Coverage Results" MODIFIED="1586578687411" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
     <SUITE FILE_PATH="coverage/reverseNAS$PM_FPGA_Template.coverage" NAME="PM_FPGA_Template Coverage Results" MODIFIED="1585325643621" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Performance_Model" />
-    <SUITE FILE_PATH="coverage/reverseNAS$explore_conv_dconv.coverage" NAME="explore_conv_dconv Coverage Results" MODIFIED="1591648786100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
+    <SUITE FILE_PATH="coverage/reverseNAS$explore_conv_dconv.coverage" NAME="explore_conv_dconv Coverage Results" MODIFIED="1591649008740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$resnet18.coverage" NAME="resnet18 Coverage Results" MODIFIED="1586394150199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_serch_space" />
     <SUITE FILE_PATH="coverage/reverseNAS$ss_proxyless_mobile.coverage" NAME="ss_proxyless_mobile Coverage Results" MODIFIED="1586580873217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
     <SUITE FILE_PATH="coverage/reverseNAS$ss_big_transfer.coverage" NAME="ss_big_transfer Coverage Results" MODIFIED="1591368186775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
@@ -844,6 +849,7 @@
     <SUITE FILE_PATH="coverage/reverseNAS$ztNAS_model_change.coverage" NAME="ztNAS_model_change Coverage Results" MODIFIED="1586357101950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Interface" />
     <SUITE FILE_PATH="coverage/reverseNAS$train_proxyless.coverage" NAME="train-proxyless Coverage Results" MODIFIED="1585891538564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module" />
     <SUITE FILE_PATH="coverage/reverseNAS$ss_mobilenet_v2.coverage" NAME="ss_mobilenet_v2 Coverage Results" MODIFIED="1591647594028" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
+    <SUITE FILE_PATH="coverage/reverseNAS$ss_mnasnet0_5.coverage" NAME="ss_mnasnet0_5 Coverage Results" MODIFIED="1591732307752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/NAS_Module/model_search_space" />
     <SUITE FILE_PATH="coverage/reverseNAS$3D_Data__1_.coverage" NAME="3D_Data (1) Coverage Results" MODIFIED="1585491375616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/util/conv_only_dse" />
   </component>
 </project>

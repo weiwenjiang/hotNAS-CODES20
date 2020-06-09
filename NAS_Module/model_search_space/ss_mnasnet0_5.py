@@ -139,7 +139,7 @@ def mnasnet0_5_space(model, dna, args):
     quan_paras["layers.13.0.layers.6"] = [3, q_list[14], True]
     quan_paras["layers.14"] = [3, q_list[15], True]
 
-    # model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
+    model_modify.Kenel_Quantization(model, quan_paras.keys(), quan_paras)
 
 
 
@@ -239,17 +239,17 @@ if __name__ == "__main__":
         print(total_lat)
         latency.append(total_lat)
 
-        acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
-        print(acc1, acc5, total_lat)
-        record[i] = (acc5, total_lat)
-        print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
-        print(dna)
+        # acc1, acc5, _ = train.main(args, dna, HW2, data_loader, data_loader_test, HW1)
+        # print(acc1, acc5, total_lat)
+        # record[i] = (acc5, total_lat)
+        # print("Random {}: acc-{}, lat-{}".format(i, acc5, total_lat))
+        # print(dna)
         print("=" * 100)
 
     print("=" * 100)
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-
+    print("Min latency:", min(latency), max(latency), sum(latency) / float(len(latency)))
     print("Exploration End, using time {}".format(total_time_str))
-    for k, v in record.items():
-        print(k, v)
+    # for k, v in record.items():
+    #     print(k, v)
